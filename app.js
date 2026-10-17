@@ -129,7 +129,7 @@ function update() {
 
   $('sBody').textContent = `S300 · ${P.body != null ? won(P.body) : '[가격 미정]'}`;
   $('sColor').textContent = `${col.name} · ${priceLabel(col.price)}`;
-  $('sLidar').textContent = state.lidar ? `라이다 3개 · ${priceLabel(P.lidar)}` : '초음파 센서 6개 (기본)';
+  $('sLidar').textContent = state.lidar ? `라이다 3개 · ${priceLabel(P.lidar)}` : '초음파 센서 6개 · 추가 비용 없음';
   $('sLte').textContent = state.lte ? `LTE 모듈 · ${priceLabel(P.lte)}` : '미포함 (기본)';
   $('sQty').textContent = `${state.qty}대`;
   $('sTotal').textContent = totalLabel;
