@@ -1,4 +1,4 @@
-import { CONFIG } from './config.js?v=9';
+import { CONFIG } from './config.js?v=10';
 
 /* ========== 상태 ========== */
 const state = { color: CONFIG.colors[0].id, lidar: false, lte: false, qty: 1, frame: CONFIG.initialFrame ?? 0 };
@@ -132,6 +132,9 @@ function update() {
   $('sLidar').textContent = state.lidar ? `라이다 3개 · ${priceLabel(P.lidar)}` : '초음파 센서 6개 · 추가 비용 없음';
   $('sLte').textContent = state.lte ? `LTE 모듈 · ${priceLabel(P.lte)}` : '미포함 (기본)';
   $('sQty').textContent = `${state.qty}대`;
+  const disc = (CONFIG.eventDiscount ?? 1500000) * state.qty;
+  $('sCash').textContent = `−${won(disc)}`;
+  $('sCard').textContent = `할부 수수료 최대 ${won(disc)} 지원`;
   $('sTotal').textContent = totalLabel;
   $('pbTotal').textContent = totalLabel;
   $('pbSummary').textContent = `S300 · ${col.name}${state.lidar ? ' · 라이다' : ''}${state.lte ? ' · LTE' : ''} · ${state.qty}대`;

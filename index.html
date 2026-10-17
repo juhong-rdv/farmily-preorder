@@ -57,7 +57,7 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4"/></svg>
           <div><b>현금(계좌이체) 결제 — 150만원 즉시 할인</b><span>잔금을 계좌이체로 납부 시 총액에서 150만원 할인</span></div>
         </div>
-        <div class="event-note">사전계약금 결제 시점이 아닌 잔금 결제 시 적용됩니다.</div>
+        <div class="event-note">1대당 기준이며 신청 대수만큼 적용됩니다. 사전계약금 결제 시점이 아닌 잔금 결제 시 적용됩니다.</div>
       </div>
 
       <section class="opt">
@@ -111,8 +111,8 @@
         <div><span>수량</span><b id="sQty"></b></div>
         <hr>
         <div class="total"><span>예상 총액</span><b id="sTotal"></b></div>
-        <div class="green"><span>현금 결제 시</span><b>−1,500,000원</b></div>
-        <div class="green"><span>카드 할부(최대 12개월) 시</span><b>할부 수수료 최대 150만원 지원</b></div>
+        <div class="green"><span>현금 결제 시</span><b id="sCash"></b></div>
+        <div class="green"><span>카드 할부(최대 12개월) 시</span><b id="sCard"></b></div>
         <p>잔금은 출고 일정 확정 후 이메일의 결제 링크(카드) 또는 계좌이체로 납부합니다. 혜택은 잔금 결제 시 택1 적용.</p>
       </section>
 
@@ -145,6 +145,6 @@
   </aside>
 </div>
 
-<script type="module" src="app.js?v=9"></script>
+<script type="module" src="app.js?v=10"></script>
 </body>
 </html>
