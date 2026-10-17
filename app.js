@@ -1,4 +1,4 @@
-import { CONFIG } from './config.js?v=10';
+import { CONFIG } from './config.js?v=11';
 
 /* ========== 상태 ========== */
 const state = { color: CONFIG.colors[0].id, lidar: false, lte: false, qty: 1, frame: CONFIG.initialFrame ?? 0 };
@@ -136,6 +136,7 @@ function update() {
   $('sCash').textContent = `−${won(disc)}`;
   $('sCard').textContent = `할부 수수료 최대 ${won(disc)} 지원`;
   $('sTotal').textContent = totalLabel;
+  $('sBalance').textContent = known ? won(Math.max(0, unit * state.qty - CONFIG.deposit)) : '[가격 미정]';
   $('pbTotal').textContent = totalLabel;
   $('pbSummary').textContent = `S300 · ${col.name}${state.lidar ? ' · 라이다' : ''}${state.lte ? ' · LTE' : ''} · ${state.qty}대`;
   const chips = ['S300', col.name, state.lidar ? '라이다 센서 3' : '초음파 센서 6', ...(state.lte ? ['LTE'] : []), `${state.qty}대`];
