@@ -140,3 +140,9 @@ input{font-family:inherit}
 .card.color-card{gap:14px}
 .card.color-card .sw{flex:0 0 40px;width:40px;height:40px;border-radius:50%;border:1px solid rgba(0,0,0,.12)}
 .card.color-card div{flex:1 1 auto}
+
+/* ---------- 예상 총액 강조 ---------- */
+.summary .total{align-items:baseline;padding-top:4px}
+.summary .total span{color:var(--ink);font-weight:700}
+.summary .total b{font-weight:900;font-size:20px;color:var(--ink)}
+.paybar-line b{font-weight:900;font-size:15px}
