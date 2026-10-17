@@ -23,9 +23,12 @@ function load(url) {
   cache.set(url, p); return p;
 }
 async function preloadSet(key, onProgress) {
-  const urls = Array.from({ length: FRAMES }, (_, i) => frameUrl(key, i));
-  let n = 0;
-  await Promise.all(urls.map((u) => load(u).then(() => { n++; onProgress && onProgress(n / FRAMES); })));
+  // 현재 각도부터 양방향으로, 동시 6개씩 (요청 폭주 방지)
+  const order = [];
+  for (let d = 0; d < FRAMES; d++) { const f = (state.frame + (d % 2 ? -(d + 1) / 2 : d / 2) + FRAMES * 4) % FRAMES; if (!order.includes(f)) order.push(f); }
+  let n = 0, idx = 0;
+  async function worker() { while (idx < order.length) { const f = order[idx++]; await load(frameUrl(key, f)); n++; onProgress && onProgress(n / FRAMES); } }
+  await Promise.all(Array.from({ length: 6 }, worker));
   loaded.add(key);
 }
 
@@ -70,19 +73,21 @@ function stopAuto() { autoRotate = false; if (autoTimer) { clearInterval(autoTim
 $('rotL').onclick = () => { stopAuto(); setFrame(state.frame - 3); };
 $('rotR').onclick = () => { stopAuto(); setFrame(state.frame + 3); };
 
-// 초기 로드: 기본 세트 먼저, 나머지 백그라운드
+// 초기 로드: 기본 세트(36장)만. 다른 세트는 사용자가 해당 옵션을 고를 때 로드 (호스팅 요청 한도·초기 속도 고려)
 (async () => {
   const lt = $('loadingText');
   await preloadSet(setKey(), (p) => { lt.textContent = `이미지 ${Math.round(p * 100)}%`; });
   $('loading').hidden = true; resize(); setFrame(0); if (autoRotate) startAuto();
-  const rest = [];
-  for (const on of [false, true]) for (const c of CONFIG.colors) { const k = `${c.id}-${on ? 'on' : 'off'}`; if (k !== setKey()) rest.push(k); }
-  for (const k of rest) await preloadSet(k);
 })();
 
 async function switchSet() {
   const key = setKey();
-  if (!loaded.has(key)) { $('loading').hidden = false; $('loadingText').textContent = '이미지 불러오는 중…'; await preloadSet(key); $('loading').hidden = true; }
+  if (!loaded.has(key)) {
+    // 현재 각도 한 장을 먼저 받아 바로 바꿔 보여주고, 나머지는 뒤에서 채움
+    await load(frameUrl(key, state.frame)); draw();
+    preloadSet(key);
+    return;
+  }
   draw();
 }
 
