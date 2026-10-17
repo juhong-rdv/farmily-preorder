@@ -12,8 +12,8 @@ export const CONFIG = {
 
   // 가격 (원). null이면 "[가격 미정]"으로 표시
   prices: {
-    body: null,   // S300 본체
-    lidar: null,  // 라이다 안전 센서 (3개)
+    body: 16000000,   // S300 본체
+    lidar: 1500000,  // 라이다 안전 센서 (3개)
     lte: null     // LTE 모듈
   },
 
