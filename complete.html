@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>사전계약 완료 · FARMILY-X S300</title>
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--green:#1E6B3A;--green-dk:#0F2A1A;--ink:#141413;--ink-2:#4A4A48;--ink-3:#6B6B68;--line:#D8D8D4}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Noto Sans KR',system-ui,sans-serif;color:var(--ink);background:#F4F4F2;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .box{background:#fff;border-radius:16px;padding:40px 36px;max-width:520px;width:100%;display:flex;flex-direction:column;gap:20px;box-shadow:0 8px 30px rgba(0,0,0,.06)}
+  .check{width:56px;height:56px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center}
+  h1{margin:0;font-size:26px;font-weight:900}
+  p{margin:0;font-size:14px;color:var(--ink-2);line-height:1.7}
+  .info{border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:8px;font-size:14px;background:#FAFAF8}
+  .info div{display:flex;justify-content:space-between;gap:12px}
+  .info span{color:var(--ink-2)}
+  .info b{font-weight:500;text-align:right;word-break:break-all}
+  .steps{display:flex;flex-direction:column;gap:10px;font-size:13px;color:var(--ink-2);line-height:1.6}
+  .steps div{display:flex;gap:10px}
+  .steps i{font-style:normal;font-weight:700;color:var(--green);flex:0 0 22px}
+  a.btn{display:block;text-align:center;height:48px;line-height:48px;border-radius:10px;background:var(--green);color:#fff;text-decoration:none;font-weight:700}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="check"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+  <h1>사전계약이 완료되었습니다</h1>
+  <p id="greet">사전계약금 100,000원 결제가 확인되었습니다. 입력하신 이메일로 접수 내역을 보내드리며, 담당자가 영업일 기준 2일 이내에 연락드립니다.</p>
+  <div class="info">
+    <div><span>주문번호</span><b id="oid">-</b></div>
+    <div><span>구성</span><b id="spec">-</b></div>
+    <div><span>결제 금액</span><b>100,000원</b></div>
+  </div>
+  <div class="steps">
+    <div><i>01</i><span>담당자 연락 · 온실 구조 확인 및 사양 확정</span></div>
+    <div><i>02</i><span>출고 일정 확정 후 잔금 결제 안내 메일 발송 (카드 링크 또는 계좌이체)</span></div>
+    <div><i>03</i><span>현장 설치 및 운용 교육</span></div>
+  </div>
+  <p>문의: <a href="mailto:[CONTACT_EMAIL]">[CONTACT_EMAIL]</a> · [CONTACT_PHONE]</p>
+  <a class="btn" href="https://farmily.ai">FARMILY 홈으로</a>
+</div>
+<script>
+  const q = new URLSearchParams(location.search);
+  const oid = q.get('oid') || '-', name = q.get('name') || '', spec = q.get('spec') || '-';
+  document.getElementById('oid').textContent = oid;
+  document.getElementById('spec').textContent = spec.replace(/\//g, ' · ');
+  if (name) document.getElementById('greet').textContent = `${name} 님, ` + document.getElementById('greet').textContent;
+</script>
+</body>
+</html>

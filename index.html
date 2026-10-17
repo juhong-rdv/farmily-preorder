@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FARMILY-X S300 사전계약</title>
+<meta name="description" content="FARMILY-X S300 온실 자율주행 방제로봇 2027년 사전계약. 색상·옵션을 선택하고 사전계약금 10만원으로 생산 순번을 확보하세요.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://cpay.payple.kr/js/v1/payment.js"></script>
+</head>
+<body>
+<div class="app">
+
+  <!-- 좌측: 3D 뷰어 -->
+  <section class="viewer">
+    <header class="viewer-head">
+      <a class="brand" href="https://farmily.ai">FARMILY<span>-X</span></a>
+      <span class="sub">S300 사전계약</span>
+    </header>
+    <div class="stage" id="stage">
+      <canvas id="canvas"></canvas>
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div id="loadingText">이미지 불러오는 중…</div>
+      </div>
+    </div>
+    <div class="viewer-foot">
+      <div class="rotate-hint">
+        <button id="rotL" aria-label="왼쪽으로 회전" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
+        <span>드래그하여 360° 회전 · 휠로 확대 · <b id="angle">0°</b></span>
+        <button id="rotR" aria-label="오른쪽으로 회전" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg></button>
+      </div>
+      <div class="chips" id="chips"></div>
+    </div>
+  </section>
+
+  <!-- 우측: 옵션 패널 -->
+  <aside class="panel">
+    <div class="panel-scroll">
+
+      <div class="intro">
+        <div class="eyebrow">PRE-ORDER · 2027 시즌</div>
+        <h1>FARMILY-X S300</h1>
+        <p>온실 레일 자율주행 약제 살포 로봇. 색상과 옵션을 선택하면 미리보기가 바로 바뀝니다. 오늘은 사전계약금 100,000원만 결제합니다.</p>
+      </div>
+
+      <div class="event">
+        <div class="event-head"><span class="eyebrow light">EVENT</span><b>2027년 미리 준비 사전계약 혜택</b></div>
+        <p>잔금 결제 방식에 따라 아래 혜택 중 하나를 적용해 드립니다.</p>
+        <div class="event-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+          <div><b>카드 장기 할부 — 할부 수수료 일부 지원</b><span>[N]개월 할부 기준 수수료 [X]% 지원. 지원 범위는 카드사마다 다릅니다.</span></div>
+        </div>
+        <div class="event-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4"/></svg>
+          <div><b>현금(계좌이체) 결제 — 1,500,000원 할인</b><span>잔금을 계좌이체로 납부 시 총액에서 150만원 할인</span></div>
+        </div>
+        <div class="event-note">사전계약금 결제 시점이 아닌 잔금 결제 시 적용됩니다.</div>
+      </div>
+
+      <section class="opt">
+        <div class="opt-head"><b>색상 조합</b><span id="colorLabel"></span></div>
+        <div class="swatches" id="swatches"></div>
+        <div class="hint">원본 컬러는 추가 비용이 없습니다. 다른 조합은 도장 비용이 추가됩니다. 프로파일 프레임은 검정으로 동일합니다.</div>
+      </section>
+
+      <section class="opt">
+        <div class="opt-head"><b>안전 센서</b></div>
+        <div class="sensor-base">
+          <div class="sensor-base-head"><b>기본 포함 · 초음파 센서 6개</b><span>정면 2 · 측면 4</span></div>
+          <p>벽·장애물을 감지해 정지합니다. 근거리 감지용으로 레일 끝단·온실 벽 충돌 방지에 적합합니다.</p>
+        </div>
+        <button class="card" id="optLidar" type="button" aria-pressed="false">
+          <div>
+            <b>라이다(LiDAR) 안전 센서 3개 추가</b>
+            <span>정면 1 · 좌우 측면 2. 레이저로 반경 수 m를 연속 스캔해 작업자·장애물을 초음파보다 멀리, 정확하게 감지하고 감속·정지합니다. 작업자가 함께 다니는 온실에 권장. 선택하면 미리보기에 센서와 감지 범위가 표시됩니다.</span>
+          </div>
+          <em data-price="lidar"></em>
+        </button>
+      </section>
+
+      <section class="opt">
+        <div class="opt-head"><b>통신</b></div>
+        <button class="card" id="optLte" type="button" aria-pressed="false">
+          <div><b>LTE 모듈</b><span>온실 Wi-Fi 없이도 원격 모니터링·작업 지시. 기본 구성에는 포함되지 않습니다.</span></div>
+          <em data-price="lte"></em>
+        </button>
+      </section>
+
+      <section class="opt row">
+        <b>수량</b>
+        <div class="qty">
+          <button id="qtyDown" type="button" aria-label="수량 줄이기">−</button>
+          <span id="qtyVal">1</span>
+          <button id="qtyUp" type="button" aria-label="수량 늘리기">+</button>
+        </div>
+      </section>
+
+      <section class="summary">
+        <div><span>본체</span><b id="sBody"></b></div>
+        <div><span>색상 조합</span><b id="sColor"></b></div>
+        <div><span>안전 센서</span><b id="sLidar"></b></div>
+        <div><span>통신</span><b id="sLte"></b></div>
+        <div><span>수량</span><b id="sQty"></b></div>
+        <hr>
+        <div><span>예상 총액</span><b id="sTotal"></b></div>
+        <div class="green"><span>현금 결제 시</span><b>−1,500,000원</b></div>
+        <div class="green"><span>카드 장기 할부 시</span><b>할부 수수료 일부 지원</b></div>
+        <p>잔금은 출고 일정 확정 후 이메일의 결제 링크(카드) 또는 계좌이체로 납부합니다. 혜택은 잔금 결제 시 택1 적용.</p>
+      </section>
+
+      <section class="opt">
+        <div class="opt-head"><b>연락처</b></div>
+        <div class="field"><label for="fName">성함 / 농장명</label><input id="fName" type="text" placeholder="홍길동 / 길동농원" autocomplete="name"></div>
+        <div class="field"><label for="fHp">휴대전화</label><input id="fHp" type="tel" placeholder="010-0000-0000" autocomplete="tel"></div>
+        <div class="field"><label for="fEmail">이메일 <small>(잔금 안내 수신용)</small></label><input id="fEmail" type="email" placeholder="farm@example.com" autocomplete="email"></div>
+        <div class="field"><label for="fMemo">온실 정보 <small>(선택)</small></label><input id="fMemo" type="text" placeholder="예) 파프리카 3,000평, 온수파이프 51mm"></div>
+        <label class="agree"><input id="fAgree" type="checkbox"> 사전계약 약관 및 개인정보 수집·이용에 동의합니다.</label>
+      </section>
+
+      <section class="policy">
+        <b>취소·환불 안내</b>
+        <div><span>결제 당일</span>전액 환불, 수수료 없음</div>
+        <div><span>결제 후 7일 이내</span>전액 환불</div>
+        <div><span>8일~출고 확정 전</span>[페이플 확인 후 기재]</div>
+        <div><span>출고 확정 후</span>사전계약 약관에 따름</div>
+      </section>
+
+    </div>
+
+    <div class="paybar">
+      <div class="paybar-line"><span id="pbSummary"></span><b id="pbTotal"></b></div>
+      <div class="paybar-row">
+        <div class="today"><small>오늘 결제</small><b>100,000원</b></div>
+        <button id="payBtn" type="button">사전계약금 결제</button>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
