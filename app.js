@@ -1,7 +1,7 @@
-import { CONFIG } from './config.js?v=3';
+import { CONFIG } from './config.js?v=4';
 
 /* ========== 상태 ========== */
-const state = { color: CONFIG.colors[0].id, lidar: false, lte: false, qty: 1, frame: 0 };
+const state = { color: CONFIG.colors[0].id, lidar: false, lte: false, qty: 1, frame: CONFIG.initialFrame ?? 0 };
 const $ = (id) => document.getElementById(id);
 const won = (n) => n.toLocaleString('ko-KR') + '원';
 const priceLabel = (p) => (p === null || p === undefined) ? '[가격 미정]' : (p === 0 ? '추가 비용 없음' : '+' + won(p));
@@ -77,7 +77,7 @@ $('rotR').onclick = () => { stopAuto(); setFrame(state.frame + 3); };
 (async () => {
   const lt = $('loadingText');
   await preloadSet(setKey(), (p) => { lt.textContent = `이미지 ${Math.round(p * 100)}%`; });
-  $('loading').hidden = true; resize(); setFrame(0); if (autoRotate) startAuto();
+  $('loading').hidden = true; resize(); setFrame(state.frame); if (autoRotate) startAuto();
 })();
 
 async function switchSet() {

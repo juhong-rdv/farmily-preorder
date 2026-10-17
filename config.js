@@ -5,6 +5,7 @@ export const CONFIG = {
   // 턴테이블 이미지: img/<색상id>-<on|off>/00.webp … 35.webp
   imageDir: 'img',
   frames: 36,
+  initialFrame: 28,   // 처음 보여줄 각도 (0~35, 10°씩 → 28 = 280°: 정면 좌측 3/4 뷰)
 
   // 사전계약금 (원)
   deposit: 100000,
