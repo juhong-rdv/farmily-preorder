@@ -1,4 +1,4 @@
-import { CONFIG } from './config.js?v=11';
+import { CONFIG } from './config.js?v=12';
 
 /* ========== 상태 ========== */
 const state = { color: CONFIG.colors[0].id, lidar: false, lte: false, qty: 1, frame: CONFIG.initialFrame ?? 0 };
@@ -15,6 +15,7 @@ const ctx = canvas.getContext('2d');
 const cache = new Map();                   // url -> HTMLImageElement
 const loaded = new Set();                  // key -> fully loaded
 let zoom = 1, panX = 0, panY = 0;
+const IMG_BG = '#F2F5F1';                   // 렌더 이미지의 배경색 (lab 뷰어 배경)
 
 function load(url) {
   if (cache.has(url)) return cache.get(url);
@@ -42,16 +43,45 @@ function resize() {
 }
 new ResizeObserver(resize).observe($('stage'));
 
+const FLOOR_Y = 0.875;                  // 이미지 높이 대비 바퀴 접지선 위치
 async function draw() {
   const key = setKey();
   const img = await load(frameUrl(key, state.frame));
   if (!img) return;
   const W = canvas.width, H = canvas.height;
-  ctx.clearRect(0, 0, W, H);
+  ctx.globalCompositeOperation = 'source-over';
   // contain fit + zoom/pan
   const s = Math.min(W / img.naturalWidth, H / img.naturalHeight) * zoom;
-  const dw = img.naturalWidth * s, dh = img.naturalHeight * s;
-  ctx.drawImage(img, (W - dw) / 2 + panX, (H - dh) / 2 + panY, dw, dh);
+  const dw = Math.round(img.naturalWidth * s), dh = Math.round(img.naturalHeight * s);
+  const dx = Math.round((W - dw) / 2 + panX), dy = Math.round((H - dh) / 2 + panY);   // 정수 좌표: multiply 경계선 방지
+  const fy = dy + dh * FLOOR_Y;                 // 바닥선(y)
+  const cx = dx + dw / 2;                       // 로봇 중심(x)
+
+  // 1) 스튜디오 배경: 벽(밝음) → 바닥선 → 바닥(점점 어두움)
+  const h0 = Math.max(0, Math.min(1, fy / H));
+  const wall = ctx.createLinearGradient(0, 0, 0, H);
+  wall.addColorStop(0, '#ffffff'); wall.addColorStop(Math.max(0, h0 - 0.18), '#fafaf7'); wall.addColorStop(h0, '#eff0ec');
+  wall.addColorStop(Math.min(1, h0 + 0.02), '#ebece8'); wall.addColorStop(1, '#d4d5cf');   // multiply(0.95) 후 목표색이 되도록 밝게 설정
+  ctx.fillStyle = wall; ctx.fillRect(0, 0, W, H);
+  // 바닥 하이라이트(로봇 주변이 살짝 밝게)
+  const spot = ctx.createRadialGradient(cx, fy, 0, cx, fy, dw * 0.8);
+  spot.addColorStop(0, 'rgba(255,255,255,.5)'); spot.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = spot; ctx.fillRect(0, fy, W, H - fy);
+  // 2) 접지 그림자 (타원)
+  ctx.save(); ctx.translate(cx, fy + dh * 0.01); ctx.scale(1, 0.14);
+  const sh = ctx.createRadialGradient(0, 0, 0, 0, 0, dw * 0.36);
+  sh.addColorStop(0, 'rgba(20,20,19,.42)'); sh.addColorStop(0.5, 'rgba(20,20,19,.16)'); sh.addColorStop(1, 'rgba(20,20,19,0)');
+  ctx.fillStyle = sh; ctx.fillRect(-dw, -dw, dw * 2, dw * 2); ctx.restore();
+  // 3) 로봇 이미지: multiply로 얹어 이미지의 흰 배경이 바닥에 녹아들게
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.drawImage(img, dx, dy, dw, dh);
+  // 이미지 밖 영역도 같은 배경색으로 multiply → 사각 경계 제거
+  ctx.fillStyle = IMG_BG;
+  if (dy > 0) ctx.fillRect(0, 0, W, dy);
+  if (dy + dh < H) ctx.fillRect(0, dy + dh, W, H - dy - dh);
+  if (dx > 0) ctx.fillRect(0, Math.max(0, dy), dx, Math.min(H, dy + dh) - Math.max(0, dy));
+  if (dx + dw < W) ctx.fillRect(dx + dw, Math.max(0, dy), W - dx - dw, Math.min(H, dy + dh) - Math.max(0, dy));
+  ctx.globalCompositeOperation = 'source-over';
 }
 
 // 드래그 회전
@@ -134,10 +164,11 @@ function update() {
   $('sQty').textContent = `${state.qty}대`;
   const disc = (CONFIG.eventDiscount ?? 1500000) * state.qty;
   $('sCash').textContent = `−${won(disc)}`;
-  $('sCard').textContent = `할부 수수료 최대 ${won(disc)} 지원`;
   $('sTotal').textContent = totalLabel;
-  $('sBalance').textContent = known ? won(Math.max(0, unit * state.qty - CONFIG.deposit)) : '[가격 미정]';
-  $('pbTotal').textContent = totalLabel;
+  const finalTotal = Math.max(0, unit * state.qty - disc);
+  $('sFinal').textContent = known ? won(finalTotal) : '[가격 미정]';
+  $('sBalance').textContent = known ? won(Math.max(0, finalTotal - CONFIG.deposit)) : '[가격 미정]';
+  $('pbTotal').textContent = known ? won(finalTotal) + ' (할인 적용)' : totalLabel;
   $('pbSummary').textContent = `S300 · ${col.name}${state.lidar ? ' · 라이다' : ''}${state.lte ? ' · LTE' : ''} · ${state.qty}대`;
   const chips = ['S300', col.name, state.lidar ? '라이다 센서 3' : '초음파 센서 6', ...(state.lte ? ['LTE'] : []), `${state.qty}대`];
   $('chips').innerHTML = chips.map((c) => `<span>${c}</span>`).join('');
