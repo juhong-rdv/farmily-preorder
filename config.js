@@ -20,12 +20,12 @@ export const CONFIG = {
     lte: 1000000  // LTE 모듈 (원격 서비스 포함, 3년 기본 사용)
   },
 
-  // 색상 조합 — id는 이미지 폴더명과 일치. 스와치는 본체/물통 두 색으로 표시
+  // 색상 선택 — id는 이미지 폴더명과 일치. 물통은 흰색 공통(도장 불가), 본체 색상만 선택
   colors: [
-    { id: 'original', name: '원본 컬러', body: '#1c524e', tank: '#cccccc', price: 0, desc: '본체 딥 그린 · 물통 라이트 그레이' },
-    { id: 'forest', name: '포레스트', body: '#35564a', tank: '#f0f2e9', price: 1000000, desc: '본체 포레스트 그린 · 물통 아이보리' },
-    { id: 'graphite', name: '그래파이트', body: '#3f494b', tank: '#f1f3ee', price: 1000000, desc: '본체 그래파이트 · 물통 아이보리' },
-    { id: 'sand', name: '샌드', body: '#777966', tank: '#f3f0e6', price: 1000000, desc: '본체 샌드 베이지 · 물통 아이보리' }
+    { id: 'original', name: '원본 컬러', body: '#1c524e', tank: '#cccccc', price: 0, desc: '딥 그린 (기본 도장)' },
+    { id: 'forest', name: '포레스트', body: '#35564a', tank: '#f0f2e9', price: 1000000, desc: '포레스트 그린' },
+    { id: 'graphite', name: '그래파이트', body: '#3f494b', tank: '#f1f3ee', price: 1000000, desc: '그래파이트 (다크 그레이)' },
+    { id: 'sand', name: '샌드', body: '#777966', tank: '#f3f0e6', price: 1000000, desc: '샌드 베이지' }
   ],
 
   // 페이플

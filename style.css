@@ -1,6 +1,6 @@
 :root{
   --green:#1E6B3A; --green-dk:#0F2A1A; --green-lt:#F2F9F4; --mint:#8FD4A8;
-  --ink:#141413; --ink-2:#4A4A48; --ink-3:#6B6B68; --line:#D8D8D4; --line-2:#E6E6E2; --bg:#F4F4F2;
+  --ink:#141413; --ink-2:#4A4A48; --ink-3:#6B6B68; --line:#D8D8D4; --line-2:#E6E6E2; --bg:#F2F5F1;   /* 렌더 이미지 배경과 동일 */
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
@@ -17,14 +17,14 @@ input{font-family:inherit}
 .brand{font-size:20px;font-weight:900;letter-spacing:1px;color:var(--ink);text-decoration:none}
 .brand span{color:var(--green)}
 .viewer-head .sub{font-size:13px;color:var(--ink-3)}
-.stage{flex:1 1 0;position:relative;min-height:0}
+.stage{position:absolute;inset:0}
 #canvas{width:100%;height:100%;display:block;touch-action:none;cursor:grab}
 #canvas:active{cursor:grabbing}
 .loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-size:13px;color:var(--ink-3);background:var(--bg)}
 .loading[hidden]{display:none}
 .spinner{width:28px;height:28px;border:3px solid var(--line);border-top-color:var(--green);border-radius:50%;animation:spin .9s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.viewer-foot{padding:0 36px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.viewer-foot{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:0 36px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
 .rotate-hint{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-2)}
 .rotate-hint button{width:44px;height:44px;border-radius:50%;border:1px solid #CFCFCB;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--ink)}
 .chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}

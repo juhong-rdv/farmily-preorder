@@ -1,4 +1,4 @@
-/* FARMILY S300 사전계약용 턴테이블 렌더링 스크립트 (v3: lab 색상조합 4종 + 라이다 3개/레이저선)
+/* FARMILY S300 사전계약용 턴테이블 렌더링 스크립트 (v5: 바닥 그라데이션 + 접지 그림자 추가)
  * 사용법: 크롬에서 http://lab.farmily.ai:8090/s300/ 접속 → F5 → F12 → Console → 이 파일 전체 붙여넣기 → Enter
  * 결과: frames_<팔레트>-<on|off>.json 8개가 다운로드 폴더에 저장됨 (각 36장)
  *   팔레트: original(원본) / forest(포레스트) / graphite(그래파이트) / sand(샌드)
@@ -63,9 +63,29 @@
       m.material.needsUpdate = true;
     }
   }
+  // 물통은 흰색 고정(도장 불가): 팔레트가 바꾸는 메쉬 중 '비녹색(밝은색)' 부품 = 물통 → 원래 재질로 되돌림
+  const origMat = new Map();
+  let tankMeshes = null;
+  function hsl(c) { const o = {}; c.getHSL(o); return o; }
+  async function detectTank() {
+    document.querySelector('[data-palette="original"]').click(); await sleep(400);
+    V.scene.traverse(m => { if (m.isMesh && !Array.isArray(m.material)) origMat.set(m, m.material.clone()); });   // 원본 팔레트 상태의 재질 보관
+    const before = new Map(); V.scene.traverse(m => { if (m.isMesh && !Array.isArray(m.material)) before.set(m, m.material.color.getHex()); });
+    document.querySelector('[data-palette="sand"]').click(); await sleep(400);
+    tankMeshes = [];
+    V.scene.traverse(m => {
+      if (!m.isMesh || Array.isArray(m.material) || !before.has(m)) return;
+      const o = origMat.get(m); if (!o || !o.color) return;
+      const h = hsl(o.color);
+      if (before.get(m) !== m.material.color.getHex() && h.l > 0.55 && h.s < 0.25) tankMeshes.push(m);   // 바뀌었고 원래 밝은 무채색 → 물통
+    });
+    console.log('[3/4] 물통(흰색 고정) 메쉬:', tankMeshes.length);
+  }
+  function fixTank() { for (const m of tankMeshes || []) { m.material = origMat.get(m).clone(); m.material.needsUpdate = true; } }
   async function palette(id) {
+    if (!tankMeshes) await detectTank();
     document.querySelector(`[data-palette="${id}"]`).click(); await sleep(400);
-    fixProfile();
+    fixProfile(); fixTank();
   }
   // 순수 V5 구성: 다른 버전의 추가 외장(V4/V6/V7/V8/V10)은 저장된 옵션과 무관하게 숨김
   const OFF_GROUPS = /V4 drive enclosure|V6 |V7 |V8 |V10 |하부 라운드 외장/;
@@ -74,6 +94,32 @@
     V.scene.traverse(o => { if (o.type === 'GridHelper') o.visible = false; });
   }
   const box = new T.Box3().setFromObject(V.model), center = box.getCenter(new T.Vector3());
+
+  // 3-1) 바닥(그라데이션) + 접지 그림자 — 사전계약 페이지에서 로봇이 떠 보이지 않도록
+  {
+    const r = V.renderer;
+    r.shadowMap.enabled = true; if (T.PCFSoftShadowMap !== undefined) r.shadowMap.type = T.PCFSoftShadowMap;
+    V.model.traverse(o => { if (o.isMesh && !/lidar|LiDAR/.test(o.name || '')) o.castShadow = true; });
+    const floorY = box.min.y;
+    const c = document.createElement('canvas'); c.width = c.height = 1024; const g = c.getContext('2d');
+    const grd = g.createRadialGradient(512, 512, 0, 512, 512, 512);
+    grd.addColorStop(0, '#e3e5e0'); grd.addColorStop(0.5, '#eceee9'); grd.addColorStop(1, '#f2f5f1');   // 가장자리는 배경색과 동일
+    g.fillStyle = grd; g.fillRect(0, 0, 1024, 1024);
+    const tex = new T.CanvasTexture(c);
+    if ('colorSpace' in tex && T.SRGBColorSpace) tex.colorSpace = T.SRGBColorSpace; else if (T.sRGBEncoding) tex.encoding = T.sRGBEncoding;
+    const floor = new T.Mesh(new T.PlaneGeometry(40, 40), new T.MeshBasicMaterial({ map: tex, toneMapped: false }));
+    floor.rotation.x = -Math.PI / 2; floor.position.set(center.x, floorY - 0.002, center.z); floor.name = '__floor'; V.scene.add(floor);
+    const shadow = new T.Mesh(new T.PlaneGeometry(40, 40), new T.ShadowMaterial({ opacity: 0.30 }));
+    shadow.rotation.x = -Math.PI / 2; shadow.position.set(center.x, floorY - 0.001, center.z); shadow.receiveShadow = true; shadow.name = '__shadow'; V.scene.add(shadow);
+    const sun = new T.DirectionalLight(0xffffff, 0.001);   // 조명은 거의 0 — 그림자만 사용
+    sun.position.set(center.x + 1.2, box.max.y + 6, center.z + 2.0); sun.target.position.copy(center); sun.castShadow = true;
+    sun.shadow.mapSize.set(2048, 2048);
+    const sc = sun.shadow.camera; sc.left = -3; sc.right = 3; sc.top = 3; sc.bottom = -3; sc.near = 0.1; sc.far = 25; sc.updateProjectionMatrix();
+    sun.shadow.bias = -0.0005; sun.shadow.radius = 4;
+    V.scene.add(sun); V.scene.add(sun.target);
+    V.scene.traverse(o => { if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => { m.needsUpdate = true; }); });
+    console.log('[3/4] 바닥·그림자 추가, floorY =', floorY.toFixed(3));
+  }
   const W = 1600, H = 1000;
   function shoot(angleDeg, elevDeg = 14) {
     const r = V.renderer, cam = V.camera;
