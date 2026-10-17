@@ -1,4 +1,4 @@
-import { CONFIG } from './config.js?v=8';
+import { CONFIG } from './config.js?v=9';
 
 /* ========== 상태 ========== */
 const state = { color: CONFIG.colors[0].id, lidar: false, lte: false, qty: 1, frame: CONFIG.initialFrame ?? 0 };
@@ -94,12 +94,19 @@ async function switchSet() {
 /* ========== UI ========== */
 function renderSwatches() {
   const wrap = $('swatches'); wrap.innerHTML = '';
+  wrap.className = 'choice'; wrap.setAttribute('role', 'radiogroup'); wrap.setAttribute('aria-label', '색상 조합');
   for (const c of CONFIG.colors) {
     const b = document.createElement('button');
-    b.type = 'button'; b.className = 'swatch'; b.setAttribute('aria-label', c.name);
-    const i = document.createElement('i'); i.style.background = `linear-gradient(135deg, ${c.body} 0 55%, ${c.tank} 55% 100%)`; b.appendChild(i);
-    const t = document.createElement('small'); t.textContent = c.name; b.appendChild(t);
-    b.onclick = () => { state.color = c.id; update(); switchSet(); };
+    b.type = 'button'; b.className = 'card color-card'; b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', 'false');
+    const sw = document.createElement('i'); sw.className = 'sw'; sw.style.background = `linear-gradient(135deg, ${c.body} 0 55%, ${c.tank} 55% 100%)`;
+    const d = document.createElement('div');
+    const t = document.createElement('b'); t.textContent = c.name;
+    if (c.price === 0) { const s = document.createElement('small'); s.textContent = '기본'; t.appendChild(s); }
+    const s2 = document.createElement('span'); s2.textContent = c.desc || '';
+    d.append(t, s2);
+    const em = document.createElement('em'); em.textContent = priceLabel(c.price);
+    b.append(sw, d, em);
+    b.onclick = () => { if (state.color !== c.id) { state.color = c.id; update(); switchSet(); } };
     wrap.appendChild(b);
   }
 }
@@ -107,7 +114,7 @@ function renderSwatches() {
 function update() {
   const col = CONFIG.colors.find((c) => c.id === state.color);
   const P = CONFIG.prices;
-  [...document.querySelectorAll('.swatch')].forEach((b, i) => b.setAttribute('aria-pressed', String(CONFIG.colors[i].id === state.color)));
+  [...document.querySelectorAll('.color-card')].forEach((b, i) => b.setAttribute('aria-checked', String(CONFIG.colors[i].id === state.color)));
   $('colorLabel').textContent = `${col.name} · ${priceLabel(col.price)}`;
   $('optLidar').setAttribute('aria-checked', String(state.lidar));
   $('optUltra').setAttribute('aria-checked', String(!state.lidar));

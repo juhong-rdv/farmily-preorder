@@ -19,10 +19,10 @@ export const CONFIG = {
 
   // 색상 조합 — id는 이미지 폴더명과 일치. 스와치는 본체/물통 두 색으로 표시
   colors: [
-    { id: 'original', name: '원본 컬러', body: '#1c524e', tank: '#cccccc', price: 0 },
-    { id: 'forest', name: '포레스트', body: '#35564a', tank: '#f0f2e9', price: 1000000 },
-    { id: 'graphite', name: '그래파이트', body: '#3f494b', tank: '#f1f3ee', price: 1000000 },
-    { id: 'sand', name: '샌드', body: '#777966', tank: '#f3f0e6', price: 1000000 }
+    { id: 'original', name: '원본 컬러', body: '#1c524e', tank: '#cccccc', price: 0, desc: '본체 딥 그린 · 물통 라이트 그레이' },
+    { id: 'forest', name: '포레스트', body: '#35564a', tank: '#f0f2e9', price: 1000000, desc: '본체 포레스트 그린 · 물통 아이보리' },
+    { id: 'graphite', name: '그래파이트', body: '#3f494b', tank: '#f1f3ee', price: 1000000, desc: '본체 그래파이트 · 물통 아이보리' },
+    { id: 'sand', name: '샌드', body: '#777966', tank: '#f3f0e6', price: 1000000, desc: '본체 샌드 베이지 · 물통 아이보리' }
   ],
 
   // 페이플

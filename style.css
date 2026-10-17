@@ -135,3 +135,8 @@ input{font-family:inherit}
 .card[role="radio"][aria-checked="true"]::before{border-color:var(--green);background:radial-gradient(circle,var(--green) 0 45%,#fff 50%)}
 .card b small{font-size:11px;font-weight:700;color:var(--green);background:var(--green-lt);border:1px solid var(--green);border-radius:999px;padding:1px 7px;margin-left:6px;vertical-align:middle}
 .sensor-base,.sensor-base-head{display:none}
+
+/* ---------- 색상 조합: 센서 리스트와 동일한 라디오 카드 ---------- */
+.card.color-card{gap:14px}
+.card.color-card .sw{flex:0 0 40px;width:40px;height:40px;border-radius:50%;border:1px solid rgba(0,0,0,.12)}
+.card.color-card div{flex:1 1 auto}
