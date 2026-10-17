@@ -126,3 +126,12 @@ input{font-family:inherit}
 .sensor-base-head{display:flex;justify-content:space-between;align-items:baseline;font-size:14px}
 .sensor-base-head span{font-size:12px;color:var(--ink-3)}
 .sensor-base p{margin:4px 0 0;font-size:12px;color:var(--ink-2);line-height:1.5}
+
+/* ---------- 양자택일 카드 ---------- */
+.choice{display:flex;flex-direction:column;gap:10px}
+.card[role="radio"]{position:relative;padding-left:44px}
+.card[role="radio"]::before{content:"";position:absolute;left:16px;top:18px;width:18px;height:18px;border-radius:50%;border:2px solid #CFCFCB;background:#fff}
+.card[role="radio"][aria-checked="true"]{border:2px solid var(--green);background:var(--green-lt)}
+.card[role="radio"][aria-checked="true"]::before{border-color:var(--green);background:radial-gradient(circle,var(--green) 0 45%,#fff 50%)}
+.card b small{font-size:11px;font-weight:700;color:var(--green);background:var(--green-lt);border:1px solid var(--green);border-radius:999px;padding:1px 7px;margin-left:6px;vertical-align:middle}
+.sensor-base,.sensor-base-head{display:none}

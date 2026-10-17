@@ -55,7 +55,7 @@ async function draw() {
 }
 
 // 드래그 회전
-let dragging = false, lastX = 0, acc = 0, autoRotate = true, autoTimer = null;
+let dragging = false, lastX = 0, acc = 0, autoRotate = false, autoTimer = null;   // 자동 회전 끔: 마우스/터치 드래그·버튼으로만 회전
 const PX_PER_FRAME = 14;
 function setFrame(f) { state.frame = ((f % FRAMES) + FRAMES) % FRAMES; draw(); $('angle').textContent = `${state.frame * (360 / FRAMES)}°`; }
 canvas.addEventListener('pointerdown', (e) => { dragging = true; lastX = e.clientX; acc = 0; canvas.setPointerCapture(e.pointerId); stopAuto(); });
@@ -109,7 +109,8 @@ function update() {
   const P = CONFIG.prices;
   [...document.querySelectorAll('.swatch')].forEach((b, i) => b.setAttribute('aria-pressed', String(CONFIG.colors[i].id === state.color)));
   $('colorLabel').textContent = `${col.name} · ${priceLabel(col.price)}`;
-  $('optLidar').setAttribute('aria-pressed', String(state.lidar));
+  $('optLidar').setAttribute('aria-checked', String(state.lidar));
+  $('optUltra').setAttribute('aria-checked', String(!state.lidar));
   $('optLte').setAttribute('aria-pressed', String(state.lte));
   document.querySelector('[data-price="lidar"]').textContent = priceLabel(P.lidar);
   document.querySelector('[data-price="lte"]').textContent = priceLabel(P.lte);
@@ -121,17 +122,18 @@ function update() {
 
   $('sBody').textContent = `S300 · ${P.body != null ? won(P.body) : '[가격 미정]'}`;
   $('sColor').textContent = `${col.name} · ${priceLabel(col.price)}`;
-  $('sLidar').textContent = state.lidar ? `초음파 6 + 라이다 3 · ${priceLabel(P.lidar)}` : '초음파 센서 6개 (기본)';
+  $('sLidar').textContent = state.lidar ? `라이다 3개 · ${priceLabel(P.lidar)}` : '초음파 센서 6개 (기본)';
   $('sLte').textContent = state.lte ? `LTE 모듈 · ${priceLabel(P.lte)}` : '미포함 (기본)';
   $('sQty').textContent = `${state.qty}대`;
   $('sTotal').textContent = totalLabel;
   $('pbTotal').textContent = totalLabel;
   $('pbSummary').textContent = `S300 · ${col.name}${state.lidar ? ' · 라이다' : ''}${state.lte ? ' · LTE' : ''} · ${state.qty}대`;
-  const chips = ['S300', col.name, state.lidar ? '라이다 3 + 초음파 6' : '초음파 센서 6', ...(state.lte ? ['LTE'] : []), `${state.qty}대`];
+  const chips = ['S300', col.name, state.lidar ? '라이다 센서 3' : '초음파 센서 6', ...(state.lte ? ['LTE'] : []), `${state.qty}대`];
   $('chips').innerHTML = chips.map((c) => `<span>${c}</span>`).join('');
 }
 
-$('optLidar').onclick = () => { state.lidar = !state.lidar; update(); switchSet(); };
+$('optLidar').onclick = () => { if (!state.lidar) { state.lidar = true; update(); switchSet(); } };
+$('optUltra').onclick = () => { if (state.lidar) { state.lidar = false; update(); switchSet(); } };
 $('optLte').onclick = () => { state.lte = !state.lte; update(); };
 $('qtyUp').onclick = () => { state.qty = Math.min(10, state.qty + 1); update(); };
 $('qtyDown').onclick = () => { state.qty = Math.max(1, state.qty - 1); update(); };

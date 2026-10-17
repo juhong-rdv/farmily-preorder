@@ -67,18 +67,23 @@
       </section>
 
       <section class="opt">
-        <div class="opt-head"><b>안전 센서</b></div>
-        <div class="sensor-base">
-          <div class="sensor-base-head"><b>기본 포함 · 초음파 센서 6개</b><span>정면 2 · 측면 4</span></div>
-          <p>벽·장애물을 감지해 정지합니다. 근거리 감지용으로 레일 끝단·온실 벽 충돌 방지에 적합합니다.</p>
+        <div class="opt-head"><b>안전 센서</b><span>둘 중 하나 선택</span></div>
+        <div class="choice" role="radiogroup" aria-label="안전 센서">
+          <button class="card" id="optUltra" type="button" role="radio" aria-checked="true">
+            <div>
+              <b>초음파 센서 6개 <small>기본</small></b>
+              <span>정면 2 · 측면 4. 벽·장애물을 감지해 정지합니다. 근거리 감지용으로 레일 끝단·온실 벽 충돌 방지에 적합합니다.</span>
+            </div>
+            <em>기본 포함</em>
+          </button>
+          <button class="card" id="optLidar" type="button" role="radio" aria-checked="false">
+            <div>
+              <b>라이다(LiDAR) 센서 3개</b>
+              <span>정면 1 · 좌우 측면 2. 레이저로 반경 수 m를 연속 스캔해 작업자·장애물을 초음파보다 멀리, 정확하게 감지하고 감속·정지합니다. 작업자가 함께 다니는 온실에 권장. 초음파 센서를 대체하며, 선택하면 미리보기에 센서와 감지 범위가 표시됩니다.</span>
+            </div>
+            <em data-price="lidar"></em>
+          </button>
         </div>
-        <button class="card" id="optLidar" type="button" aria-pressed="false">
-          <div>
-            <b>라이다(LiDAR) 안전 센서 3개 추가</b>
-            <span>정면 1 · 좌우 측면 2. 레이저로 반경 수 m를 연속 스캔해 작업자·장애물을 초음파보다 멀리, 정확하게 감지하고 감속·정지합니다. 작업자가 함께 다니는 온실에 권장. 선택하면 미리보기에 센서와 감지 범위가 표시됩니다.</span>
-          </div>
-          <em data-price="lidar"></em>
-        </button>
       </section>
 
       <section class="opt">
