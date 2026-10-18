@@ -1,4 +1,4 @@
-import { CONFIG } from './config.js?v=14';
+import { CONFIG } from './config.js?v=15';
 
 /* ========== 상태 ========== */
 const state = { color: CONFIG.colors[0].id, lidar: false, lte: false, qty: 1, frame: CONFIG.initialFrame ?? 0 };
@@ -112,9 +112,24 @@ function renderSwatches() {
   }
 }
 
+
+/* ========== 테마: 선택한 색상을 UI 강조색에 반영 ========== */
+const hex2rgb = (h) => { const n = parseInt(h.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
+const rgb2hex = (r) => '#' + r.map((v) => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, '0')).join('');
+const mix = (a, b, t) => rgb2hex(hex2rgb(a).map((v, i) => v + (hex2rgb(b)[i] - v) * t));   // a→b 를 t 만큼 섞음
+function applyTheme(c) {
+  const root = document.documentElement.style;
+  const base = c.accent || c.body;
+  root.setProperty('--green', base);                       // 버튼·선택 테두리·강조 글자
+  root.setProperty('--green-dk', mix(base, '#000000', 0.55)); // 이벤트 박스 배경
+  root.setProperty('--green-lt', mix(base, '#ffffff', 0.92)); // 선택 카드 배경
+  root.setProperty('--mint', mix(base, '#ffffff', 0.55));     // 이벤트 박스 보조 글자
+}
+
 function update() {
   const col = CONFIG.colors.find((c) => c.id === state.color);
   const P = CONFIG.prices;
+  applyTheme(col);
   [...document.querySelectorAll('.color-card')].forEach((b, i) => b.setAttribute('aria-checked', String(CONFIG.colors[i].id === state.color)));
   $('colorLabel').textContent = `${col.name} · ${priceLabel(col.price)}`;
   $('optLidar').setAttribute('aria-checked', String(state.lidar));
