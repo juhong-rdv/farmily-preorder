@@ -1,4 +1,4 @@
-/* FARMILY S300 사전계약용 턴테이블 렌더링 스크립트 (v5: 바닥 그라데이션 + 접지 그림자 추가)
+/* FARMILY S300 사전계약용 턴테이블 렌더링 스크립트 (v5.1: 바닥 그라데이션 + 접지 그림자 1개)
  * 사용법: 크롬에서 http://lab.farmily.ai:8090/s300/ 접속 → F5 → F12 → Console → 이 파일 전체 붙여넣기 → Enter
  * 결과: frames_<팔레트>-<on|off>.json 8개가 다운로드 폴더에 저장됨 (각 36장)
  *   팔레트: original(원본) / forest(포레스트) / graphite(그래파이트) / sand(샌드)
@@ -117,6 +117,8 @@
     const sc = sun.shadow.camera; sc.left = -3; sc.right = 3; sc.top = 3; sc.bottom = -3; sc.near = 0.1; sc.far = 25; sc.updateProjectionMatrix();
     sun.shadow.bias = -0.0005; sun.shadow.radius = 4;
     V.scene.add(sun); V.scene.add(sun.target);
+    // lab 뷰어 자체 조명의 그림자는 끔 (그림자가 2개 생기는 문제) — 그림자는 위 sun 하나만
+    V.scene.traverse(o => { if (o.isLight && o !== sun && o.castShadow) { o.castShadow = false; console.log('  기존 조명 그림자 끔:', o.type, o.name || ''); } });
     V.scene.traverse(o => { if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => { m.needsUpdate = true; }); });
     console.log('[3/4] 바닥·그림자 추가, floorY =', floorY.toFixed(3));
   }
