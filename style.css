@@ -171,3 +171,7 @@ input{font-family:inherit}
 .step+.step::before{content:"";position:absolute;left:-1px;top:50%;width:14px;height:14px;transform:translate(-50%,-50%) rotate(45deg);background:var(--green);border-radius:2px;clip-path:polygon(0 0,100% 0,100% 100%);z-index:1}
 .step+.step{padding-left:22px}
 @media (max-width: 860px){.step+.step{padding-left:14px}.step+.step::before{left:50%;top:-1px;transform:translate(-50%,-50%) rotate(135deg)}}
+
+/* ---------- 사전계약 할인 강조 ---------- */
+.summary .discount span{color:#C8321E;font-weight:700}
+.summary .discount b{color:#C8321E;font-weight:900;font-size:17px}
