@@ -10,7 +10,7 @@ src, out = sys.argv[1], sys.argv[2]
 sprite_map = None
 if len(sys.argv) > 3:
     a = sys.argv[3]
-    sprite_map = json.load(open(a, encoding='utf-8')) if a.endswith('.json') else {k: a.rstrip('/') + '/' + k + '.webp' for k in ['original-off','original-on','forest-off','forest-on','graphite-off','graphite-on','sand-off','sand-on']}
+    sprite_map = json.load(open(a, encoding='utf-8')) if a.endswith('.json') else {k: [a.rstrip('/') + '/' + k + '-a.jpg', a.rstrip('/') + '/' + k + '-b.jpg'] for k in ['original-off','original-on','forest-off','forest-on','graphite-off','graphite-on','sand-off','sand-on']}
 R = lambda n: open(os.path.join(src, n), encoding='utf-8').read()
 html, css, js, cfg = R('index.html'), R('style.css'), R('app.js'), R('config.js')
 
@@ -79,6 +79,8 @@ css = css.replace('.fxp .fxp{', '.fxp{')
 css += '''
 .fxp{font-family:'Noto Sans KR',system-ui,sans-serif;color:#141413;-webkit-font-smoothing:antialiased;line-height:1.4}
 .fxp button,.fxp input{font-family:inherit}
+.fxp #canvas{position:absolute;inset:0;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;margin:0!important;padding:0!important}
+.fxp .stage{overflow:hidden}
 .fxp .done{position:absolute;inset:0;background:#F4F4F2;display:flex;align-items:center;justify-content:center;padding:24px;z-index:20}
 .fxp .done[hidden]{display:none}
 .fxp .done-box{background:#fff;border-radius:16px;padding:40px 36px;max-width:520px;width:100%;display:flex;flex-direction:column;gap:18px;box-shadow:0 8px 30px rgba(0,0,0,.06)}
@@ -97,8 +99,8 @@ css += '''
 # ---------- JS: 모듈 → 즉시실행, 스프라이트 로딩, 위젯 내 완료 화면 ----------
 cfg_body = cfg[cfg.index('export const CONFIG = ') + len('export const CONFIG = '):].strip().rstrip(';')
 cfg_body = re.sub(r"\n  // 턴테이블 이미지:.*?\n  imageDir: 'img',\n  frames: 36,", "\n  frames: 36,", cfg_body, flags=re.S)
-sprites = sprite_map or {k: '여기에_아임웹_이미지_URL_' + k for k in ['original-off','original-on','forest-off','forest-on','graphite-off','graphite-on','sand-off','sand-on']}
-sprite_js = '  // 턴테이블 스프라이트 시트(6x6, 36장): 아임웹에 업로드한 이미지 주소\n  sprites: ' + json.dumps(sprites, ensure_ascii=False, indent=4).replace('\n', '\n  ') + ',\n  spriteCols: 6, spriteW: 900, spriteH: 675,\n'
+sprites = sprite_map or {k: ['여기에_아임웹_이미지_URL_' + k + '-a', '여기에_아임웹_이미지_URL_' + k + '-b'] for k in ['original-off','original-on','forest-off','forest-on','graphite-off','graphite-on','sand-off','sand-on']}
+sprite_js = '  // 턴테이블 스프라이트 시트: 세트당 2장(a: 0~17번, b: 18~35번 프레임), 각 2열x9행, 프레임 960x720. 아임웹(cdn.imweb.me)에 업로드한 주소\n  sprites: ' + json.dumps(sprites, ensure_ascii=False, indent=4).replace('\n', '\n  ') + ',\n  spriteCols: 2, spriteW: 960, spriteH: 720, spritePerSheet: 18,\n'
 cfg_body = cfg_body.replace('\n  frames: 36,', '\n  frames: 36,\n' + sprite_js, 1)
 
 js = js.replace("import { CONFIG } from './config.js?v=15';", 'const CONFIG = ' + cfg_body + ';')
@@ -109,7 +111,7 @@ js = js.replace("document.querySelector('[data-price=\"lte\"]')", "ROOT.querySel
 js = js.replace("const root = document.documentElement.style;", "const root = ROOT.style;")
 # 이미지 로딩: 스프라이트
 old = js[js.index('const frameUrl = '): js.index('function resize()')]
-new = '''const SHEET = { cols: CONFIG.spriteCols, w: CONFIG.spriteW, h: CONFIG.spriteH };
+new = '''const SHEET = { cols: CONFIG.spriteCols, w: CONFIG.spriteW, h: CONFIG.spriteH, per: CONFIG.spritePerSheet || 36 };
 
 /* ========== 턴테이블 뷰어 (스프라이트 시트) ========== */
 const canvas = $('canvas');
@@ -118,10 +120,14 @@ const sheets = new Map();                  // key -> Promise<HTMLImageElement|nu
 let zoom = 1, panX = 0, panY = 0;
 const IMG_BG = '#F2F5F1';                   // 렌더 이미지의 배경색
 
-function loadSheet(key) {
+function loadOne(url) {
+  const img = new Image(); img.decoding = 'async'; img.src = url;
+  return new Promise((res) => { img.onload = () => res(img); img.onerror = () => res(null); });
+}
+function loadSheet(key) {                   // 세트의 시트 전부(배열) 로드 → [img, img] 또는 null
   if (sheets.has(key)) return sheets.get(key);
-  const img = new Image(); img.decoding = 'async'; img.src = CONFIG.sprites[key];
-  const p = new Promise((res) => { img.onload = () => res(img); img.onerror = () => res(null); });
+  const urls = [].concat(CONFIG.sprites[key]);
+  const p = Promise.all(urls.map(loadOne)).then((arr) => arr.every(Boolean) ? arr : null);
   sheets.set(key, p); return p;
 }
 
@@ -130,19 +136,32 @@ js = js.replace(old, new)
 old_draw = js[js.index('async function draw() {'): js.index('// 드래그 회전')]
 new_draw = '''async function draw() {
   const key = setKey();
-  const img = await loadSheet(key);
-  if (!img || key !== setKey()) return;
+  const imgs = await loadSheet(key);
+  if (!imgs || key !== setKey()) return;
   const W = canvas.width, H = canvas.height;
   ctx.fillStyle = IMG_BG; ctx.fillRect(0, 0, W, H);
   const s = Math.min(W / SHEET.w, H / SHEET.h) * zoom;
   const dw = Math.round(SHEET.w * s), dh = Math.round(SHEET.h * s);
   const dx = Math.round((W - dw) / 2 + panX), dy = Math.round((H - dh) / 2 + panY);
-  const sx = (state.frame % SHEET.cols) * SHEET.w, sy = Math.floor(state.frame / SHEET.cols) * SHEET.h;
+  const img = imgs[Math.floor(state.frame / SHEET.per)], f = state.frame % SHEET.per;
+  const sx = (f % SHEET.cols) * SHEET.w, sy = Math.floor(f / SHEET.cols) * SHEET.h;
   ctx.drawImage(img, sx, sy, SHEET.w, SHEET.h, dx, dy, dw, dh);
 }
 
 '''
 js = js.replace(old_draw, new_draw)
+# 아임웹 전역 CSS(canvas height:auto 등)로 인한 ResizeObserver 무한 루프 방지: stage 크기 기준 + 변경 시에만 리사이즈
+old_rs = js[js.index('function resize() {'): js.index("new ResizeObserver(resize).observe($('stage'));") + len("new ResizeObserver(resize).observe($('stage'));")]
+new_rs = """let lastW = 0, lastH = 0;
+function resize() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const st = $('stage'); const w = st.clientWidth, h = st.clientHeight;
+  if (!w || !h) return;
+  if (w !== lastW || h !== lastH) { lastW = w; lastH = h; canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr); }
+  draw();
+}
+new ResizeObserver(() => resize()).observe($('stage'));"""
+js = js.replace(old_rs, new_rs)
 old_init = js[js.index('// 초기 로드:'): js.index('/* ========== UI ==========')]
 new_init = '''// 초기 로드: 기본 세트 1장(스프라이트)만. 다른 세트는 해당 옵션을 고를 때 로드
 (async () => {

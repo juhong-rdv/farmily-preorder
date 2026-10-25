@@ -1,0 +1,41 @@
+<script>
+(function(){
+  /* 국내(KR) 전용: 사전예약 메뉴·페이지(/34) 해외 접속 시 숨김 */
+  var PAGE = '/37';                 // 사전예약 페이지 경로
+  var MENU_TEXT = '2027사전예약';    // 메뉴 이름
+  var KEY = 'fx_geo_cc';
+  function hide(){
+    /* 메뉴·푸터 링크 제거 */
+    var links = document.querySelectorAll('a');
+    for (var i = 0; i < links.length; i++) {
+      var a = links[i], href = (a.getAttribute('href') || '').replace(/[?#].*$/, '').replace(/\/$/, '');
+      if (href.slice(-PAGE.length) === PAGE || (a.textContent || '').trim() === MENU_TEXT) {
+        var li = a.closest('li') || a; li.style.display = 'none';
+      }
+    }
+    /* 사전예약 페이지 본문 교체 */
+    if (location.pathname.replace(/\/$/, '') === PAGE) {
+      var box = document.querySelector('.fxp');
+      if (box) box.innerHTML = '<div style="padding:120px 20px;text-align:center;font-size:15px;color:#4A4A48;line-height:1.7">이 페이지는 대한민국 내에서만 이용하실 수 있습니다.<br>This page is available in South Korea only.<br><br>문의: hello@farmily.ai</div>';
+    }
+  }
+  function apply(cc){
+    try { sessionStorage.setItem(KEY, cc); } catch(e){}
+    if (cc !== 'KR') {
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hide); else hide();
+      /* 동적으로 렌더되는 메뉴 대비 */
+      var n = 0, t = setInterval(function(){ hide(); if (++n > 20) clearInterval(t); }, 500);
+    }
+  }
+  var cached = null; try { cached = sessionStorage.getItem(KEY); } catch(e){}
+  if (cached) { apply(cached); return; }
+  fetch('https://get.geojs.io/v1/ip/country.json', { cache: 'no-store' })
+    .then(function(r){ return r.json(); })
+    .then(function(j){ apply((j && j.country) || 'KR'); })
+    .catch(function(){
+      fetch('https://ipwho.is/').then(function(r){ return r.json(); })
+        .then(function(j){ apply((j && j.country_code) || 'KR'); })
+        .catch(function(){ /* 판별 실패 시 차단하지 않음 */ });
+    });
+})();
+</script>
