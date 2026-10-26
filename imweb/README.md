@@ -1,4 +1,4 @@
-# 아임웹 삽입 (farmilyx.imweb.me/37 · 메뉴 "2027사전예약")
+# 아임웹 삽입 (farmilyx.imweb.me/pre-order · 메뉴 "2027사전예약")
 
 - `farmilyx-preorder-imweb.html` : 코드 위젯에 붙여 넣는 단일 파일 (CSS+HTML+JS). 빌드: `python3 tools/build_imweb.py . imweb/farmilyx-preorder-imweb.html imweb/sprite_map.json`
 - `farmilyx-preorder-imweb.min.html` : 주석 제거본 (2026-10-25 게시본과 동일 내용 + 캔버스 리사이즈 보강)
