@@ -142,6 +142,29 @@
 .fxp .summary .discount b{color:#C8321E;font-weight:900;font-size:17px}
 .fxp .summary .vat-note{color:var(--ink-2)}
 .fxp .summary .vat-note b{display:inline;font-weight:700;color:var(--ink);margin-right:4px}
+@media (max-width: 860px){.fxp .app{isolation:isolate}
+.fxp .viewer{height:48vh;height:48dvh;min-height:320px;z-index:3}
+.fxp .stage{bottom:78px}
+.fxp .viewer-head{top:12px;left:16px}
+.fxp .viewer-head .sub{display:none}
+.fxp .viewer-foot{padding:6px 14px 10px;gap:6px;background:var(--bg);flex-direction:column;align-items:stretch}
+.fxp .rotate-hint{justify-content:space-between;font-size:12px;width:100%}
+.fxp .rotate-hint button{width:38px;height:38px;flex:0 0 38px}
+.fxp .rotate-hint span{text-align:center;flex:1 1 auto}
+.fxp .viewer-note{font-size:11px;line-height:1.4;margin:0;flex:none;text-align:center}
+.fxp .steps, .fxp .step+.step::before{z-index:0}
+.fxp .panel-scroll{padding:20px 16px 170px;gap:24px}
+.fxp .intro h1{font-size:26px}
+.fxp .paybar{padding:10px 16px 12px;padding-right:calc(16px + 88px);gap:6px}
+.fxp .paybar-line{flex-direction:column;gap:2px;font-size:12px}
+.fxp .paybar-line b{font-size:14px}
+.fxp .paybar-row{flex-direction:column;align-items:stretch;gap:8px}
+.fxp .today{flex-direction:row;justify-content:space-between;align-items:baseline}
+.fxp .today small{font-size:12px}
+.fxp .today b{font-size:18px;white-space:nowrap}
+.fxp #payBtn{width:100%;height:46px;font-size:15px;padding:0 10px;white-space:nowrap}
+.fxp .panel-scroll{padding-bottom:200px}}
+
 .fxp{font-family:'Noto Sans KR',system-ui,sans-serif;color:#141413;-webkit-font-smoothing:antialiased;line-height:1.4}
 .fxp button,.fxp input{font-family:inherit}
 .fxp #canvas{position:absolute;inset:0;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;margin:0!important;padding:0!important}

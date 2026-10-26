@@ -178,3 +178,29 @@ input{font-family:inherit}
 
 .summary .vat-note{color:var(--ink-2)}
 .summary .vat-note b{display:inline;font-weight:700;color:var(--ink);margin-right:4px}
+
+/* ---------- mobile 가독성 보강 (2026-10-26) ---------- */
+@media (max-width: 860px){
+  .app{isolation:isolate}
+  .viewer{height:48vh;height:48dvh;min-height:320px;z-index:3}
+  .stage{bottom:78px}                       /* 이미지 영역이 하단 안내와 겹치지 않도록 */
+  .viewer-head{top:12px;left:16px}
+  .viewer-head .sub{display:none}
+  .viewer-foot{padding:6px 14px 10px;gap:6px;background:var(--bg);flex-direction:column;align-items:stretch}
+  .rotate-hint{justify-content:space-between;font-size:12px;width:100%}
+  .rotate-hint button{width:38px;height:38px;flex:0 0 38px}
+  .rotate-hint span{text-align:center;flex:1 1 auto}
+  .viewer-note{font-size:11px;line-height:1.4;margin:0;flex:none;text-align:center}
+  .steps,.step+.step::before{z-index:0}
+  .panel-scroll{padding:20px 16px 170px;gap:24px}
+  .intro h1{font-size:26px}
+  .paybar{padding:10px 16px 12px;padding-right:calc(16px + 88px);gap:6px}   /* 우측 하단 '문의' 버튼 자리 */
+  .paybar-line{flex-direction:column;gap:2px;font-size:12px}
+  .paybar-line b{font-size:14px}
+  .paybar-row{flex-direction:column;align-items:stretch;gap:8px}
+  .today{flex-direction:row;justify-content:space-between;align-items:baseline}
+  .today small{font-size:12px}
+  .today b{font-size:18px;white-space:nowrap}
+  #payBtn{width:100%;height:46px;font-size:15px;padding:0 10px;white-space:nowrap}
+  .panel-scroll{padding-bottom:200px}
+}
