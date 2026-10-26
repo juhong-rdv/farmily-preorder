@@ -175,3 +175,6 @@ input{font-family:inherit}
 /* ---------- 사전계약 할인 강조 ---------- */
 .summary .discount span{color:#C8321E;font-weight:700}
 .summary .discount b{color:#C8321E;font-weight:900;font-size:17px}
+
+.summary .vat-note{color:var(--ink-2)}
+.summary .vat-note b{display:inline;font-weight:700;color:var(--ink);margin-right:4px}
