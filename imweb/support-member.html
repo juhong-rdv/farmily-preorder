@@ -39,13 +39,14 @@
 (function(){
   var root=document.getElementById('fxm'); if(!root) return;
   var back=btoa(unescape(encodeURIComponent(location.pathname)));
-  function isLogin(){ return !!document.querySelector('a[href^="/logout.cm"]:not(#fxmLogout)'); }
+  function memberName(){ var el=document.querySelector('.profile-info .sm-padding'); return el?el.textContent.replace(/\s+/g,' ').trim():''; }
+  function isLogin(){ return !!memberName(); }
   function call(fn){ try{ if(window.SITE_MEMBER && typeof SITE_MEMBER[fn]==='function'){ SITE_MEMBER[fn](back); return true; } }catch(e){} return false; }
   function render(){
     var on=isLogin();
     document.getElementById('fxmOut').hidden=on;
     document.getElementById('fxmIn').hidden=!on;
-    document.getElementById('fxmSub').textContent=on?'사전계약 내역 확인, 회원정보 수정, 로그아웃을 이곳에서 할 수 있습니다.':'로그인하시면 사전계약 내역과 결제 영수증을 확인하고, 취소 요청도 직접 하실 수 있습니다.';
+    document.getElementById('fxmSub').textContent=on?(memberName()+'님, 로그인 중입니다. 사전계약 내역 확인, 회원정보 수정, 로그아웃을 이곳에서 할 수 있습니다.'):'로그인하시면 사전계약 내역과 결제 영수증을 확인하고, 취소 요청도 직접 하실 수 있습니다.';
     document.getElementById('fxmLogout').href='/logout.cm?back_url='+back;
   }
   document.getElementById('fxmLogin').onclick=function(){ if(!call('openLogin')) location.href='/login?back_url='+back; };
