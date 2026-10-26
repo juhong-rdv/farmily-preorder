@@ -301,6 +301,15 @@
       </section>
 
       <section class="opt">
+        <div class="opt-head"><b>농업인 · 농업법인 확인 <small style="font-weight:400;color:var(--ink-3)">(부가세 적용 기준)</small></b></div>
+        <button class="card" id="optFarm" type="button" aria-pressed="true">
+          <div><b>농업인 · 농업법인이며, 농업용으로 구매·사용합니다</b><span>선택하면 영세율(부가세 0%)로 계산됩니다. 농업경영체 등록 농업인 또는 농업법인이 농업용으로 구매하는 경우에만 해당하며, 결제 후 농업경영체 등록확인서 등 증빙 서류 제출에 협조해 주셔야 합니다. 증빙이 확인되지 않으면 부가가치세가 추가 청구될 수 있습니다. 학교·연구소·일반인·일반기업은 선택을 해제해 주세요.</span></div>
+          <em id="farmPrice">부가세 0%</em>
+        </button>
+        <p style="margin:8px 0 0;font-size:12px;color:var(--ink-3);line-height:1.6">※ 영세율은 농업인이 농업용으로 구매할 때만 적용됩니다. 해당하지 않는 경우 선택을 해제하면 부가가치세 10%가 포함된 금액으로 계산되어 안내됩니다.</p>
+      </section>
+
+      <section class="opt">
         <div class="opt-head"><b>추가 정보</b></div><p class="opt-note" style="margin:0 0 10px;font-size:13px;color:var(--ink-2);line-height:1.6">성함·연락처·이메일은 다음 단계 주문서에서 입력합니다. 회원 로그인(구글 간편가입 가능) 또는 비회원으로 결제할 수 있으며, 로그인하면 고객지원 > 내 정보에서 계약 내역을 바로 확인할 수 있습니다.</p>
         <div class="field"><label for="fMemo">온실 정보 <small>(선택)</small></label><input id="fMemo" type="text" placeholder="예) 파프리카 3,000평, 온수파이프 51mm"></div>
         <label class="agree"><input id="fAgree" type="checkbox"> 사전계약 약관 및 개인정보 수집·이용에 동의합니다.</label>
@@ -413,7 +422,7 @@ const CONFIG = {
 };
 
 /* ========== 상태 ========== */
-const state = { color: CONFIG.colors[0].id, lidar: false, lte: false, qty: 1, frame: CONFIG.initialFrame ?? 0 };
+const state = { buyer: 'farm', color: CONFIG.colors[0].id, lidar: false, lte: false, qty: 1, frame: CONFIG.initialFrame ?? 0 };
 const ROOT = document.currentScript ? document.currentScript.closest('.fxp') || document.querySelector('.fxp') : document.querySelector('.fxp');
 const $ = (id) => ROOT.querySelector('#' + id);
 const won = (n) => n.toLocaleString('ko-KR') + '원';
@@ -548,7 +557,9 @@ function update() {
 
   const unit = (P.body ?? 0) + (col.price ?? 0) + (state.lidar ? (P.lidar ?? 0) : 0) + (state.lte ? (P.lte ?? 0) : 0);
   const known = P.body !== null && P.body !== undefined;
-  const totalLabel = known ? won(unit * state.qty) : `[가격 미정] × ${state.qty}대`;
+  const vat = state.buyer === 'gen' ? 1.1 : 1;   // 농업인·농업법인(영세율) 외에는 부가세 10%
+  const vatTag = state.buyer === 'gen' ? ' (부가세 포함)' : ' (영세율)';
+  const totalLabel = known ? won(Math.round(unit * state.qty * vat)) + vatTag : `[가격 미정] × ${state.qty}대`;
 
   $('sBody').textContent = `S300 · ${P.body != null ? won(P.body) : '[가격 미정]'}`;
   $('sColor').textContent = `${col.name} · ${priceLabel(col.price)}`;
@@ -559,17 +570,18 @@ function update() {
   $('sCash').textContent = `−${won(disc)}`;
   $('sTotal').textContent = totalLabel;
   const finalTotal = Math.max(0, unit * state.qty - disc);
-  $('sFinal').textContent = known ? won(finalTotal) : '[가격 미정]';
-  $('sBalance').textContent = known ? won(Math.max(0, finalTotal - CONFIG.deposit)) : '[가격 미정]';
-  $('pbTotal').textContent = known ? won(finalTotal) + ' (할인 적용)' : totalLabel;
+  $('sFinal').textContent = known ? won(Math.round(finalTotal * vat)) + vatTag : '[가격 미정]';
+  $('sBalance').textContent = known ? won(Math.max(0, Math.round(finalTotal * vat) - CONFIG.deposit)) : '[가격 미정]';
+  $('pbTotal').textContent = known ? won(Math.round(finalTotal * vat)) + (state.buyer === 'gen' ? ' (할인·부가세 적용)' : ' (할인 적용)') : totalLabel;
   $('pbSummary').textContent = `S300 · ${col.name}${state.lidar ? ' · 라이다' : ''}${state.lte ? ' · LTE' : ''} · ${state.qty}대`;
-  const chips = ['S300', col.name, state.lidar ? '라이다 센서' : '초음파 센서', ...(state.lte ? ['LTE'] : []), `${state.qty}대`];
+  const chips = [state.buyer === 'gen' ? '부가세 포함' : '농업인 영세율', 'S300', col.name, state.lidar ? '라이다 센서' : '초음파 센서', ...(state.lte ? ['LTE'] : []), `${state.qty}대`];
   $('chips').innerHTML = chips.map((c) => `<span>${c}</span>`).join('');
 }
 
 $('optLidar').onclick = () => { if (!state.lidar) { state.lidar = true; update(); switchSet(); } };
 $('optUltra').onclick = () => { if (state.lidar) { state.lidar = false; update(); switchSet(); } };
 $('optLte').onclick = () => { state.lte = !state.lte; update(); };
+$('optFarm').onclick = () => { state.buyer = state.buyer === 'farm' ? 'gen' : 'farm'; $('optFarm').setAttribute('aria-pressed', state.buyer === 'farm' ? 'true' : 'false'); $('farmPrice').textContent = state.buyer === 'farm' ? '부가세 0%' : '부가세 10% 포함'; update(); };
 $('qtyUp').onclick = () => { state.qty = Math.min(10, state.qty + 1); update(); };
 $('qtyDown').onclick = () => { state.qty = Math.max(1, state.qty - 1); update(); };
 
@@ -583,7 +595,7 @@ $('payBtn').onclick = () => {
   const memo = $('fMemo').value.trim();
   if (!$('fAgree').checked) { alert('사전계약 약관 및 개인정보 수집·이용에 동의해 주세요.'); return; }
   const col = CONFIG.colors.find((c) => c.id === state.color);
-  const spec = 'S300 / ' + col.name + (state.lidar ? ' / 라이다 안전센서' : ' / 초음파 센서') + (state.lte ? ' / LTE' : '') + ' / ' + state.qty + '대' + (memo ? ' / ' + memo : '');
+  const spec = 'S300 / ' + col.name + (state.lidar ? ' / 라이다 안전센서' : ' / 초음파 센서') + (state.lte ? ' / LTE' : '') + ' / ' + state.qty + '대' + ' / ' + (state.buyer === 'farm' ? '농업인·농업법인(영세율, 농업용 사용 동의)' : '학교·연구소·일반·기업(부가세 포함)') + (memo ? ' / 온실: ' + memo : '');
   try { sessionStorage.setItem('fx_spec', spec); } catch (e) {}
   const btn = $('payBtn'); btn.disabled = true; btn.textContent = '주문서로 이동 중…';
   const body = new URLSearchParams({ backurl: location.origin + '/pre-order', prodIdx: String(IMWEB.prodIdx), orderCount: String(state.qty), type: 'normal', deliv_type: 'parcel', deliv_pay_type: 'price', deliv_country: 'KR', shipping_template_code: IMWEB.shippingTemplate, infoUrl: location.origin });
