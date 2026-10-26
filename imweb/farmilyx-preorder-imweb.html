@@ -1,7 +1,6 @@
 <!-- FARMILY-X S300 사전계약 · 아임웹 코드 위젯용 (한 덩어리로 붙여 넣기) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
-<script src="https://cpay.payple.kr/js/v1/payment.js"></script>
 <style>
 .fxp{
   --green:#1E6B3A; --green-dk:#0F2A1A; --green-lt:#F2F9F4; --mint:#8FD4A8;
@@ -302,10 +301,7 @@
       </section>
 
       <section class="opt">
-        <div class="opt-head"><b>연락처</b></div>
-        <div class="field"><label for="fName">성함 / 농장명</label><input id="fName" type="text" placeholder="홍길동 / 길동농원" autocomplete="name"></div>
-        <div class="field"><label for="fHp">휴대전화</label><input id="fHp" type="tel" placeholder="010-0000-0000" autocomplete="tel"></div>
-        <div class="field"><label for="fEmail">이메일</label><input id="fEmail" type="email" placeholder="farm@example.com" autocomplete="email"><small class="field-help">사전계약금 결제 영수증, 잔금 결제 안내(결제 링크), 출고 일정 등 계약 관련 안내를 이 이메일로 보내드립니다. 정확히 입력해 주세요.</small></div>
+        <div class="opt-head"><b>추가 정보</b></div><p class="opt-note" style="margin:0 0 10px;font-size:13px;color:var(--ink-2);line-height:1.6">성함·연락처·이메일은 다음 단계 주문서에서 입력합니다. 결제는 로그인(회원) 상태에서 진행되며, 구글 계정으로 간편가입할 수 있습니다.</p>
         <div class="field"><label for="fMemo">온실 정보 <small>(선택)</small></label><input id="fMemo" type="text" placeholder="예) 파프리카 3,000평, 온수파이프 51mm"></div>
         <label class="agree"><input id="fAgree" type="checkbox"> 사전계약 약관 및 개인정보 수집·이용에 동의합니다.</label>
       </section>
@@ -413,13 +409,7 @@ const CONFIG = {
     { id: 'forest', name: '포레스트', body: '#35564a', tank: '#f0f2e9', price: 1000000, desc: '포레스트 그린' },
     { id: 'graphite', name: '그래파이트', body: '#3f494b', tank: '#f1f3ee', price: 1000000, desc: '그래파이트 (다크 그레이)' },
     { id: 'sand', name: '샌드', body: '#777966', tank: '#f3f0e6', price: 1000000, desc: '샌드 베이지' }
-  ],
-
-  // 페이플
-  payple: {
-    clientKey: 'YOUR_CLIENT_KEY'   // 페이플 관리자 > 파트너 인증 > 운영 clientKey
-    // 테스트 시: index.html의 payment.js를 https://democpay.payple.kr/js/v1/payment.js 로 바꾸고 테스트 키 사용
-  }
+  ]
 };
 
 /* ========== 상태 ========== */
@@ -583,44 +573,32 @@ $('optLte').onclick = () => { state.lte = !state.lte; update(); };
 $('qtyUp').onclick = () => { state.qty = Math.min(10, state.qty + 1); update(); };
 $('qtyDown').onclick = () => { state.qty = Math.max(1, state.qty - 1); update(); };
 
-/* ========== 페이플 결제 ========== */
+/* ========== 아임웹 주문서 연결 (사전계약금 상품 idx 8) ==========
+   흐름: 약관 동의 확인 → 로그인 여부 확인(헤더 프로필 이름) → OMS_add_order.cm 으로 주문서 생성 → 주문서(/shop_payment)로 이동
+   선택 사양은 sessionStorage.fx_spec 에 저장되고, 공통 Footer Code 스크립트가 주문서 배송메모에 자동 입력 + 신용카드 선택 */
+const IMWEB = { prodIdx: 8, shippingTemplate: 'T202510230ea3b35d85abd' };
+function memberName(){ var el = document.querySelector('.profile-info .sm-padding'); return el ? el.textContent.replace(/\s+/g, ' ').trim() : ''; }
+function b64(p){ try { return btoa(unescape(encodeURIComponent(p))); } catch (e) { return ''; } }
 $('payBtn').onclick = () => {
-  const name = $('fName').value.trim();
-  const hp = $('fHp').value.replace(/[^0-9]/g, '');
-  const email = $('fEmail').value.trim();
   const memo = $('fMemo').value.trim();
-  if (!name || !hp || !email) { alert('성함, 휴대전화, 이메일을 모두 입력해 주세요.'); return; }
-  if (!/^01[0-9]{8,9}$/.test(hp)) { alert('휴대전화 번호를 확인해 주세요.'); return; }
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { alert('이메일 주소를 확인해 주세요.'); return; }
-  if (!$('fAgree').checked) { alert('약관 및 개인정보 수집·이용에 동의해 주세요.'); return; }
-  if (typeof PaypleCpayAuthCheck !== 'function') { alert('결제 모듈을 불러오지 못했습니다. 새로고침해 주세요.'); return; }
-
+  if (!$('fAgree').checked) { alert('사전계약 약관 및 개인정보 수집·이용에 동의해 주세요.'); return; }
   const col = CONFIG.colors.find((c) => c.id === state.color);
-  const spec = `S300/${col.name}${state.lidar ? '/라이다' : ''}${state.lte ? '/LTE' : ''}/${state.qty}대${memo ? '/' + memo : ''}`;
-  const oid = 'PRE' + new Date().toISOString().slice(2, 10).replace(/-/g, '') + Math.random().toString(36).slice(2, 7).toUpperCase();
-
-  PaypleCpayAuthCheck({
-    clientKey: CONFIG.payple.clientKey,
-    PCD_PAY_TYPE: 'card',
-    PCD_PAY_WORK: 'PAY',
-    PCD_CARD_VER: '02',
-    PCD_PAY_GOODS: ('FARMILY-X 사전계약금 ' + spec).slice(0, 100),
-    PCD_PAY_TOTAL: CONFIG.deposit,
-    PCD_PAY_OID: oid,
-    PCD_PAYER_NAME: name,
-    PCD_PAYER_HP: hp,
-    PCD_PAYER_EMAIL: email,
-    PCD_PAYER_NO: spec.slice(0, 50),
-    PCD_PAY_ISTAX: 'Y',
-    PCD_RST_URL: location.href.split('#')[0],
-    callbackFunction: (res) => {
-      if (res && res.PCD_PAY_RST === 'success') {
-        showDone(res.PCD_PAY_OID || oid, name, spec);
-      } else {
-        alert('결제가 완료되지 않았습니다.\n' + (res && res.PCD_PAY_MSG ? res.PCD_PAY_MSG : ''));
-      }
-    }
-  });
+  const spec = 'S300 / ' + col.name + (state.lidar ? ' / 라이다 안전센서' : ' / 초음파 센서') + (state.lte ? ' / LTE' : '') + ' / ' + state.qty + '대' + (memo ? ' / ' + memo : '');
+  try { sessionStorage.setItem('fx_spec', spec); } catch (e) {}
+  if (!memberName()) {
+    alert('사전계약금 결제는 로그인 후 진행됩니다.\n로그인 또는 회원가입(구글 계정 간편가입 가능) 후 다시 눌러 주세요.');
+    if (window.SITE_MEMBER && typeof SITE_MEMBER.openLogin === 'function') SITE_MEMBER.openLogin(b64('/pre-order')); else location.href = '/login?back_url=' + b64('/pre-order');
+    return;
+  }
+  const btn = $('payBtn'); btn.disabled = true; btn.textContent = '주문서로 이동 중…';
+  const body = new URLSearchParams({ backurl: location.origin + '/pre-order', prodIdx: String(IMWEB.prodIdx), orderCount: String(state.qty), type: 'normal', deliv_type: 'parcel', deliv_pay_type: 'price', deliv_country: 'KR', shipping_template_code: IMWEB.shippingTemplate, infoUrl: location.origin });
+  fetch('/shop/oms/OMS_add_order.cm', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-Requested-With': 'XMLHttpRequest' }, body: body.toString() })
+    .then((r) => r.json())
+    .then((j) => {
+      if (j && j.msg === 'SUCCESS' && j.back_url_base64) { location.href = atob(j.back_url_base64); }
+      else { throw new Error((j && (j.errmsg || j.msg)) || '주문서 생성 실패'); }
+    })
+    .catch((e) => { alert('주문서를 만들지 못했습니다. 잠시 후 다시 시도해 주세요.\n' + (e && e.message ? e.message : '')); btn.disabled = false; btn.textContent = '사전계약금 카드 결제'; });
 };
 
 renderSwatches();
