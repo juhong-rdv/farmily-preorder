@@ -301,7 +301,7 @@
       </section>
 
       <section class="opt">
-        <div class="opt-head"><b>추가 정보</b></div><p class="opt-note" style="margin:0 0 10px;font-size:13px;color:var(--ink-2);line-height:1.6">성함·연락처·이메일은 다음 단계 주문서에서 입력합니다. 결제는 로그인(회원) 상태에서 진행되며, 구글 계정으로 간편가입할 수 있습니다.</p>
+        <div class="opt-head"><b>추가 정보</b></div><p class="opt-note" style="margin:0 0 10px;font-size:13px;color:var(--ink-2);line-height:1.6">성함·연락처·이메일은 다음 단계 주문서에서 입력합니다. 회원 로그인(구글 간편가입 가능) 또는 비회원으로 결제할 수 있으며, 로그인하면 고객지원 > 내 정보에서 계약 내역을 바로 확인할 수 있습니다.</p>
         <div class="field"><label for="fMemo">온실 정보 <small>(선택)</small></label><input id="fMemo" type="text" placeholder="예) 파프리카 3,000평, 온수파이프 51mm"></div>
         <label class="agree"><input id="fAgree" type="checkbox"> 사전계약 약관 및 개인정보 수집·이용에 동의합니다.</label>
       </section>
@@ -574,8 +574,8 @@ $('qtyUp').onclick = () => { state.qty = Math.min(10, state.qty + 1); update(); 
 $('qtyDown').onclick = () => { state.qty = Math.max(1, state.qty - 1); update(); };
 
 /* ========== 아임웹 주문서 연결 (사전계약금 상품 idx 8) ==========
-   흐름: 약관 동의 확인 → 로그인 여부 확인(헤더 프로필 이름) → OMS_add_order.cm 으로 주문서 생성 → 주문서(/shop_payment)로 이동
-   선택 사양은 sessionStorage.fx_spec 에 저장되고, 공통 Footer Code 스크립트가 주문서 배송메모에 자동 입력 + 신용카드 선택 */
+   흐름: 약관 동의 확인 → OMS_add_order.cm 으로 주문서 생성(회원/비회원 모두 가능) → 주문서(/shop_payment)로 이동
+   선택 사양은 sessionStorage.fx_spec 에 저장되고, 공통 Footer Code 스크립트가 주문서 배송메모에 자동 입력 */
 const IMWEB = { prodIdx: 8, shippingTemplate: 'T202510230ea3b35d85abd' };
 function memberName(){ var el = document.querySelector('.profile-info .sm-padding'); return el ? el.textContent.replace(/\s+/g, ' ').trim() : ''; }
 function b64(p){ try { return btoa(unescape(encodeURIComponent(p))); } catch (e) { return ''; } }
@@ -585,11 +585,6 @@ $('payBtn').onclick = () => {
   const col = CONFIG.colors.find((c) => c.id === state.color);
   const spec = 'S300 / ' + col.name + (state.lidar ? ' / 라이다 안전센서' : ' / 초음파 센서') + (state.lte ? ' / LTE' : '') + ' / ' + state.qty + '대' + (memo ? ' / ' + memo : '');
   try { sessionStorage.setItem('fx_spec', spec); } catch (e) {}
-  if (!memberName()) {
-    alert('사전계약금 결제는 로그인 후 진행됩니다.\n로그인 또는 회원가입(구글 계정 간편가입 가능) 후 다시 눌러 주세요.');
-    if (window.SITE_MEMBER && typeof SITE_MEMBER.openLogin === 'function') SITE_MEMBER.openLogin(b64('/pre-order')); else location.href = '/login?back_url=' + b64('/pre-order');
-    return;
-  }
   const btn = $('payBtn'); btn.disabled = true; btn.textContent = '주문서로 이동 중…';
   const body = new URLSearchParams({ backurl: location.origin + '/pre-order', prodIdx: String(IMWEB.prodIdx), orderCount: String(state.qty), type: 'normal', deliv_type: 'parcel', deliv_pay_type: 'price', deliv_country: 'KR', shipping_template_code: IMWEB.shippingTemplate, infoUrl: location.origin });
   fetch('/shop/oms/OMS_add_order.cm', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-Requested-With': 'XMLHttpRequest' }, body: body.toString() })
