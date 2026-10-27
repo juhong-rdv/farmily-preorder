@@ -588,9 +588,24 @@ $('qtyDown').onclick = () => { state.qty = Math.max(1, state.qty - 1); update();
 /* ========== 아임웹 주문서 연결 (사전계약금 상품 idx 8) ==========
    흐름: 약관 동의 확인 → OMS_add_order.cm 으로 주문서 생성(회원/비회원 모두 가능) → 주문서(/shop_payment)로 이동
    선택 사양은 sessionStorage.fx_spec 에 저장되고, 공통 Footer Code 스크립트가 주문서 배송메모에 자동 입력 */
-const IMWEB = { prodIdx: 8, shippingTemplate: 'T202510230ea3b35d85abd' };
-function memberName(){ var el = document.querySelector('.profile-info .sm-padding'); return el ? el.textContent.replace(/\s+/g, ' ').trim() : ''; }
-function b64(p){ try { return btoa(unescape(encodeURIComponent(p))); } catch (e) { return ''; } }
+const IMWEB = {
+  prodIdx: 8, shippingTemplate: 'T202510230ea3b35d85abd',
+  // 아임웹 상품 #8 옵션 코드 (관리자 > 상품 > 옵션). 값은 [value_code, 표시명]
+  opt: {
+    color:  { code: 'O202610278aeb61428357f', name: '색상', values: { original: ['O2026102775bbb91183e54', '원본 컬러'], forest: ['O202610275c2637cb79a76', '포레스트'], graphite: ['O20261027336b9ad33e586', '그래파이트'], sand: ['O20261027cfbcf8475b7f8', '샌드'] } },
+    sensor: { code: 'O202610276d5506294a66b', name: '안전센서', values: { ultra: ['O20261027c96ea53d35d29', '초음파 센서'], lidar: ['O20261027deea217f2fdfc', '라이다 센서'] } },
+    lte:    { code: 'O20261027b74bce6a840f8', name: 'LTE 모듈', values: { no: ['O202610278e6a09ebc870b', '미포함'], yes: ['O202610272b0ca408c5226', 'LTE 모듈 + 3년 구독 포함'] } },
+    buyer:  { code: 'O20261027f230d03fa3975', name: '구매자 구분(부가세)', values: { farm: ['O202610276d12b4ee8f50f', '농업인·농업법인(영세율)'], gen: ['O2026102742532ac2e6283', '학교·연구소·일반·기업(부가세 포함)'] } }
+  }
+};
+function postForm(url, params) {
+  return fetch(url, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-Requested-With': 'XMLHttpRequest' }, body: params.toString() }).then((r) => r.json());
+}
+function selectedOptions() {
+  const O = IMWEB.opt;
+  const pick = (g, k) => ({ value_type: 'SELECT', option_code: O[g].code, value_code: O[g].values[k][0], value_name: O[g].values[k][1], option_name: O[g].name });
+  return [pick('color', state.color), pick('sensor', state.lidar ? 'lidar' : 'ultra'), pick('lte', state.lte ? 'yes' : 'no'), pick('buyer', state.buyer === 'gen' ? 'gen' : 'farm')];
+}
 $('payBtn').onclick = () => {
   const memo = $('fMemo').value.trim();
   if (!$('fAgree').checked) { alert('사전계약 약관 및 개인정보 수집·이용에 동의해 주세요.'); return; }
@@ -598,14 +613,29 @@ $('payBtn').onclick = () => {
   const spec = 'S300 / ' + col.name + (state.lidar ? ' / 라이다 안전센서' : ' / 초음파 센서') + (state.lte ? ' / LTE' : '') + ' / ' + state.qty + '대' + ' / ' + (state.buyer === 'farm' ? '농업인·농업법인(영세율, 농업용 사용 동의)' : '학교·연구소·일반·기업(부가세 포함)') + (memo ? ' / 온실: ' + memo : '');
   try { sessionStorage.setItem('fx_spec', spec); } catch (e) {}
   const btn = $('payBtn'); btn.disabled = true; btn.textContent = '주문서로 이동 중…';
-  const body = new URLSearchParams({ backurl: location.origin + '/pre-order', prodIdx: String(IMWEB.prodIdx), orderCount: String(state.qty), type: 'normal', deliv_type: 'parcel', deliv_pay_type: 'price', deliv_country: 'KR', shipping_template_code: IMWEB.shippingTemplate, infoUrl: location.origin });
-  fetch('/shop/oms/OMS_add_order.cm', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-Requested-With': 'XMLHttpRequest' }, body: body.toString() })
-    .then((r) => r.json())
-    .then((j) => {
-      if (j && j.msg === 'SUCCESS' && j.back_url_base64) { location.href = atob(j.back_url_base64); }
-      else { throw new Error((j && (j.errmsg || j.msg)) || '주문서 생성 실패'); }
-    })
-    .catch((e) => { alert('주문서를 만들지 못했습니다. 잠시 후 다시 시도해 주세요.\n' + (e && e.message ? e.message : '')); btn.disabled = false; btn.textContent = '사전계약금 카드 결제'; });
+  const fail = (e) => { alert('주문서를 만들지 못했습니다. 잠시 후 다시 시도해 주세요.\n' + (e && e.message ? e.message : '')); btn.disabled = false; btn.textContent = '사전계약금 카드 결제'; };
+  const opts = selectedOptions();
+  // 1) 옵션 조합 → 아임웹 옵션 상세 코드
+  const sp = new URLSearchParams({ prod_idx: String(IMWEB.prodIdx) });
+  opts.forEach((o, i) => { ['value_type', 'option_code', 'value_code', 'value_name'].forEach((k) => sp.append('options[' + i + '][' + k + ']', o[k])); });
+  sp.append('require', 'Y'); sp.append('count', String(state.qty)); sp.append('idx', '0'); sp.append('skip_quantity_validation', 'false');
+  postForm('/shop/select_option.cm', sp).then((j) => {
+    const so = j && j.selected_option;
+    if (!so || !so.option_detail_code) throw new Error((j && j.msg) || '옵션 확인 실패');
+    // 2) 주문서 생성 (상품 페이지 "구매하기"와 동일한 파라미터)
+    const op = new URLSearchParams({ backurl: location.origin + '/pre-order', prodIdx: String(IMWEB.prodIdx) });
+    const pre = 'optDataList[0]';
+    op.append(pre + '[idx]', '0'); op.append(pre + '[option_detail_code]', so.option_detail_code);
+    (so.options || opts).forEach((o, i) => { ['value_type', 'option_code', 'value_code', 'value_name', 'option_name'].forEach((k) => op.append(pre + '[options][' + i + '][' + k + ']', o[k])); });
+    op.append(pre + '[price]', String(so.price != null ? so.price : CONFIG.deposit)); op.append(pre + '[count]', String(state.qty)); op.append(pre + '[require]', 'true');
+    op.append(pre + '[sku_no]', so.sku_no || ''); op.append(pre + '[use_stock]', 'false'); op.append(pre + '[stock]', '0'); op.append(pre + '[stock_un_limit]', 'false'); op.append(pre + '[option_mix_type]', 'MIX');
+    ['orderCount=0', 'type=normal', 'deliv_type=parcel', 'deliv_pay_type=price', 'deliv_country=KR', 'is_gift_buy=false'].forEach((kv) => { const [k, v] = kv.split('='); op.append(k, v); });
+    op.append('shipping_template_code', IMWEB.shippingTemplate); op.append('infoUrl', location.origin);
+    return postForm('/shop/oms/OMS_add_order.cm', op);
+  }).then((j) => {
+    if (j && j.msg === 'SUCCESS' && j.back_url_base64) { location.href = atob(j.back_url_base64); }
+    else { throw new Error((j && (j.errmsg || j.msg)) || '주문서 생성 실패'); }
+  }).catch(fail);
 };
 
 renderSwatches();
