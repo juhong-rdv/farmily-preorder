@@ -220,7 +220,7 @@
 
       <div class="intro">
         <div class="eyebrow">2027년 농사 시즌 준비 프리오더</div>
-        <h1 id="introTitle">FARMILY-X S300</h1>
+        <h1 id="introTitle">FARMILY-X 시리즈 <small style="display:block;font-size:15px;font-weight:500;color:var(--ink-2);margin-top:2px">(선택 제품 : S300 스프레이)</small></h1>
         <p id="introText">온실 레일 자율주행 약제 살포 로봇. 색상과 옵션을 선택하면 미리보기가 바로 바뀝니다.<br>오늘은 사전계약금 10만원이 결제 됩니다.</p>
       </div>
 
@@ -619,7 +619,7 @@ function update() {
   $('secColor').hidden = uv; $('secSensor').hidden = uv; $('secFarm').hidden = uv; $('secLift').hidden = !uv;
   $('optFixed').setAttribute('aria-checked', String(!state.lift)); $('optLift').setAttribute('aria-checked', String(state.lift));
   ROOT.querySelector('[data-price="lift"]').textContent = '+' + won(U.lift) + ' (공급가)';
-  $('introTitle').textContent = uv ? 'FARMILY-X UV' : 'FARMILY-X S300';
+  $('introTitle').querySelector('small').textContent = uv ? '(선택 제품 : UV 방제)' : '(선택 제품 : S300 스프레이)';
   $('introText').innerHTML = uv ? '온실 레일 자율주행 UV-C 방제 로봇. 약제 없이 자외선(UV-C)으로 흰가루병 등 병해를 예방합니다. 리프트 옵션을 선택하면 미리보기가 바로 바뀝니다.<br>오늘은 사전계약금 10만원이 결제 됩니다.' : '온실 레일 자율주행 약제 살포 로봇. 색상과 옵션을 선택하면 미리보기가 바로 바뀝니다.<br>오늘은 사전계약금 10만원이 결제 됩니다.';
   $('viewerSub').textContent = uv ? 'UV 사전계약' : 'S300 사전계약';
   $('sColorLbl').textContent = uv ? '색상' : '색상'; $('sLidarLbl').textContent = uv ? '리프트' : '안전 센서';
