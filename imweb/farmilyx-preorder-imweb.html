@@ -108,6 +108,9 @@
 .fxp .sensor-base p{margin:4px 0 0;font-size:12px;color:var(--ink-2);line-height:1.5}
 .fxp .choice{display:flex;flex-direction:column;gap:10px}
 .fxp .card[role="radio"]{position:relative;padding-left:44px}
+.fxp .pay-est{margin-top:10px;border:1px solid var(--line);border-radius:10px;background:#FAFAF8;padding:12px 14px;font-size:13px;line-height:1.7;color:var(--ink-2)}
+.fxp .pay-est b{color:var(--ink);font-weight:700}
+.fxp .pay-est .row{display:flex;justify-content:space-between;gap:12px}
 .fxp .card[role="radio"]::before{content:"";position:absolute;left:16px;top:18px;width:18px;height:18px;border-radius:50%;border:2px solid #CFCFCB;background:#fff}
 .fxp .card[role="radio"][aria-checked="true"]{border:2px solid var(--green);background:var(--green-lt)}
 .fxp .card[role="radio"][aria-checked="true"]::before{border-color:var(--green);background:radial-gradient(circle,var(--green) 0 45%,#fff 50%)}
@@ -164,6 +167,7 @@
 .fxp #payBtn{width:100%;height:46px;font-size:15px;padding:0 10px;white-space:nowrap}
 .fxp .panel-scroll{padding-bottom:200px}}
 
+.fxp [hidden]{display:none!important}
 .fxp{font-family:'Noto Sans KR',system-ui,sans-serif;color:#141413;-webkit-font-smoothing:antialiased;line-height:1.4}
 .fxp button,.fxp input{font-family:inherit}
 .fxp #canvas{position:absolute;inset:0;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;margin:0!important;padding:0!important}
@@ -190,7 +194,7 @@
   <section class="viewer">
     <header class="viewer-head">
       <a class="brand" href="https://farmily.ai">FARMILY<span>-X</span></a>
-      <span class="sub">S300 사전계약</span>
+      <span class="sub" id="viewerSub">S300 사전계약</span>
     </header>
     <div class="stage" id="stage">
       <canvas id="canvas"></canvas>
@@ -216,9 +220,23 @@
 
       <div class="intro">
         <div class="eyebrow">2027년 농사 시즌 준비 프리오더</div>
-        <h1>FARMILY-X S300</h1>
-        <p>온실 레일 자율주행 약제 살포 로봇. 색상과 옵션을 선택하면 미리보기가 바로 바뀝니다.<br>오늘은 사전계약금 10만원이 결제 됩니다.</p>
+        <h1 id="introTitle">FARMILY-X S300</h1>
+        <p id="introText">온실 레일 자율주행 약제 살포 로봇. 색상과 옵션을 선택하면 미리보기가 바로 바뀝니다.<br>오늘은 사전계약금 10만원이 결제 됩니다.</p>
       </div>
+
+      <section class="opt">
+        <div class="opt-head"><b>모델 선택</b><span>둘 중 하나 선택</span></div>
+        <div class="choice" role="radiogroup" aria-label="모델 선택">
+          <button class="card" id="modelS300" type="button" role="radio" aria-checked="true">
+            <div><b>FARMILY-X S300 <small>약제 살포</small></b><span>온실 레일 자율주행 약제(농약·영양제) 살포 로봇. 색상 4종, 안전센서, LTE 옵션 선택.</span></div>
+            <em id="modelS300Price"></em>
+          </button>
+          <button class="card" id="modelUV" type="button" role="radio" aria-checked="false">
+            <div><b>FARMILY-X UV <small>UV-C 방제</small></b><span>온실 레일 자율주행 UV-C 방제 로봇. 약제 없이 자외선으로 흰가루병 등을 예방합니다. 고정형 / 리프트형(높이 자동조정) 선택.</span></div>
+            <em id="modelUVPrice"></em>
+          </button>
+        </div>
+      </section>
 
       <div class="event">
         <div class="event-head"><span class="eyebrow light">EVENT</span><b>2027년 미리 준비 사전계약 150만원 할인 혜택</b></div>
@@ -240,12 +258,26 @@
         <div class="step"><i>3</i><div><b>순차 출고</b><span>2027년 2월 1일~ 예정</span></div></div>
       </section>
 
-      <section class="opt">
+      <section class="opt" id="secColor">
         <div class="opt-head"><b>색상 선택</b><span id="colorLabel"></span></div>
         <div class="swatches" id="swatches"></div>
       </section>
 
-      <section class="opt">
+      <section class="opt" id="secLift" hidden>
+        <div class="opt-head"><b>리프트 (높이 자동조정)</b><span>둘 중 하나 선택</span></div>
+        <div class="choice" role="radiogroup" aria-label="리프트">
+          <button class="card" id="optFixed" type="button" role="radio" aria-checked="true">
+            <div><b>고정형 <small>기본</small></b><span>UV 램프 패널 높이가 고정된 기본형입니다. 작물 높이에 맞춰 설치 시 패널 높이를 맞춥니다.</span></div>
+            <em id="fixedPrice">기본 구성</em>
+          </button>
+          <button class="card" id="optLift" type="button" role="radio" aria-checked="false">
+            <div><b>리프트형 (높이 자동조정)</b><span>주행 중 리프트가 UV 램프 패널을 상하로 이동시켜 작물 전체 높이를 고르게 조사합니다. 키가 큰 작물(파프리카·토마토·오이 등)에 권장. 선택하면 미리보기에 리프트가 올라간 모습이 표시됩니다.</span></div>
+            <em data-price="lift"></em>
+          </button>
+        </div>
+      </section>
+
+      <section class="opt" id="secSensor">
         <div class="opt-head"><b>안전 센서</b><span>둘 중 하나 선택</span></div>
         <div class="choice" role="radiogroup" aria-label="안전 센서">
           <button class="card" id="optUltra" type="button" role="radio" aria-checked="true">
@@ -284,8 +316,8 @@
 
       <section class="summary">
         <div><span>본체</span><b id="sBody"></b></div>
-        <div><span>색상</span><b id="sColor"></b></div>
-        <div><span>안전 센서</span><b id="sLidar"></b></div>
+        <div><span id="sColorLbl">색상</span><b id="sColor"></b></div>
+        <div><span id="sLidarLbl">안전 센서</span><b id="sLidar"></b></div>
         <div><span>무선 통신·원격기술지원</span><b id="sLte"></b></div>
         <div><span>수량</span><b id="sQty"></b></div>
         <hr>
@@ -297,16 +329,36 @@
         <div class="total"><span>10일 이내에 납부할 금액</span><b id="sBalance"></b></div>
         <p>잔금은 이메일로 안내되는 결제 링크에서 카드로 결제합니다(일시불 또는 최대 12개월 할부). 사전계약 할인은 잔금 결제 시 적용됩니다.</p>
         <p>본 예약은 최종 구성, 판매가격, 인도일정 또는 모든 기능의 제공을 확정하는 것은 아닙니다. 최종 판매가격 및 인도 일정 등은 추후 별도로 안내됩니다.</p>
-        <p class="vat-note"><b>부가세 안내</b> 표시된 금액은 농업인이 농업용으로 구매하실 때 적용되는 영세율(부가세 0%) 기준입니다. 학교·연구소·일반인·일반기업 구매 시에는 부가가치세(10%)가 포함되어 청구됩니다.</p>
+        <p class="vat-note" id="vatNote"><b>부가세 안내</b> 표시된 금액은 농업인이 농업용으로 구매하실 때 적용되는 영세율(부가세 0%) 기준입니다. 학교·연구소·일반인·일반기업 구매 시에는 부가가치세(10%)가 포함되어 청구됩니다.</p>
       </section>
 
-      <section class="opt">
+      <section class="opt" id="secFarm">
         <div class="opt-head"><b>농업인 · 농업법인 확인 <small style="font-weight:400;color:var(--ink-3)">(부가세 적용 기준)</small></b></div>
         <button class="card" id="optFarm" type="button" aria-pressed="true">
           <div><b>농업인 · 농업법인이며, 농업용으로 구매·사용합니다</b><span>선택하면 영세율(부가세 0%)로 계산됩니다. 농업경영체 등록 농업인 또는 농업법인이 농업용으로 구매하는 경우에만 해당하며, 결제 후 농업경영체 등록확인서 등 증빙 서류 제출에 협조해 주셔야 합니다. 증빙이 확인되지 않으면 부가가치세가 추가 청구될 수 있습니다. 학교·연구소·일반인·일반기업은 선택을 해제해 주세요.</span></div>
           <em id="farmPrice">부가세 0%</em>
         </button>
         <p style="margin:8px 0 0;font-size:12px;color:var(--ink-3);line-height:1.6">※ 영세율은 농업인이 농업용으로 구매할 때만 적용됩니다. 해당하지 않는 경우 선택을 해제하면 부가가치세 10%가 포함된 금액으로 계산되어 안내됩니다.</p>
+      </section>
+
+      <section class="opt">
+        <div class="opt-head"><b>잔금 결제 방식 <small style="font-weight:400;color:var(--ink-3)">(예상 납부액 안내)</small></b></div>
+        <div class="choice" role="radiogroup" aria-label="잔금 결제 방식">
+          <button class="card" id="payFull" type="button" role="radio" aria-checked="true">
+            <div><b>잔금 100% 일시 결제</b><span>잔금 전액을 카드 일시불(또는 계좌이체)로 결제합니다. 할부 수수료가 없습니다.</span></div>
+            <em id="payFullAmt"></em>
+          </button>
+          <button class="card" id="payHalf" type="button" role="radio" aria-checked="false">
+            <div><b>50% 일시 결제 + 50% 12개월 카드 할부</b><span>잔금의 절반은 일시불로, 나머지 절반은 12개월 카드 할부로 결제합니다. 초기 부담을 줄이면서 할부 수수료는 절반에만 붙습니다.</span></div>
+            <em id="payHalfAmt"></em>
+          </button>
+          <button class="card" id="payInst" type="button" role="radio" aria-checked="false">
+            <div><b>잔금 100% 12개월 카드 할부</b><span>잔금 전액을 12개월 카드 할부로 결제합니다. 월 납부 부담이 가장 작지만 할부 수수료가 전액에 붙습니다.</span></div>
+            <em id="payInstAmt"></em>
+          </button>
+        </div>
+        <div class="pay-est" id="payEst"></div>
+        <p style="margin:8px 0 0;font-size:12px;color:var(--ink-3);line-height:1.6">※ 예상 납부액은 12개월 할부 수수료를 연 15%로 가정해 계산한 참고 금액입니다. 할부 수수료율은 카드사·카드 상품·회원 등급에 따라 다르며(통상 12개월 기준 연 10~19%), 무이자 할부 행사가 적용되면 수수료가 없을 수 있습니다. 실제 납부액은 잔금 결제 시 카드사 안내를 따릅니다. 사전계약 할인 150만원은 모든 방식에 동일하게 적용됩니다.</p>
       </section>
 
       <section class="opt">
@@ -319,7 +371,7 @@
         <b>예약 확정 · 취소 안내</b>
         <p>결제가 완료된 후 예약이 확정됩니다. 10일 이내에 결제가 완료되지 않을 경우 예약이 취소될 수 있습니다. 10일 이후 취소에 대한 환불은 제공되지 않습니다.</p>
         <b style="margin-top:10px">부가세 안내</b>
-        <p>농업인이 농업용으로 구매하시는 경우 영세율(부가세 0%)이 적용됩니다. 학교, 연구소, 일반인, 일반기업은 부가가치세가 포함된 금액으로 청구됩니다.</p>
+        <p>FARMILY-X S300은 농업인이 농업용으로 구매하시는 경우 영세율(부가세 0%)이 적용됩니다. 학교, 연구소, 일반인, 일반기업은 부가가치세가 포함된 금액으로 청구됩니다. FARMILY-X UV는 구매자 구분과 관계없이 부가가치세(10%)가 포함된 금액으로 청구됩니다.</p>
         <b style="margin-top:10px">출고 안내</b>
         <p>모든 제품은 출고 전 주행·동작 테스트와 방제 테스트를 거칩니다. 이 과정에서 메인 바퀴·보조 바퀴 등 주행 관련 부품에 사용 흔적이 남거나 물기가 묻어 있을 수 있으며, 이는 제품 결함이 아닙니다.</p>
       </section>
@@ -393,6 +445,14 @@ const CONFIG = {
       "sand-on": [
           "https://cdn.imweb.me/upload/S2025102337314c508962d/8b49deba24b51.jpg",
           "https://cdn.imweb.me/upload/S2025102337314c508962d/f7b7991728f91.jpg"
+      ],
+      "uv-fixed": [
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/81e64d9b1d94e.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/aa4cb46176506.jpg"
+      ],
+      "uv-lift": [
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/db7f6306c81ce.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/96bb6436e761d.jpg"
       ]
   },
   spriteCols: 2, spriteW: 960, spriteH: 720, spritePerSheet: 18,
@@ -407,9 +467,14 @@ const CONFIG = {
 
   // 가격 (원). null이면 "[가격 미정]"으로 표시
   prices: {
-    body: 16000000,   // S300 본체
+    body: 16000000,   // S300 본체 (영세율 기준 공급가)
     lidar: 1500000,  // 라이다 안전 센서 (3개)
-    lte: 1000000  // LTE 모듈 (원격 서비스 포함, 3년 기본 사용)
+    lte: 1000000  // LTE 모듈 (원격 서비스 포함, 3년 기본 사용) — S300·UV 공통
+  },
+  // UV 모델: 공급가 기준. 부가세는 구매자 구분과 관계없이 항상 10% 포함하여 안내
+  uv: {
+    body: 20000000,   // UV 고정형 본체 (공급가)
+    lift: 5000000     // 리프트형(높이 자동조정) 추가 → 공급가 25,000,000
   },
 
   // 색상 선택 — id는 이미지 폴더명과 일치. 물통은 흰색 공통(도장 불가), 본체 색상만 선택
@@ -422,13 +487,14 @@ const CONFIG = {
 };
 
 /* ========== 상태 ========== */
-const state = { buyer: 'farm', color: CONFIG.colors[0].id, lidar: false, lte: false, qty: 1, frame: CONFIG.initialFrame ?? 0 };
+const state = { model: 's300', lift: false, payPlan: 'full', buyer: 'farm', color: CONFIG.colors[0].id, lidar: false, lte: false, qty: 1, frame: CONFIG.initialFrame ?? 0 };
 const ROOT = document.currentScript ? document.currentScript.closest('.fxp') || document.querySelector('.fxp') : document.querySelector('.fxp');
 const $ = (id) => ROOT.querySelector('#' + id);
 const won = (n) => n.toLocaleString('ko-KR') + '원';
 const priceLabel = (p) => (p === null || p === undefined) ? '[가격 미정]' : (p === 0 ? '추가 비용 없음' : '+' + won(p));
 const FRAMES = CONFIG.frames;             // 36
-const setKey = () => `${state.color}-${state.lidar ? 'on' : 'off'}`;
+const setKey = () => state.model === 'uv' ? `uv-${state.lift ? 'lift' : 'fixed'}` : `${state.color}-${state.lidar ? 'on' : 'off'}`;
+const isUV = () => state.model === 'uv';
 const SHEET = { cols: CONFIG.spriteCols, w: CONFIG.spriteW, h: CONFIG.spriteH, per: CONFIG.spritePerSheet || 36 };
 
 /* ========== 턴테이블 뷰어 (스프라이트 시트) ========== */
@@ -544,8 +610,20 @@ function applyTheme(c) {
 
 function update() {
   const col = CONFIG.colors.find((c) => c.id === state.color);
-  const P = CONFIG.prices;
-  applyTheme(col);
+  const P = CONFIG.prices, U = CONFIG.uv, uv = isUV();
+  applyTheme(uv ? CONFIG.colors[0] : col);
+  /* 모델별 표시 전환 */
+  $('modelS300').setAttribute('aria-checked', String(!uv)); $('modelUV').setAttribute('aria-checked', String(uv));
+  $('modelS300Price').textContent = P.body != null ? won(P.body) + ' (영세율 기준)' : '[가격 미정]';
+  $('modelUVPrice').textContent = won(Math.round(U.body * 1.1)) + ' (부가세 포함)';
+  $('secColor').hidden = uv; $('secSensor').hidden = uv; $('secFarm').hidden = uv; $('secLift').hidden = !uv;
+  $('optFixed').setAttribute('aria-checked', String(!state.lift)); $('optLift').setAttribute('aria-checked', String(state.lift));
+  ROOT.querySelector('[data-price="lift"]').textContent = '+' + won(U.lift) + ' (공급가)';
+  $('introTitle').textContent = uv ? 'FARMILY-X UV' : 'FARMILY-X S300';
+  $('introText').innerHTML = uv ? '온실 레일 자율주행 UV-C 방제 로봇. 약제 없이 자외선(UV-C)으로 흰가루병 등 병해를 예방합니다. 리프트 옵션을 선택하면 미리보기가 바로 바뀝니다.<br>오늘은 사전계약금 10만원이 결제 됩니다.' : '온실 레일 자율주행 약제 살포 로봇. 색상과 옵션을 선택하면 미리보기가 바로 바뀝니다.<br>오늘은 사전계약금 10만원이 결제 됩니다.';
+  $('viewerSub').textContent = uv ? 'UV 사전계약' : 'S300 사전계약';
+  $('sColorLbl').textContent = uv ? '색상' : '색상'; $('sLidarLbl').textContent = uv ? '리프트' : '안전 센서';
+  $('vatNote').innerHTML = uv ? '<b>부가세 안내</b> FARMILY-X UV는 구매자 구분(농업인·학교·연구소·일반·기업)과 관계없이 부가가치세(10%)가 포함된 금액으로 안내·청구됩니다.' : '<b>부가세 안내</b> 표시된 금액은 농업인이 농업용으로 구매하실 때 적용되는 영세율(부가세 0%) 기준입니다. 학교·연구소·일반인·일반기업 구매 시에는 부가가치세(10%)가 포함되어 청구됩니다.';
   [...ROOT.querySelectorAll('.color-card')].forEach((b, i) => b.setAttribute('aria-checked', String(CONFIG.colors[i].id === state.color)));
   $('colorLabel').textContent = `${col.name} · ${priceLabel(col.price)}`;
   $('optLidar').setAttribute('aria-checked', String(state.lidar));
@@ -555,15 +633,16 @@ function update() {
   ROOT.querySelector('[data-price="lte"]').textContent = priceLabel(P.lte);
   $('qtyVal').textContent = state.qty;
 
-  const unit = (P.body ?? 0) + (col.price ?? 0) + (state.lidar ? (P.lidar ?? 0) : 0) + (state.lte ? (P.lte ?? 0) : 0);
-  const known = P.body !== null && P.body !== undefined;
-  const vat = state.buyer === 'gen' ? 1.1 : 1;   // 농업인·농업법인(영세율) 외에는 부가세 10%
-  const vatTag = state.buyer === 'gen' ? ' (부가세 포함)' : ' (영세율)';
+  const unit = uv ? U.body + (state.lift ? U.lift : 0) + (state.lte ? (P.lte ?? 0) : 0)
+                  : (P.body ?? 0) + (col.price ?? 0) + (state.lidar ? (P.lidar ?? 0) : 0) + (state.lte ? (P.lte ?? 0) : 0);
+  const known = uv ? true : (P.body !== null && P.body !== undefined);
+  const vat = (uv || state.buyer === 'gen') ? 1.1 : 1;   // UV는 항상 부가세 포함. S300은 농업인·농업법인(영세율) 외에 부가세 10%
+  const vatTag = (uv || state.buyer === 'gen') ? ' (부가세 포함)' : ' (영세율)';
   const totalLabel = known ? won(Math.round(unit * state.qty * vat)) + vatTag : `[가격 미정] × ${state.qty}대`;
 
-  $('sBody').textContent = `S300 · ${P.body != null ? won(P.body) : '[가격 미정]'}`;
-  $('sColor').textContent = `${col.name} · ${priceLabel(col.price)}`;
-  $('sLidar').textContent = state.lidar ? `라이다 센서 · ${priceLabel(P.lidar)}` : '초음파 센서 · 추가 비용 없음';
+  $('sBody').textContent = uv ? `UV ${state.lift ? '리프트형' : '고정형'} · ${won(U.body + (state.lift ? U.lift : 0))} (공급가)` : `S300 · ${P.body != null ? won(P.body) : '[가격 미정]'}`;
+  $('sColor').textContent = uv ? '원본 컬러 (딥 그린) · 기본' : `${col.name} · ${priceLabel(col.price)}`;
+  $('sLidar').textContent = uv ? (state.lift ? `리프트형(높이 자동조정) · +${won(U.lift)}` : '고정형 · 기본') : (state.lidar ? `라이다 센서 · ${priceLabel(P.lidar)}` : '초음파 센서 · 추가 비용 없음');
   $('sLte').textContent = state.lte ? `LTE 모듈 + 3년 구독 · ${priceLabel(P.lte)}` : '미포함 (기본)';
   $('sQty').textContent = `${state.qty}대`;
   const disc = (CONFIG.eventDiscount ?? 1500000) * state.qty;
@@ -572,15 +651,41 @@ function update() {
   const finalTotal = Math.max(0, unit * state.qty - disc);
   $('sFinal').textContent = known ? won(Math.round(finalTotal * vat)) + vatTag : '[가격 미정]';
   $('sBalance').textContent = known ? won(Math.max(0, Math.round(finalTotal * vat) - CONFIG.deposit)) : '[가격 미정]';
-  $('pbTotal').textContent = known ? won(Math.round(finalTotal * vat)) + (state.buyer === 'gen' ? ' (할인·부가세 적용)' : ' (할인 적용)') : totalLabel;
-  $('pbSummary').textContent = `S300 · ${col.name}${state.lidar ? ' · 라이다' : ''}${state.lte ? ' · LTE' : ''} · ${state.qty}대`;
-  const chips = [state.buyer === 'gen' ? '부가세 포함' : '농업인 영세율', 'S300', col.name, state.lidar ? '라이다 센서' : '초음파 센서', ...(state.lte ? ['LTE'] : []), `${state.qty}대`];
+  /* 잔금 결제 방식별 예상 납부액 (12개월 할부, 연 INSTALL_RATE 가정) */
+  const balance = known ? Math.max(0, Math.round(finalTotal * vat) - CONFIG.deposit) : 0;
+  const pmt = (P) => { const r = INSTALL_RATE / 12, n = 12; return P <= 0 ? 0 : Math.round(P * r / (1 - Math.pow(1 + r, -n))); };
+  const half = Math.round(balance / 2);
+  const mHalf = pmt(half), mInst = pmt(balance);
+  $('payFullAmt').textContent = known ? '일시불 ' + won(balance) : '[가격 미정]';
+  $('payHalfAmt').textContent = known ? '월 약 ' + won(mHalf) + ' ×12' : '[가격 미정]';
+  $('payInstAmt').textContent = known ? '월 약 ' + won(mInst) + ' ×12' : '[가격 미정]';
+  let est = '';
+  if (known) {
+    if (state.payPlan === 'full') est = `<div class="row"><span>잔금 (사전계약금 ${won(CONFIG.deposit)} 제외)</span><b>${won(balance)}</b></div><div class="row"><span>일시 결제</span><b>${won(balance)}</b></div><div class="row"><span>할부 수수료</span><b>없음</b></div>`;
+    else if (state.payPlan === 'half') est = `<div class="row"><span>잔금</span><b>${won(balance)}</b></div><div class="row"><span>일시 결제 (50%)</span><b>${won(balance - half)}</b></div><div class="row"><span>12개월 할부 (50%) 월 납부액</span><b>약 ${won(mHalf)}</b></div><div class="row"><span>할부 총액 · 수수료 (연 15% 가정)</span><b>약 ${won(mHalf * 12)} · 수수료 약 ${won(mHalf * 12 - half)}</b></div>`;
+    else est = `<div class="row"><span>잔금</span><b>${won(balance)}</b></div><div class="row"><span>12개월 할부 월 납부액</span><b>약 ${won(mInst)}</b></div><div class="row"><span>할부 총액 · 수수료 (연 15% 가정)</span><b>약 ${won(mInst * 12)} · 수수료 약 ${won(mInst * 12 - balance)}</b></div>`;
+  } else est = '가격 확정 후 안내됩니다.';
+  $('payEst').innerHTML = est;
+  $('pbTotal').textContent = known ? won(Math.round(finalTotal * vat)) + ((uv || state.buyer === 'gen') ? ' (할인·부가세 적용)' : ' (할인 적용)') : totalLabel;
+  $('pbSummary').textContent = uv ? `UV · ${state.lift ? '리프트형' : '고정형'}${state.lte ? ' · LTE' : ''} · ${state.qty}대` : `S300 · ${col.name}${state.lidar ? ' · 라이다' : ''}${state.lte ? ' · LTE' : ''} · ${state.qty}대`;
+  const chips = uv ? ['부가세 포함', 'UV', state.lift ? '리프트형 (높이 자동조정)' : '고정형', ...(state.lte ? ['LTE'] : []), `${state.qty}대`]
+                   : [state.buyer === 'gen' ? '부가세 포함' : '농업인 영세율', 'S300', col.name, state.lidar ? '라이다 센서' : '초음파 센서', ...(state.lte ? ['LTE'] : []), `${state.qty}대`];
   $('chips').innerHTML = chips.map((c) => `<span>${c}</span>`).join('');
 }
 
+function setModel(m) { if (state.model === m) return; state.model = m; update(); switchSet(); }
+$('modelS300').onclick = () => setModel('s300');
+$('modelUV').onclick = () => setModel('uv');
+$('optFixed').onclick = () => { if (state.lift) { state.lift = false; update(); switchSet(); } };
+$('optLift').onclick = () => { if (!state.lift) { state.lift = true; update(); switchSet(); } };
 $('optLidar').onclick = () => { if (!state.lidar) { state.lidar = true; update(); switchSet(); } };
 $('optUltra').onclick = () => { if (state.lidar) { state.lidar = false; update(); switchSet(); } };
 $('optLte').onclick = () => { state.lte = !state.lte; update(); };
+const INSTALL_RATE = 0.15;   // 12개월 카드 할부 수수료 가정(연). 카드사마다 다름 — 안내 문구와 함께 표시
+function setPayPlan(p){ state.payPlan = p; ['Full','Half','Inst'].forEach((k) => $('pay' + k).setAttribute('aria-checked', ({ Full: 'full', Half: 'half', Inst: 'inst' })[k] === p ? 'true' : 'false')); update(); }
+$('payFull').onclick = () => setPayPlan('full');
+$('payHalf').onclick = () => setPayPlan('half');
+$('payInst').onclick = () => setPayPlan('inst');
 $('optFarm').onclick = () => { state.buyer = state.buyer === 'farm' ? 'gen' : 'farm'; $('optFarm').setAttribute('aria-pressed', state.buyer === 'farm' ? 'true' : 'false'); $('farmPrice').textContent = state.buyer === 'farm' ? '부가세 0%' : '부가세 10% 포함'; update(); };
 $('qtyUp').onclick = () => { state.qty = Math.min(10, state.qty + 1); update(); };
 $('qtyDown').onclick = () => { state.qty = Math.max(1, state.qty - 1); update(); };
@@ -588,7 +693,15 @@ $('qtyDown').onclick = () => { state.qty = Math.max(1, state.qty - 1); update();
 /* ========== 아임웹 주문서 연결 (사전계약금 상품 idx 8) ==========
    흐름: 약관 동의 확인 → OMS_add_order.cm 으로 주문서 생성(회원/비회원 모두 가능) → 주문서(/shop_payment)로 이동
    선택 사양은 sessionStorage.fx_spec 에 저장되고, 공통 Footer Code 스크립트가 주문서 배송메모에 자동 입력 */
-const IMWEB = {
+const IMWEB_UV = {
+  prodIdx: 9, shippingTemplate: 'T202510230ea3b35d85abd',
+  // 아임웹 상품 #9 (UV 사전계약금) 옵션 코드
+  opt: {
+    lift: { code: 'O202610281b918fadbc2ca', name: '리프트(높이 자동조정)', values: { fixed: ['O20261028588c317775738', '고정형(리프트 없음)'], lift: ['O2026102830dc0b064d0e1', '리프트형(높이 자동조정)'] } },
+    lte:  { code: 'O20261028f0ff0f636eb16', name: 'LTE 모듈', values: { no: ['O202610281a79db2aa10d8', '미포함'], yes: ['O202610285e49b16a9eada', 'LTE 모듈 + 3년 구독 포함'] } }
+  }
+};
+const IMWEB_S300 = {
   prodIdx: 8, shippingTemplate: 'T202510230ea3b35d85abd',
   // 아임웹 상품 #8 옵션 코드 (관리자 > 상품 > 옵션). 값은 [value_code, 표시명]
   opt: {
@@ -598,19 +711,23 @@ const IMWEB = {
     buyer:  { code: 'O20261027f230d03fa3975', name: '구매자 구분(부가세)', values: { farm: ['O202610276d12b4ee8f50f', '농업인·농업법인(영세율)'], gen: ['O2026102742532ac2e6283', '학교·연구소·일반·기업(부가세 포함)'] } }
   }
 };
+const curIMWEB = () => isUV() ? IMWEB_UV : IMWEB_S300;
 function postForm(url, params) {
   return fetch(url, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-Requested-With': 'XMLHttpRequest' }, body: params.toString() }).then((r) => r.json());
 }
 function selectedOptions() {
-  const O = IMWEB.opt;
+  const O = curIMWEB().opt;
   const pick = (g, k) => ({ value_type: 'SELECT', option_code: O[g].code, value_code: O[g].values[k][0], value_name: O[g].values[k][1], option_name: O[g].name });
+  if (isUV()) return [pick('lift', state.lift ? 'lift' : 'fixed'), pick('lte', state.lte ? 'yes' : 'no')];
   return [pick('color', state.color), pick('sensor', state.lidar ? 'lidar' : 'ultra'), pick('lte', state.lte ? 'yes' : 'no'), pick('buyer', state.buyer === 'gen' ? 'gen' : 'farm')];
 }
 $('payBtn').onclick = () => {
   const memo = $('fMemo').value.trim();
   if (!$('fAgree').checked) { alert('사전계약 약관 및 개인정보 수집·이용에 동의해 주세요.'); return; }
   const col = CONFIG.colors.find((c) => c.id === state.color);
-  const spec = 'S300 / ' + col.name + (state.lidar ? ' / 라이다 안전센서' : ' / 초음파 센서') + (state.lte ? ' / LTE' : '') + ' / ' + state.qty + '대' + ' / ' + (state.buyer === 'farm' ? '농업인·농업법인(영세율, 농업용 사용 동의)' : '학교·연구소·일반·기업(부가세 포함)') + (memo ? ' / 온실: ' + memo : '');
+  const IMWEB = curIMWEB();
+  const spec = (isUV() ? 'UV / ' + (state.lift ? '리프트형(높이 자동조정)' : '고정형') + (state.lte ? ' / LTE' : '') + ' / ' + state.qty + '대 / 부가세 포함'
+                       : 'S300 / ' + col.name + (state.lidar ? ' / 라이다 안전센서' : ' / 초음파 센서') + (state.lte ? ' / LTE' : '') + ' / ' + state.qty + '대' + ' / ' + (state.buyer === 'farm' ? '농업인·농업법인(영세율, 농업용 사용 동의)' : '학교·연구소·일반·기업(부가세 포함)')) + ' / 잔금: ' + ({ full: '100% 일시불', half: '50% 일시불 + 50% 12개월 할부', inst: '100% 12개월 할부' })[state.payPlan] + (memo ? ' / 온실: ' + memo : '');
   try { sessionStorage.setItem('fx_spec', spec); } catch (e) {}
   const btn = $('payBtn'); btn.disabled = true; btn.textContent = '주문서로 이동 중…';
   const fail = (e) => { alert('주문서를 만들지 못했습니다. 잠시 후 다시 시도해 주세요.\n' + (e && e.message ? e.message : '')); btn.disabled = false; btn.textContent = '사전계약금 카드 결제'; };

@@ -20,3 +20,10 @@ Settings → Pages → Branch: main / (root). 커스텀 도메인 사용 시 `CN
 1. 페이플 관리자 → 파트너 인증 설정에 배포 도메인 등록
 2. `config.js`의 `clientKey`를 운영 키로 교체
 3. 테스트: `index.html`의 payment.js를 `democpay.payple.kr`로 바꾸고 테스트 키 사용
+
+## FARMILY-X UV 추가 (2026-10-29)
+- 모델 선택(S300 / UV)이 구성기 상단에 추가됨. UV 옵션: 리프트(고정형 / 리프트형 +500만원), LTE. UV는 항상 부가세 포함.
+- 아임웹 상품: #8 S300 사전계약금, #9 UV 사전계약금 (옵션 리프트 2종 × LTE 2종)
+- UV 이미지: lab.farmily.ai:8090/farmily-uv/ 콘솔에서 `render_uv.js` 실행 → 다운로드 폴더의 `frames_uv-*.json` →
+  `python tools/convert_uv.py <폴더> img` → `python tools/make_sprites_jpg.py img img_sprites_jpg2 uv-fixed uv-lift` → 아임웹 업로드 후 `imweb/sprite_map.json` 갱신
+- uv-lift 세트는 리프트 500 mm 상승 상태로 렌더

@@ -1,34 +1,12 @@
 {
- "original-off": [
-  "https://cdn.imweb.me/upload/S2025102337314c508962d/7a3e0e5ec4f25.jpg",
-  "https://cdn.imweb.me/upload/S2025102337314c508962d/0460f9453bb3f.jpg"
- ],
- "original-on": [
-  "https://cdn.imweb.me/upload/S2025102337314c508962d/cdc709764bf9f.jpg",
-  "https://cdn.imweb.me/upload/S2025102337314c508962d/610c9db15269e.jpg"
- ],
- "forest-off": [
-  "https://cdn.imweb.me/upload/S2025102337314c508962d/82ae707bee7ae.jpg",
-  "https://cdn.imweb.me/upload/S2025102337314c508962d/e4256521c7050.jpg"
- ],
- "forest-on": [
-  "https://cdn.imweb.me/upload/S2025102337314c508962d/17e1129f3b6f9.jpg",
-  "https://cdn.imweb.me/upload/S2025102337314c508962d/b9738390390a1.jpg"
- ],
- "graphite-off": [
-  "https://cdn.imweb.me/upload/S2025102337314c508962d/2d17173b90b93.jpg",
-  "https://cdn.imweb.me/upload/S2025102337314c508962d/d7cdfc4c77ca2.jpg"
- ],
- "graphite-on": [
-  "https://cdn.imweb.me/upload/S2025102337314c508962d/90f11f14aefdf.jpg",
-  "https://cdn.imweb.me/upload/S2025102337314c508962d/2090394348472.jpg"
- ],
- "sand-off": [
-  "https://cdn.imweb.me/upload/S2025102337314c508962d/87c1bf2aa4433.jpg",
-  "https://cdn.imweb.me/upload/S2025102337314c508962d/42db972f25b20.jpg"
- ],
- "sand-on": [
-  "https://cdn.imweb.me/upload/S2025102337314c508962d/8b49deba24b51.jpg",
-  "https://cdn.imweb.me/upload/S2025102337314c508962d/f7b7991728f91.jpg"
- ]
+ "original-off": ["https://cdn.imweb.me/upload/S2025102337314c508962d/7a3e0e5ec4f25.jpg", "https://cdn.imweb.me/upload/S2025102337314c508962d/0460f9453bb3f.jpg"],
+ "original-on": ["https://cdn.imweb.me/upload/S2025102337314c508962d/cdc709764bf9f.jpg", "https://cdn.imweb.me/upload/S2025102337314c508962d/610c9db15269e.jpg"],
+ "forest-off": ["https://cdn.imweb.me/upload/S2025102337314c508962d/82ae707bee7ae.jpg", "https://cdn.imweb.me/upload/S2025102337314c508962d/e4256521c7050.jpg"],
+ "forest-on": ["https://cdn.imweb.me/upload/S2025102337314c508962d/17e1129f3b6f9.jpg", "https://cdn.imweb.me/upload/S2025102337314c508962d/b9738390390a1.jpg"],
+ "graphite-off": ["https://cdn.imweb.me/upload/S2025102337314c508962d/2d17173b90b93.jpg", "https://cdn.imweb.me/upload/S2025102337314c508962d/d7cdfc4c77ca2.jpg"],
+ "graphite-on": ["https://cdn.imweb.me/upload/S2025102337314c508962d/90f11f14aefdf.jpg", "https://cdn.imweb.me/upload/S2025102337314c508962d/2090394348472.jpg"],
+ "sand-off": ["https://cdn.imweb.me/upload/S2025102337314c508962d/87c1bf2aa4433.jpg", "https://cdn.imweb.me/upload/S2025102337314c508962d/42db972f25b20.jpg"],
+ "sand-on": ["https://cdn.imweb.me/upload/S2025102337314c508962d/8b49deba24b51.jpg", "https://cdn.imweb.me/upload/S2025102337314c508962d/f7b7991728f91.jpg"],
+ "uv-fixed": ["https://cdn.imweb.me/upload/S2025102337314c508962d/81e64d9b1d94e.jpg", "https://cdn.imweb.me/upload/S2025102337314c508962d/aa4cb46176506.jpg"],
+ "uv-lift": ["https://cdn.imweb.me/upload/S2025102337314c508962d/db7f6306c81ce.jpg", "https://cdn.imweb.me/upload/S2025102337314c508962d/96bb6436e761d.jpg"]
 }
