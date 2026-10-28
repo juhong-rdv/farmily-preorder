@@ -110,7 +110,12 @@
 .fxp .card[role="radio"]{position:relative;padding-left:44px}
 .fxp .pay-est{margin-top:10px;border:1px solid var(--line);border-radius:10px;background:#FAFAF8;padding:12px 14px;font-size:13px;line-height:1.7;color:var(--ink-2)}
 .fxp .pay-est b{color:var(--ink);font-weight:700}
-.fxp .pay-est .row{display:flex;justify-content:space-between;gap:12px}
+.fxp .pay-est .pe-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:0;padding:0;text-align:left}
+.fxp .pay-est .pe-row span{flex:1 1 auto;text-align:left;color:var(--ink-2)}
+.fxp .pay-est .pe-row b{flex:0 0 auto;text-align:right;white-space:nowrap}
+.fxp .pay-est .pe-note{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--green-lt);border:1px solid var(--green);color:var(--ink);font-size:12.5px;line-height:1.6}
+.fxp .pay-est .pe-note b{color:var(--green)}
+.fxp .pay-est .pe-title{display:block;font-size:13px;font-weight:700;color:var(--ink);margin:0 0 6px;padding-bottom:6px;border-bottom:1px solid var(--line)}
 .fxp .card[role="radio"]::before{content:"";position:absolute;left:16px;top:18px;width:18px;height:18px;border-radius:50%;border:2px solid #CFCFCB;background:#fff}
 .fxp .card[role="radio"][aria-checked="true"]{border:2px solid var(--green);background:var(--green-lt)}
 .fxp .card[role="radio"][aria-checked="true"]::before{border-color:var(--green);background:radial-gradient(circle,var(--green) 0 45%,#fff 50%)}
@@ -298,7 +303,7 @@
       </section>
 
       <section class="opt">
-        <div class="opt-head"><b>무선 통신 및 원격기술지원 <small style="font-weight:400;color:var(--ink-3)">(최신 SW 업데이트)</small></b></div>
+        <div class="opt-head"><b>무선 통신 및 파밀리+케어서비스(원격기술지원) <small style="font-weight:400;color:var(--ink-3)">(최신 SW 업데이트)</small></b></div>
         <button class="card" id="optLte" type="button" aria-pressed="false">
           <div><b>LTE 모듈 + 3년 LTE 구독 포함</b><span>LTE 장비 추가와 3년간의 LTE 구독료가 포함됩니다. Wi-Fi가 어려운 온실에서도 원격 확인이 가능하고, 최신 SW 업데이트로 로봇을 지속 관리해 드립니다. 지속 관리된 장비는 보상판매 시 최대 보상을 약속드립니다. 3년 후에는 월 LTE 통신료를 포함한 구독료가 부과될 수 있습니다. 장비 교체에 따른 AS 추가 비용이 발생할 수 있습니다(AS 규정 참고). 기본 구성에는 포함되지 않으며, 구매 결정 후에는 추가 장착이 어려우니 지금 선택해 주세요.</span></div>
           <em data-price="lte"></em>
@@ -318,7 +323,7 @@
         <div><span>본체</span><b id="sBody"></b></div>
         <div><span id="sColorLbl">색상</span><b id="sColor"></b></div>
         <div><span id="sLidarLbl">안전 센서</span><b id="sLidar"></b></div>
-        <div><span>무선 통신·원격기술지원</span><b id="sLte"></b></div>
+        <div><span>무선 통신·파밀리+케어서비스</span><b id="sLte"></b></div>
         <div><span>수량</span><b id="sQty"></b></div>
         <hr>
         <div><span>예상 총액</span><b id="sTotal"></b></div>
@@ -661,11 +666,17 @@ function update() {
   $('payInstAmt').textContent = known ? '월 약 ' + won(mInst) + ' ×12' : '[가격 미정]';
   let est = '';
   if (known) {
-    if (state.payPlan === 'full') est = `<div class="row"><span>잔금 (사전계약금 ${won(CONFIG.deposit)} 제외)</span><b>${won(balance)}</b></div><div class="row"><span>일시 결제</span><b>${won(balance)}</b></div><div class="row"><span>할부 수수료</span><b>없음</b></div>`;
-    else if (state.payPlan === 'half') est = `<div class="row"><span>잔금</span><b>${won(balance)}</b></div><div class="row"><span>일시 결제 (50%)</span><b>${won(balance - half)}</b></div><div class="row"><span>12개월 할부 (50%) 월 납부액</span><b>약 ${won(mHalf)}</b></div><div class="row"><span>할부 총액 · 수수료 (연 15% 가정)</span><b>약 ${won(mHalf * 12)} · 수수료 약 ${won(mHalf * 12 - half)}</b></div>`;
-    else est = `<div class="row"><span>잔금</span><b>${won(balance)}</b></div><div class="row"><span>12개월 할부 월 납부액</span><b>약 ${won(mInst)}</b></div><div class="row"><span>할부 총액 · 수수료 (연 15% 가정)</span><b>약 ${won(mInst * 12)} · 수수료 약 ${won(mInst * 12 - balance)}</b></div>`;
+    if (state.payPlan === 'full') est = `<div class="pe-row"><span>잔금 (사전계약금 ${won(CONFIG.deposit)} 제외)</span><b>${won(balance)}</b></div><div class="pe-row"><span>일시 결제</span><b>${won(balance)}</b></div><div class="pe-row"><span>할부 수수료</span><b>없음</b></div>`;
+    else if (state.payPlan === 'half') est = `<div class="pe-row"><span>잔금</span><b>${won(balance)}</b></div><div class="pe-row"><span>일시 결제 (50%)</span><b>${won(balance - half)}</b></div><div class="pe-row"><span>12개월 할부 (50%) 월 납부액</span><b>약 ${won(mHalf)}</b></div><div class="pe-row"><span>할부 총액 · 수수료 (연 15% 가정)</span><b>약 ${won(mHalf * 12)} · 수수료 약 ${won(mHalf * 12 - half)}</b></div>`;
+    else est = `<div class="pe-row"><span>잔금</span><b>${won(balance)}</b></div><div class="pe-row"><span>12개월 할부 월 납부액</span><b>약 ${won(mInst)}</b></div><div class="pe-row"><span>할부 총액 · 수수료 (연 15% 가정)</span><b>약 ${won(mInst * 12)} · 수수료 약 ${won(mInst * 12 - balance)}</b></div>`;
+    const fee = state.payPlan === 'full' ? 0 : state.payPlan === 'half' ? (mHalf * 12 - half) : (mInst * 12 - balance);
+    let hl;
+    if (fee <= 0) hl = `할부 수수료가 없으므로 사전계약 할인 <b>${won(disc)}</b>이 그대로 절감됩니다.`;
+    else if (disc >= fee) hl = `사전계약 할인 <b>${won(disc)}</b>이 12개월 할부 수수료(약 ${won(fee)})를 전액 상쇄하고도 <b>약 ${won(disc - fee)}</b>이 더 절감됩니다. 사실상 <b>무이자 할부 + 추가 할인</b> 효과입니다.`;
+    else hl = `사전계약 할인 <b>${won(disc)}</b>이 12개월 할부 수수료(약 ${won(fee)})의 대부분을 상쇄해 실질 수수료 부담은 <b>약 ${won(fee - disc)}</b>에 그칩니다.`;
+    est += `<div class="pe-note">${hl}</div>`;
   } else est = '가격 확정 후 안내됩니다.';
-  $('payEst').innerHTML = est;
+  $('payEst').innerHTML = '<span class="pe-title">결제 예상 시뮬레이션</span>' + est;
   $('pbTotal').textContent = known ? won(Math.round(finalTotal * vat)) + ((uv || state.buyer === 'gen') ? ' (할인·부가세 적용)' : ' (할인 적용)') : totalLabel;
   $('pbSummary').textContent = uv ? `UV · ${state.lift ? '리프트형' : '고정형'}${state.lte ? ' · LTE' : ''} · ${state.qty}대` : `S300 · ${col.name}${state.lidar ? ' · 라이다' : ''}${state.lte ? ' · LTE' : ''} · ${state.qty}대`;
   const chips = uv ? ['부가세 포함', 'UV', state.lift ? '리프트형 (높이 자동조정)' : '고정형', ...(state.lte ? ['LTE'] : []), `${state.qty}대`]
