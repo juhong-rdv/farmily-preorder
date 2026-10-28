@@ -76,6 +76,11 @@
 .fxp .field input:focus{outline:2px solid var(--green);outline-offset:1px;border-color:var(--green)}
 .fxp .agree{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--ink-2);line-height:1.6}
 .fxp .agree input{width:18px;height:18px;margin-top:2px}
+.fxp .agree{padding:10px 12px;border:1px solid transparent;border-radius:10px;margin:0 -12px}
+.fxp .agree.err{border-color:#C8321E;background:#FFF3F1;color:#8A1F12;animation:fxShake .5s}
+.fxp .agree.err input{outline:2px solid #C8321E;outline-offset:1px}
+.fxp .agree-msg{margin:6px 0 0;font-size:12.5px;font-weight:700;color:#C8321E}
+@keyframes fxShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
 .fxp .policy{display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--ink-2);line-height:1.6}
 .fxp .policy b{font-size:15px;color:var(--ink);margin-bottom:2px}
 .fxp .policy div{display:flex;gap:10px}
@@ -150,7 +155,14 @@
 .fxp .summary .vat-note{color:var(--ink-2)}
 .fxp .summary .vat-note b{display:inline;font-weight:700;color:var(--ink);margin-right:4px}
 @media (max-width: 860px){.fxp .app{isolation:isolate}
-.fxp .viewer{height:48vh;height:48dvh;min-height:320px;z-index:3}
+.fxp .viewer{height:46vh;height:46dvh;min-height:300px;z-index:3;position:relative;top:auto}
+.fxp .mini.on{display:block}
+.fxp .card:not(.color-card){flex-wrap:wrap}
+.fxp .card:not(.color-card)>div{flex:1 1 100%}
+.fxp .card:not(.color-card)>em{flex:1 1 100%;text-align:right;margin-top:2px;color:var(--green)}
+.fxp .opt-head{flex-wrap:wrap;gap:4px}
+.fxp .summary{font-size:14px}
+.fxp .summary b{max-width:60%}
 .fxp .stage{bottom:78px}
 .fxp .viewer-head{top:12px;left:16px}
 .fxp .viewer-head .sub{display:none}
@@ -173,6 +185,9 @@
 .fxp .panel-scroll{padding-bottom:200px}}
 
 .fxp [hidden]{display:none!important}
+.fxp .mini{display:none;position:fixed;right:12px;bottom:calc(var(--pbh,150px) + 14px);z-index:6;width:88px;height:88px;border-radius:50%;border:2px solid var(--green);background:#F2F5F1;box-shadow:0 6px 18px rgba(0,0,0,.18);padding:0;overflow:hidden;cursor:pointer}
+.fxp .mini canvas{width:100%;height:100%;display:block}
+.fxp .mini span{position:absolute;left:0;right:0;bottom:0;background:rgba(20,20,19,.72);color:#fff;font-size:9px;font-weight:700;text-align:center;padding:3px 6px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fxp{font-family:'Noto Sans KR',system-ui,sans-serif;color:#141413;-webkit-font-smoothing:antialiased;line-height:1.4}
 .fxp button,.fxp input{font-family:inherit}
 .fxp #canvas{position:absolute;inset:0;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;margin:0!important;padding:0!important}
@@ -357,6 +372,10 @@
             <div><b>50% 일시 결제 + 50% 12개월 카드 할부</b><span>잔금의 절반은 일시불로, 나머지 절반은 12개월 카드 할부로 결제합니다. 초기 부담을 줄이면서 할부 수수료는 절반에만 붙습니다.</span></div>
             <em id="payHalfAmt"></em>
           </button>
+          <button class="card" id="payP30" type="button" role="radio" aria-checked="false">
+            <div><b>30% 일시 결제 + 70% 12개월 카드 할부</b><span>잔금의 30%는 일시불로, 나머지 70%는 12개월 카드 할부로 결제합니다. 초기 부담을 더 줄이고 싶을 때 선택하세요.</span></div>
+            <em id="payP30Amt"></em>
+          </button>
           <button class="card" id="payInst" type="button" role="radio" aria-checked="false">
             <div><b>잔금 100% 12개월 카드 할부</b><span>잔금 전액을 12개월 카드 할부로 결제합니다. 월 납부 부담이 가장 작지만 할부 수수료가 전액에 붙습니다.</span></div>
             <em id="payInstAmt"></em>
@@ -392,6 +411,7 @@
     </div>
   </aside>
 
+<button class="mini" id="mini" type="button" aria-label="모델 미리보기로 이동" title="위로 이동해 모델 보기"><canvas id="miniCanvas" width="176" height="176"></canvas><span id="miniLabel"></span></button>
 <div class="done" id="done" hidden>
   <div class="done-box">
     <div class="check"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
@@ -542,7 +562,21 @@ async function draw() {
   const img = imgs[Math.floor(state.frame / SHEET.per)], f = state.frame % SHEET.per;
   const sx = (f % SHEET.cols) * SHEET.w, sy = Math.floor(f / SHEET.cols) * SHEET.h;
   ctx.drawImage(img, sx, sy, SHEET.w, SHEET.h, dx, dy, dw, dh);
+  /* 모바일 플로팅 미니 뷰어: 프레임 중앙부를 잘라 원형 썸네일로 */
+  const mc = $('miniCanvas'); if (mc) { const g = mc.getContext('2d'); g.fillStyle = IMG_BG; g.fillRect(0, 0, mc.width, mc.height); const cw = SHEET.h * 0.92, chh = SHEET.h * 0.92; g.drawImage(img, sx + (SHEET.w - cw) / 2, sy + SHEET.h * 0.04, cw, chh, 0, 0, mc.width, mc.height); }
 }
+/* 모바일: 뷰어가 화면 밖으로 나가면 우측 하단에 미니 뷰어 표시, 탭하면 뷰어로 이동 */
+(() => {
+  const mini = $('mini'), viewer = ROOT.querySelector('.viewer'), paybar = ROOT.querySelector('.paybar');
+  if (!mini || !viewer) return;
+  const mq = window.matchMedia('(max-width: 860px)');
+  let out = false;
+  const sync = () => mini.classList.toggle('on', out && mq.matches && $('done').hidden);
+  new IntersectionObserver((es) => { out = !es[0].isIntersecting; sync(); }, { threshold: 0.12 }).observe(viewer);
+  mq.addEventListener ? mq.addEventListener('change', sync) : mq.addListener(sync);
+  if (paybar) new ResizeObserver(() => ROOT.style.setProperty('--pbh', paybar.offsetHeight + 'px')).observe(paybar);
+  mini.onclick = () => viewer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+})();
 
 // 드래그 회전
 let dragging = false, lastX = 0, acc = 0, autoRotate = false, autoTimer = null;   // 자동 회전 끔: 마우스/터치 드래그·버튼으로만 회전
@@ -659,17 +693,21 @@ function update() {
   /* 잔금 결제 방식별 예상 납부액 (12개월 할부, 연 INSTALL_RATE 가정) */
   const balance = known ? Math.max(0, Math.round(finalTotal * vat) - CONFIG.deposit) : 0;
   const pmt = (P) => { const r = INSTALL_RATE / 12, n = 12; return P <= 0 ? 0 : Math.round(P * r / (1 - Math.pow(1 + r, -n))); };
-  const half = Math.round(balance / 2);
-  const mHalf = pmt(half), mInst = pmt(balance);
+  /* 일시 결제 비율별: full 100% / half 50% / p30 30% / inst 0% */
+  const UP = { full: 1, half: 0.5, p30: 0.3, inst: 0 };
+  const splitOf = (ratio) => { const up = Math.round(balance * ratio), fin = balance - up, m = pmt(fin); return { up, fin, m, fee: fin > 0 ? m * 12 - fin : 0 }; };
+  const half = splitOf(0.5), p30 = splitOf(0.3), inst = splitOf(0);
   $('payFullAmt').textContent = known ? '일시불 ' + won(balance) : '[가격 미정]';
-  $('payHalfAmt').textContent = known ? '월 약 ' + won(mHalf) + ' ×12' : '[가격 미정]';
-  $('payInstAmt').textContent = known ? '월 약 ' + won(mInst) + ' ×12' : '[가격 미정]';
+  $('payHalfAmt').textContent = known ? '월 약 ' + won(half.m) + ' ×12' : '[가격 미정]';
+  $('payP30Amt').textContent = known ? '월 약 ' + won(p30.m) + ' ×12' : '[가격 미정]';
+  $('payInstAmt').textContent = known ? '월 약 ' + won(inst.m) + ' ×12' : '[가격 미정]';
   let est = '';
   if (known) {
+    const cur = splitOf(UP[state.payPlan] ?? 1), pct = Math.round((UP[state.payPlan] ?? 1) * 100);
     if (state.payPlan === 'full') est = `<div class="pe-row"><span>잔금 (사전계약금 ${won(CONFIG.deposit)} 제외)</span><b>${won(balance)}</b></div><div class="pe-row"><span>일시 결제</span><b>${won(balance)}</b></div><div class="pe-row"><span>할부 수수료</span><b>없음</b></div>`;
-    else if (state.payPlan === 'half') est = `<div class="pe-row"><span>잔금</span><b>${won(balance)}</b></div><div class="pe-row"><span>일시 결제 (50%)</span><b>${won(balance - half)}</b></div><div class="pe-row"><span>12개월 할부 (50%) 월 납부액</span><b>약 ${won(mHalf)}</b></div><div class="pe-row"><span>할부 총액 · 수수료 (연 15% 가정)</span><b>약 ${won(mHalf * 12)} · 수수료 약 ${won(mHalf * 12 - half)}</b></div>`;
-    else est = `<div class="pe-row"><span>잔금</span><b>${won(balance)}</b></div><div class="pe-row"><span>12개월 할부 월 납부액</span><b>약 ${won(mInst)}</b></div><div class="pe-row"><span>할부 총액 · 수수료 (연 15% 가정)</span><b>약 ${won(mInst * 12)} · 수수료 약 ${won(mInst * 12 - balance)}</b></div>`;
-    const fee = state.payPlan === 'full' ? 0 : state.payPlan === 'half' ? (mHalf * 12 - half) : (mInst * 12 - balance);
+    else if (state.payPlan === 'inst') est = `<div class="pe-row"><span>잔금</span><b>${won(balance)}</b></div><div class="pe-row"><span>12개월 할부 월 납부액</span><b>약 ${won(cur.m)}</b></div><div class="pe-row"><span>할부 총액 · 수수료 (연 15% 가정)</span><b>약 ${won(cur.m * 12)} · 수수료 약 ${won(cur.fee)}</b></div>`;
+    else est = `<div class="pe-row"><span>잔금</span><b>${won(balance)}</b></div><div class="pe-row"><span>일시 결제 (${pct}%)</span><b>${won(cur.up)}</b></div><div class="pe-row"><span>12개월 할부 (${100 - pct}%) 월 납부액</span><b>약 ${won(cur.m)}</b></div><div class="pe-row"><span>할부 총액 · 수수료 (연 15% 가정)</span><b>약 ${won(cur.m * 12)} · 수수료 약 ${won(cur.fee)}</b></div>`;
+    const fee = cur.fee;
     let hl;
     if (fee <= 0) hl = `할부 수수료가 없으므로 사전계약 할인 <b>${won(disc)}</b>이 그대로 절감됩니다.`;
     else if (disc >= fee) hl = `사전계약 할인 <b>${won(disc)}</b>이 12개월 할부 수수료(약 ${won(fee)})를 전액 상쇄하고도 <b>약 ${won(disc - fee)}</b>이 더 절감됩니다. 사실상 <b>무이자 할부 + 추가 할인</b> 효과입니다.`;
@@ -682,6 +720,7 @@ function update() {
   const chips = uv ? ['부가세 포함', 'UV', state.lift ? '리프트형 (높이 자동조정)' : '고정형', ...(state.lte ? ['LTE'] : []), `${state.qty}대`]
                    : [state.buyer === 'gen' ? '부가세 포함' : '농업인 영세율', 'S300', col.name, state.lidar ? '라이다 센서' : '초음파 센서', ...(state.lte ? ['LTE'] : []), `${state.qty}대`];
   $('chips').innerHTML = chips.map((c) => `<span>${c}</span>`).join('');
+  if ($('miniLabel')) $('miniLabel').textContent = uv ? (state.lift ? 'UV 리프트형' : 'UV 고정형') : 'S300 ' + col.name;
 }
 
 function setModel(m) { if (state.model === m) return; state.model = m; update(); switchSet(); }
@@ -693,11 +732,13 @@ $('optLidar').onclick = () => { if (!state.lidar) { state.lidar = true; update()
 $('optUltra').onclick = () => { if (state.lidar) { state.lidar = false; update(); switchSet(); } };
 $('optLte').onclick = () => { state.lte = !state.lte; update(); };
 const INSTALL_RATE = 0.15;   // 12개월 카드 할부 수수료 가정(연). 카드사마다 다름 — 안내 문구와 함께 표시
-function setPayPlan(p){ state.payPlan = p; ['Full','Half','Inst'].forEach((k) => $('pay' + k).setAttribute('aria-checked', ({ Full: 'full', Half: 'half', Inst: 'inst' })[k] === p ? 'true' : 'false')); update(); }
+function setPayPlan(p){ state.payPlan = p; ['Full','Half','P30','Inst'].forEach((k) => $('pay' + k).setAttribute('aria-checked', ({ Full: 'full', Half: 'half', P30: 'p30', Inst: 'inst' })[k] === p ? 'true' : 'false')); update(); }
 $('payFull').onclick = () => setPayPlan('full');
 $('payHalf').onclick = () => setPayPlan('half');
+$('payP30').onclick = () => setPayPlan('p30');
 $('payInst').onclick = () => setPayPlan('inst');
 $('optFarm').onclick = () => { state.buyer = state.buyer === 'farm' ? 'gen' : 'farm'; $('optFarm').setAttribute('aria-pressed', state.buyer === 'farm' ? 'true' : 'false'); $('farmPrice').textContent = state.buyer === 'farm' ? '부가세 0%' : '부가세 10% 포함'; update(); };
+$('fAgree').onchange = () => { if ($('fAgree').checked) { ROOT.querySelector('.agree').classList.remove('err'); const m = $('agreeMsg'); if (m) m.remove(); } };
 $('qtyUp').onclick = () => { state.qty = Math.min(10, state.qty + 1); update(); };
 $('qtyDown').onclick = () => { state.qty = Math.max(1, state.qty - 1); update(); };
 
@@ -734,11 +775,20 @@ function selectedOptions() {
 }
 $('payBtn').onclick = () => {
   const memo = $('fMemo').value.trim();
-  if (!$('fAgree').checked) { alert('사전계약 약관 및 개인정보 수집·이용에 동의해 주세요.'); return; }
+  if (!$('fAgree').checked) {
+    /* 알림창 대신: 동의 항목으로 스크롤 + 강조(하이라이트) + 안내 문구 */
+    const lab = ROOT.querySelector('.agree');
+    lab.classList.remove('err'); void lab.offsetWidth; lab.classList.add('err');
+    let msg = $('agreeMsg'); if (!msg) { msg = document.createElement('p'); msg.id = 'agreeMsg'; msg.className = 'agree-msg'; lab.after(msg); }
+    msg.textContent = '결제를 진행하려면 사전계약 약관 및 개인정보 수집·이용에 동의해 주세요.';
+    lab.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => { try { $('fAgree').focus({ preventScroll: true }); } catch (e) {} }, 400);
+    return;
+  }
   const col = CONFIG.colors.find((c) => c.id === state.color);
   const IMWEB = curIMWEB();
   const spec = (isUV() ? 'UV / ' + (state.lift ? '리프트형(높이 자동조정)' : '고정형') + (state.lte ? ' / LTE' : '') + ' / ' + state.qty + '대 / 부가세 포함'
-                       : 'S300 / ' + col.name + (state.lidar ? ' / 라이다 안전센서' : ' / 초음파 센서') + (state.lte ? ' / LTE' : '') + ' / ' + state.qty + '대' + ' / ' + (state.buyer === 'farm' ? '농업인·농업법인(영세율, 농업용 사용 동의)' : '학교·연구소·일반·기업(부가세 포함)')) + ' / 잔금: ' + ({ full: '100% 일시불', half: '50% 일시불 + 50% 12개월 할부', inst: '100% 12개월 할부' })[state.payPlan] + (memo ? ' / 온실: ' + memo : '');
+                       : 'S300 / ' + col.name + (state.lidar ? ' / 라이다 안전센서' : ' / 초음파 센서') + (state.lte ? ' / LTE' : '') + ' / ' + state.qty + '대' + ' / ' + (state.buyer === 'farm' ? '농업인·농업법인(영세율, 농업용 사용 동의)' : '학교·연구소·일반·기업(부가세 포함)')) + ' / 잔금: ' + ({ full: '100% 일시불', half: '50% 일시불 + 50% 12개월 할부', p30: '30% 일시불 + 70% 12개월 할부', inst: '100% 12개월 할부' })[state.payPlan] + (memo ? ' / 온실: ' + memo : '');
   try { sessionStorage.setItem('fx_spec', spec); } catch (e) {}
   const btn = $('payBtn'); btn.disabled = true; btn.textContent = '주문서로 이동 중…';
   const fail = (e) => { alert('주문서를 만들지 못했습니다. 잠시 후 다시 시도해 주세요.\n' + (e && e.message ? e.message : '')); btn.disabled = false; btn.textContent = '사전계약금 카드 결제'; };
