@@ -1,6 +1,6 @@
 /* FARMILY UV 사전계약용 턴테이블 렌더링 스크립트 (lab.farmily.ai:8090/farmily-uv/ 콘솔에서 실행)
  * 결과: frames_uv-fixed.json / frames_uv-lift.json (각 36장) → 다운로드 폴더
- *   uv-fixed = 리프트 0 mm(고정형), uv-lift = 리프트 상승(높이 자동조정형)
+ *   uv-fixed = 리프트 0 mm(고정형), uv-lift = 리프트 400 mm 상승(높이 자동조정형)
  */
 (async () => {
   const sleep = (ms) => new Promise(r => setTimeout(r, ms));
@@ -8,7 +8,7 @@
   for (let i = 0; i < 300 && !window.__uvReady; i++) await sleep(200);
   const V = window.__farmilyUV; if (!V) { window.__uvRender.status = 'no viewer'; return; }
   const T = (await import('/s300/vendor/three/three.module.js'));
-  const LIFT_MM = window.__uvLiftMm || 500, ANGLE0 = window.__uvAngle0 ?? 35;
+  const LIFT_MM = window.__uvLiftMm || 400, ANGLE0 = window.__uvAngle0 ?? 35;
   const { scene, renderer: r, camera: cam, controls, model, equipment } = V;
 
   // 1) 뷰어 장식 제거: 격자, 기존 바닥 그림자, 기존 조명 그림자
@@ -43,7 +43,9 @@
   }
 
   // 3) 촬영
-  const W = window.__uvW || 2000, H = window.__uvH || 2000, DIST = window.__uvDist || 4.4, LOOK_Y = window.__uvLookY ?? 1.15;
+  // S300 렌더(render_frames.js)와 동일한 카메라: 1600x1000, fov 36, dist 5.2, look floorY+0.95, elev 14 → 두 모델 스케일 일치
+  const W = window.__uvW || 1600, H = window.__uvH || 1000, DIST = window.__uvDist || 5.2, LOOK_Y = window.__uvLookY ?? 0.95;
+  cam.fov = 36;
   function shoot(angleDeg, elevDeg = 14) {
     const prevSize = new T.Vector2(); r.getSize(prevSize); const prevPR = r.getPixelRatio();
     r.setPixelRatio(1); r.setSize(W, H, false); cam.aspect = W / H;

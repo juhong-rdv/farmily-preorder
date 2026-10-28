@@ -182,12 +182,32 @@
 .fxp .today small{font-size:12px}
 .fxp .today b{font-size:18px;white-space:nowrap}
 .fxp #payBtn{width:100%;height:46px;font-size:15px;padding:0 10px;white-space:nowrap}
-.fxp .panel-scroll{padding-bottom:200px}}
+.fxp .panel-scroll{padding-bottom:200px}
+.fxp .intro p{font-size:15.5px;line-height:1.7}
+.fxp .card b{font-size:17px}
+.fxp .card span{font-size:14px;line-height:1.7}
+.fxp .card em{font-size:15px}
+.fxp .opt-head{font-size:16px}
+.fxp .opt-head span{font-size:13.5px}
+.fxp .summary{font-size:15px;gap:12px}
+.fxp .summary p{font-size:13.5px;line-height:1.7}
+.fxp .policy{font-size:14px;line-height:1.7}
+.fxp .event>p,.fxp .event-item span{font-size:13.5px;line-height:1.65}
+.fxp .event-item b{font-size:15px}
+.fxp .pay-est{font-size:14px;line-height:1.75}
+.fxp .pay-est .pe-note{font-size:13.5px}
+.fxp .opt-note{font-size:14px!important;line-height:1.7!important}
+.fxp .agree{font-size:13.5px}
+.fxp .step b{font-size:15px}
+.fxp .step span{font-size:13px}
+.fxp .field input{font-size:16px}}
 
 .fxp [hidden]{display:none!important}
-.fxp .mini{display:none;position:fixed;right:12px;bottom:calc(var(--pbh,150px) + 14px);z-index:6;width:88px;height:88px;border-radius:50%;border:2px solid var(--green);background:#F2F5F1;box-shadow:0 6px 18px rgba(0,0,0,.18);padding:0;overflow:hidden;cursor:pointer}
+.fxp{word-break:keep-all;overflow-wrap:break-word;letter-spacing:-0.01em}
+.fxp .card span,.fxp .summary p,.fxp .policy p,.fxp .event-item span,.fxp .pay-est{line-height:1.65}
+.fxp .mini{display:none;position:fixed;right:12px;top:calc(var(--hdr,56px) + 12px);z-index:6;width:114px;height:114px;border-radius:14px;border:2px solid var(--green);background:#F2F5F1;box-shadow:0 6px 18px rgba(0,0,0,.18);padding:0;overflow:hidden;cursor:pointer}
 .fxp .mini canvas{width:100%;height:100%;display:block}
-.fxp .mini span{position:absolute;left:0;right:0;bottom:0;background:rgba(20,20,19,.72);color:#fff;font-size:9px;font-weight:700;text-align:center;padding:3px 6px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fxp .mini span{position:absolute;left:0;right:0;bottom:0;background:rgba(20,20,19,.72);color:#fff;font-size:10px;font-weight:700;text-align:center;padding:3px 6px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fxp{font-family:'Noto Sans KR',system-ui,sans-serif;color:#141413;-webkit-font-smoothing:antialiased;line-height:1.4}
 .fxp button,.fxp input{font-family:inherit}
 .fxp #canvas{position:absolute;inset:0;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;margin:0!important;padding:0!important}
@@ -225,11 +245,6 @@
     </div>
     <div class="viewer-foot">
       <div class="viewer-note">※ 3D 이미지는 예상 이미지이며, 실제 출고 제품은 사양·디자인이 일부 변경될 수 있습니다.</div>
-      <div class="rotate-hint">
-        <button id="rotL" aria-label="왼쪽으로 회전" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
-        <span>드래그하여 360° 회전 · 휠로 확대 · <b id="angle">0°</b></span>
-        <button id="rotR" aria-label="오른쪽으로 회전" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg></button>
-      </div>
       <div class="chips" id="chips"></div>
     </div>
   </section>
@@ -365,19 +380,19 @@
         <div class="opt-head"><b>잔금 결제 방식 <small style="font-weight:400;color:var(--ink-3)">(예상 납부액 안내)</small></b></div>
         <div class="choice" role="radiogroup" aria-label="잔금 결제 방식">
           <button class="card" id="payFull" type="button" role="radio" aria-checked="true">
-            <div><b>잔금 100% 일시 결제</b><span>잔금 전액을 카드 일시불(또는 계좌이체)로 결제합니다. 할부 수수료가 없습니다.</span></div>
+            <div><b>100% 일시 결제</b><span>잔금 전액을 카드 일시불(또는 계좌이체)로 결제합니다. 할부 수수료가 없습니다.</span></div>
             <em id="payFullAmt"></em>
-          </button>
-          <button class="card" id="payHalf" type="button" role="radio" aria-checked="false">
-            <div><b>50% 일시 결제 + 50% 12개월 카드 할부</b><span>잔금의 절반은 일시불로, 나머지 절반은 12개월 카드 할부로 결제합니다. 초기 부담을 줄이면서 할부 수수료는 절반에만 붙습니다.</span></div>
-            <em id="payHalfAmt"></em>
           </button>
           <button class="card" id="payP30" type="button" role="radio" aria-checked="false">
             <div><b>30% 일시 결제 + 70% 12개월 카드 할부</b><span>잔금의 30%는 일시불로, 나머지 70%는 12개월 카드 할부로 결제합니다. 초기 부담을 더 줄이고 싶을 때 선택하세요.</span></div>
             <em id="payP30Amt"></em>
           </button>
+          <button class="card" id="payHalf" type="button" role="radio" aria-checked="false">
+            <div><b>50% 일시 결제 + 50% 12개월 카드 할부 <small>많이 선택하는 옵션</small></b><span>잔금의 절반은 일시불로, 나머지 절반은 12개월 카드 할부로 결제합니다. 초기 부담을 줄이면서 할부 수수료는 절반에만 붙습니다.</span></div>
+            <em id="payHalfAmt"></em>
+          </button>
           <button class="card" id="payInst" type="button" role="radio" aria-checked="false">
-            <div><b>잔금 100% 12개월 카드 할부</b><span>잔금 전액을 12개월 카드 할부로 결제합니다. 월 납부 부담이 가장 작지만 할부 수수료가 전액에 붙습니다.</span></div>
+            <div><b>100% 12개월 카드 할부</b><span>잔금 전액을 12개월 카드 할부로 결제합니다. 월 납부 부담이 가장 작지만 할부 수수료가 전액에 붙습니다.</span></div>
             <em id="payInstAmt"></em>
           </button>
         </div>
@@ -411,7 +426,7 @@
     </div>
   </aside>
 
-<button class="mini" id="mini" type="button" aria-label="모델 미리보기로 이동" title="위로 이동해 모델 보기"><canvas id="miniCanvas" width="176" height="176"></canvas><span id="miniLabel"></span></button>
+<button class="mini" id="mini" type="button" aria-label="모델 미리보기로 이동" title="위로 이동해 모델 보기"><canvas id="miniCanvas" width="228" height="228"></canvas><span id="miniLabel"></span></button>
 <div class="done" id="done" hidden>
   <div class="done-box">
     <div class="check"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
@@ -440,44 +455,44 @@ const CONFIG = {
   // 턴테이블 스프라이트 시트: 세트당 2장(a: 0~17번, b: 18~35번 프레임), 각 2열x9행, 프레임 960x720. 아임웹(cdn.imweb.me)에 업로드한 주소
   sprites: {
       "original-off": [
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/7a3e0e5ec4f25.jpg",
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/0460f9453bb3f.jpg"
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/a08cee61f03b9.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/11d0739cb598f.jpg"
       ],
       "original-on": [
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/cdc709764bf9f.jpg",
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/610c9db15269e.jpg"
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/7c319ce10c547.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/5d91f240edb99.jpg"
       ],
       "forest-off": [
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/82ae707bee7ae.jpg",
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/e4256521c7050.jpg"
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/e0fd0b2e301e2.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/1c97dd44b4fea.jpg"
       ],
       "forest-on": [
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/17e1129f3b6f9.jpg",
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/b9738390390a1.jpg"
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/40a9718837426.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/5cb964669d8c7.jpg"
       ],
       "graphite-off": [
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/2d17173b90b93.jpg",
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/d7cdfc4c77ca2.jpg"
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/e570f17b18a9e.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/09132b0fe9b8c.jpg"
       ],
       "graphite-on": [
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/90f11f14aefdf.jpg",
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/2090394348472.jpg"
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/584004c2a0299.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/73bc25e77bff4.jpg"
       ],
       "sand-off": [
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/87c1bf2aa4433.jpg",
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/42db972f25b20.jpg"
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/83a2bc00bc15b.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/d2d73c4337c7d.jpg"
       ],
       "sand-on": [
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/8b49deba24b51.jpg",
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/f7b7991728f91.jpg"
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/ee39d7dca49f7.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/407f25506c157.jpg"
       ],
       "uv-fixed": [
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/81e64d9b1d94e.jpg",
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/aa4cb46176506.jpg"
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/069de43861340.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/6df545fc965d6.jpg"
       ],
       "uv-lift": [
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/db7f6306c81ce.jpg",
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/96bb6436e761d.jpg"
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/d34abfc1f51db.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/441a1b13be6f8.jpg"
       ]
   },
   spriteCols: 2, spriteW: 960, spriteH: 720, spritePerSheet: 18,
@@ -574,14 +589,16 @@ async function draw() {
   const sync = () => mini.classList.toggle('on', out && mq.matches && $('done').hidden);
   new IntersectionObserver((es) => { out = !es[0].isIntersecting; sync(); }, { threshold: 0.12 }).observe(viewer);
   mq.addEventListener ? mq.addEventListener('change', sync) : mq.addListener(sync);
-  if (paybar) new ResizeObserver(() => ROOT.style.setProperty('--pbh', paybar.offsetHeight + 'px')).observe(paybar);
+  /* 상단 고정 헤더(아임웹) 높이만큼 아래에 배치 */
+  const hdr = () => { let h = 0; for (const el of document.querySelectorAll('header, #header, .header, [class*="header"]')) { const cs = getComputedStyle(el); if ((cs.position === 'fixed' || cs.position === 'sticky') && el.getBoundingClientRect().top <= 1 && el.offsetHeight > 0 && el.offsetHeight < 200) h = Math.max(h, el.getBoundingClientRect().bottom); } ROOT.style.setProperty('--hdr', Math.round(h) + 'px'); };
+  hdr(); window.addEventListener('scroll', hdr, { passive: true }); window.addEventListener('resize', hdr);
   mini.onclick = () => viewer.scrollIntoView({ behavior: 'smooth', block: 'start' });
 })();
 
 // 드래그 회전
 let dragging = false, lastX = 0, acc = 0, autoRotate = false, autoTimer = null;   // 자동 회전 끔: 마우스/터치 드래그·버튼으로만 회전
 const PX_PER_FRAME = 14;
-function setFrame(f) { state.frame = ((f % FRAMES) + FRAMES) % FRAMES; draw(); $('angle').textContent = `${state.frame * (360 / FRAMES)}°`; }
+function setFrame(f) { state.frame = ((f % FRAMES) + FRAMES) % FRAMES; draw(); }
 canvas.addEventListener('pointerdown', (e) => { dragging = true; lastX = e.clientX; acc = 0; canvas.setPointerCapture(e.pointerId); stopAuto(); });
 canvas.addEventListener('pointermove', (e) => {
   if (!dragging) return;
@@ -594,8 +611,6 @@ canvas.addEventListener('wheel', (e) => { e.preventDefault(); zoom = Math.min(2.
 canvas.addEventListener('dblclick', () => { zoom = 1; panX = panY = 0; draw(); });
 function startAuto() { stopAuto(); autoTimer = setInterval(() => setFrame(state.frame + 1), 120); }
 function stopAuto() { autoRotate = false; if (autoTimer) { clearInterval(autoTimer); autoTimer = null; } }
-$('rotL').onclick = () => { stopAuto(); setFrame(state.frame - 3); };
-$('rotR').onclick = () => { stopAuto(); setFrame(state.frame + 3); };
 
 // 초기 로드: 기본 세트 1장(스프라이트)만. 다른 세트는 해당 옵션을 고를 때 로드
 (async () => {

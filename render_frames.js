@@ -1,4 +1,4 @@
-/* FARMILY S300 사전계약용 턴테이블 렌더링 스크립트 (v5.1: 바닥 그라데이션 + 접지 그림자 1개)
+/* FARMILY S300 사전계약용 턴테이블 렌더링 스크립트 (v5.2: UV와 통일 카메라 2000x1500/fov35/dist5.0)
  * 사용법: 크롬에서 http://lab.farmily.ai:8090/s300/ 접속 → F5 → F12 → Console → 이 파일 전체 붙여넣기 → Enter
  * 결과: frames_<팔레트>-<on|off>.json 8개가 다운로드 폴더에 저장됨 (각 36장)
  *   팔레트: original(원본) / forest(포레스트) / graphite(그래파이트) / sand(샌드)
@@ -122,13 +122,14 @@
     V.scene.traverse(o => { if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => { m.needsUpdate = true; }); });
     console.log('[3/4] 바닥·그림자 추가, floorY =', floorY.toFixed(3));
   }
-  const W = 1600, H = 1000;
+  // 통일 카메라 (UV render_uv.js와 동일): 2000x1500, fov 35, dist 5.0, look floorY+1.0, elev 14 → S300·UV 스케일/배경 일치
+  const W = 2000, H = 1500;
   function shoot(angleDeg, elevDeg = 14) {
     const r = V.renderer, cam = V.camera;
     const prevSize = new T.Vector2(); r.getSize(prevSize); const prevPR = r.getPixelRatio();
-    r.setPixelRatio(1); r.setSize(W, H, false); cam.aspect = W / H;
-    const look = new T.Vector3(center.x, box.min.y + 0.95, center.z);
-    const dist = 5.2;   // 레이저 스캔 부채꼴까지 들어오도록 약간 멀리
+    r.setPixelRatio(1); r.setSize(W, H, false); cam.aspect = W / H; cam.fov = 35;
+    const look = new T.Vector3(center.x, box.min.y + 1.0, center.z);
+    const dist = 5.0;
     const a = T.MathUtils.degToRad(angleDeg), e = T.MathUtils.degToRad(elevDeg);
     cam.position.set(look.x + dist * Math.cos(e) * Math.sin(a), look.y + dist * Math.sin(e), look.z + dist * Math.cos(e) * Math.cos(a));
     cam.lookAt(look); cam.updateProjectionMatrix();
