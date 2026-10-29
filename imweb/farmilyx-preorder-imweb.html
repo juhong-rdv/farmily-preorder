@@ -156,7 +156,7 @@
 .fxp .summary .vat-note{color:var(--ink-2)}
 .fxp .summary .vat-note b{display:inline;font-weight:700;color:var(--ink);margin-right:4px}
 @media (max-width: 860px){.fxp .app{isolation:isolate}
-.fxp .viewer{height:46vh;height:46dvh;min-height:300px;z-index:3;position:relative;top:auto}
+.fxp .viewer{flex:none;height:calc(100vw * 0.75 + 78px);max-height:64vh;min-height:0;z-index:3;position:relative;top:auto}
 .fxp .mini.on{display:block}
 .fxp .card:not(.color-card){flex-wrap:wrap}
 .fxp .card:not(.color-card)>div{flex:1 1 100%}
@@ -168,11 +168,11 @@
 .fxp .stage{bottom:78px}
 .fxp .viewer-head{top:12px;left:16px}
 .fxp .viewer-head .sub{display:none}
-.fxp .viewer-foot{padding:6px 14px 10px;gap:6px;background:var(--bg);flex-direction:column;align-items:stretch}
+.fxp .viewer-foot{padding:8px 16px 12px;gap:6px;background:linear-gradient(to bottom,rgba(242,245,241,0),var(--bg) 40%);flex-direction:column;align-items:stretch}
 .fxp .rotate-hint{justify-content:space-between;font-size:12px;width:100%}
 .fxp .rotate-hint button{width:38px;height:38px;flex:0 0 38px}
 .fxp .rotate-hint span{text-align:center;flex:1 1 auto}
-.fxp .viewer-note{font-size:11px;line-height:1.4;margin:0;flex:none;text-align:center}
+.fxp .viewer-note{font-size:11px;line-height:1.5;margin:0;flex:none;text-align:left;color:var(--ink-3);padding:0 2px}
 .fxp .steps, .fxp .step+.step::before{z-index:0}
 .fxp .panel-scroll{padding:20px 16px 170px;gap:24px}
 .fxp .intro h1{font-size:26px}
@@ -271,7 +271,7 @@
             <em id="modelS300Price"></em>
           </button>
           <button class="card" id="modelUV" type="button" role="radio" aria-checked="false">
-            <div><b>FARMILY-X UV <small>UV-C 방제</small></b><span>온실 레일 자율주행 UV-C 방제 로봇. 약제 없이 자외선으로 흰가루병 등을 예방합니다. 고정형 / 리프트형(높이 자동조정) 선택.</span></div>
+            <div><b>FARMILY-X UV <small>UV-C 방제</small></b><span>온실 레일 자율주행 UV-C 방제 로봇. 약제 없이 자외선으로 흰가루병 등을 예방합니다. 색상 4종, 고정형 / 리프트형(높이 자동조정), LTE 옵션 선택.</span></div>
             <em id="modelUVPrice"></em>
           </button>
         </div>
@@ -459,44 +459,68 @@ const CONFIG = {
   // 턴테이블 스프라이트 시트: 세트당 2장(a: 0~17번, b: 18~35번 프레임), 각 2열x9행, 프레임 960x720. 아임웹(cdn.imweb.me)에 업로드한 주소
   sprites: {
       "original-off": [
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/a08cee61f03b9.jpg",
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/11d0739cb598f.jpg"
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/4e7cb0621aaf5.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/65cc80f013403.jpg"
       ],
       "original-on": [
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/7c319ce10c547.jpg",
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/5d91f240edb99.jpg"
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/95320d85f3055.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/b852cb465cd9e.jpg"
       ],
       "forest-off": [
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/e0fd0b2e301e2.jpg",
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/1c97dd44b4fea.jpg"
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/f786f7ee973bf.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/101408f4ecfa3.jpg"
       ],
       "forest-on": [
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/40a9718837426.jpg",
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/5cb964669d8c7.jpg"
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/f05befe2968c9.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/20e7f67a4a69a.jpg"
       ],
       "graphite-off": [
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/e570f17b18a9e.jpg",
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/09132b0fe9b8c.jpg"
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/8d6c85d8413b7.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/1296fa821afae.jpg"
       ],
       "graphite-on": [
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/584004c2a0299.jpg",
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/73bc25e77bff4.jpg"
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/99eca7c14e10c.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/90fa267911b54.jpg"
       ],
       "sand-off": [
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/83a2bc00bc15b.jpg",
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/d2d73c4337c7d.jpg"
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/9fa267b2b90ce.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/ccc415e89cac3.jpg"
       ],
       "sand-on": [
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/ee39d7dca49f7.jpg",
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/407f25506c157.jpg"
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/5ef27e5b0b4a8.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/299846c8a23b5.jpg"
       ],
-      "uv-fixed": [
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/069de43861340.jpg",
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/6df545fc965d6.jpg"
+      "uv-original-fixed": [
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/2a5c6c908dad7.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/6a4140fa8fe73.jpg"
       ],
-      "uv-lift": [
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/d34abfc1f51db.jpg",
-          "https://cdn.imweb.me/upload/S2025102337314c508962d/441a1b13be6f8.jpg"
+      "uv-original-lift": [
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/8b469b3c60d70.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/c8f9993bd1e87.jpg"
+      ],
+      "uv-forest-fixed": [
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/82fe2e134ea28.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/18d017deeccd3.jpg"
+      ],
+      "uv-forest-lift": [
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/b915284eacf41.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/945395303f125.jpg"
+      ],
+      "uv-graphite-fixed": [
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/291dfb3176775.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/8169a3077115a.jpg"
+      ],
+      "uv-graphite-lift": [
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/e8da9e21de51a.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/dfb1bcc281196.jpg"
+      ],
+      "uv-sand-fixed": [
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/e7e8103068e16.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/013ecf456aff1.jpg"
+      ],
+      "uv-sand-lift": [
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/cd39bad34950c.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/cbf0ec1cc80b7.jpg"
       ]
   },
   spriteCols: 2, spriteW: 960, spriteH: 720, spritePerSheet: 18,
@@ -537,7 +561,7 @@ const $ = (id) => ROOT.querySelector('#' + id);
 const won = (n) => n.toLocaleString('ko-KR') + '원';
 const priceLabel = (p) => (p === null || p === undefined) ? '[가격 미정]' : (p === 0 ? '추가 비용 없음' : '+' + won(p));
 const FRAMES = CONFIG.frames;             // 36
-const setKey = () => state.model === 'uv' ? `uv-${state.lift ? 'lift' : 'fixed'}` : `${state.color}-${state.lidar ? 'on' : 'off'}`;
+const setKey = () => state.model === 'uv' ? `uv-${state.color}-${state.lift ? 'lift' : 'fixed'}` : `${state.color}-${state.lidar ? 'on' : 'off'}`;
 const isUV = () => state.model === 'uv';
 const SHEET = { cols: CONFIG.spriteCols, w: CONFIG.spriteW, h: CONFIG.spriteH, per: CONFIG.spritePerSheet || 36 };
 
@@ -575,7 +599,9 @@ async function draw() {
   if (!imgs || key !== setKey()) return;
   const W = canvas.width, H = canvas.height;
   ctx.fillStyle = IMG_BG; ctx.fillRect(0, 0, W, H);
-  const s = Math.min(W / SHEET.w, H / SHEET.h) * zoom;
+  /* 가로가 넓은 화면은 contain, 세로가 긴 화면(모바일)은 cover로 좌우를 잘라 배경 사각형이 보이지 않게 */
+  const fit = (window.innerWidth <= 860 || W / H < SHEET.w / SHEET.h) ? Math.max(W / SHEET.w, H / SHEET.h) : Math.min(W / SHEET.w, H / SHEET.h);
+  const s = fit * zoom;
   const dw = Math.round(SHEET.w * s), dh = Math.round(SHEET.h * s);
   const dx = Math.round((W - dw) / 2 + panX), dy = Math.round((H - dh) / 2 + panY);
   const img = imgs[Math.floor(state.frame / SHEET.per)], f = state.frame % SHEET.per;
@@ -681,16 +707,16 @@ function applyTheme(c) {
 function update() {
   const col = CONFIG.colors.find((c) => c.id === state.color);
   const P = CONFIG.prices, U = CONFIG.uv, uv = isUV();
-  applyTheme(uv ? CONFIG.colors[0] : col);
+  applyTheme(col);
   /* 모델별 표시 전환 */
   $('modelS300').setAttribute('aria-checked', String(!uv)); $('modelUV').setAttribute('aria-checked', String(uv));
   $('modelS300Price').textContent = P.body != null ? won(P.body) + ' (영세율 기준)' : '[가격 미정]';
   $('modelUVPrice').textContent = won(Math.round(U.body * 1.1)) + ' (부가세 포함)';
-  $('secColor').hidden = uv; $('secSensor').hidden = uv; $('secFarm').hidden = uv; $('secLift').hidden = !uv;
+  $('secColor').hidden = false; $('secSensor').hidden = uv; $('secFarm').hidden = uv; $('secLift').hidden = !uv;
   $('optFixed').setAttribute('aria-checked', String(!state.lift)); $('optLift').setAttribute('aria-checked', String(state.lift));
   ROOT.querySelector('[data-price="lift"]').textContent = '+' + won(U.lift) + ' (공급가)';
   $('introTitle').querySelector('small').textContent = uv ? '(선택 제품 : UV 방제)' : '(선택 제품 : S300 스프레이)';
-  $('introText').innerHTML = uv ? '온실 레일 자율주행 UV-C 방제 로봇. 약제 없이 자외선(UV-C)으로 흰가루병 등 병해를 예방합니다. 리프트 옵션을 선택하면 미리보기가 바로 바뀝니다.<br>오늘은 사전계약금 10만원이 결제 됩니다.' : '온실 레일 자율주행 약제 살포 로봇. 색상과 옵션을 선택하면 미리보기가 바로 바뀝니다.<br>오늘은 사전계약금 10만원이 결제 됩니다.';
+  $('introText').innerHTML = uv ? '온실 레일 자율주행 UV-C 방제 로봇. 약제 없이 자외선(UV-C)으로 흰가루병 등 병해를 예방합니다. 색상과 리프트 옵션을 선택하면 미리보기가 바로 바뀝니다.<br>오늘은 사전계약금 10만원이 결제 됩니다.' : '온실 레일 자율주행 약제 살포 로봇. 색상과 옵션을 선택하면 미리보기가 바로 바뀝니다.<br>오늘은 사전계약금 10만원이 결제 됩니다.';
   $('viewerSub').textContent = uv ? 'UV 사전계약' : 'S300 사전계약';
   $('sColorLbl').textContent = uv ? '색상' : '색상'; $('sLidarLbl').textContent = uv ? '리프트' : '안전 센서';
   $('vatNote').innerHTML = uv ? '<b>부가세 안내</b> FARMILY-X UV는 구매자 구분(농업인·학교·연구소·일반·기업)과 관계없이 부가가치세(10%)가 포함된 금액으로 안내·청구됩니다.' : '<b>부가세 안내</b> 표시된 금액은 농업인이 농업용으로 구매하실 때 적용되는 영세율(부가세 0%) 기준입니다. 학교·연구소·일반인·일반기업 구매 시에는 부가가치세(10%)가 포함되어 청구됩니다.';
@@ -703,7 +729,7 @@ function update() {
   ROOT.querySelector('[data-price="lte"]').textContent = priceLabel(P.lte);
   $('qtyVal').textContent = state.qty;
 
-  const unit = uv ? U.body + (state.lift ? U.lift : 0) + (state.lte ? (P.lte ?? 0) : 0)
+  const unit = uv ? U.body + (col.price ?? 0) + (state.lift ? U.lift : 0) + (state.lte ? (P.lte ?? 0) : 0)
                   : (P.body ?? 0) + (col.price ?? 0) + (state.lidar ? (P.lidar ?? 0) : 0) + (state.lte ? (P.lte ?? 0) : 0);
   const known = uv ? true : (P.body !== null && P.body !== undefined);
   const vat = (uv || state.buyer === 'gen') ? 1.1 : 1;   // UV는 항상 부가세 포함. S300은 농업인·농업법인(영세율) 외에 부가세 10%
@@ -711,7 +737,7 @@ function update() {
   const totalLabel = known ? won(Math.round(unit * state.qty * vat)) + vatTag : `[가격 미정] × ${state.qty}대`;
 
   $('sBody').textContent = uv ? `UV ${state.lift ? '리프트형' : '고정형'} · ${won(U.body + (state.lift ? U.lift : 0))} (공급가)` : `S300 · ${P.body != null ? won(P.body) : '[가격 미정]'}`;
-  $('sColor').textContent = uv ? '원본 컬러 (딥 그린) · 기본' : `${col.name} · ${priceLabel(col.price)}`;
+  $('sColor').textContent = `${col.name} · ${priceLabel(col.price)}`;
   $('sLidar').textContent = uv ? (state.lift ? `리프트형(높이 자동조정) · +${won(U.lift)}` : '고정형 · 기본') : (state.lidar ? `라이다 센서 · ${priceLabel(P.lidar)}` : '초음파 센서 · 추가 비용 없음');
   $('sLte').textContent = state.lte ? `LTE 모듈 + 3년 구독 · ${priceLabel(P.lte)}` : '미포함 (기본)';
   $('sQty').textContent = `${state.qty}대`;
@@ -747,11 +773,11 @@ function update() {
   } else est = '가격 확정 후 안내됩니다.';
   $('payEst').innerHTML = '<span class="pe-title">결제 예상 시뮬레이션 <small>(12개월 카드 할부로 할 경우 · 참고용)</small></span>' + est;
   $('pbTotal').textContent = known ? won(Math.round(finalTotal * vat)) + ((uv || state.buyer === 'gen') ? ' (할인·부가세 적용)' : ' (할인 적용)') : totalLabel;
-  $('pbSummary').textContent = uv ? `UV · ${state.lift ? '리프트형' : '고정형'}${state.lte ? ' · LTE' : ''} · ${state.qty}대` : `S300 · ${col.name}${state.lidar ? ' · 라이다' : ''}${state.lte ? ' · LTE' : ''} · ${state.qty}대`;
-  const chips = uv ? ['부가세 포함', 'UV', state.lift ? '리프트형 (높이 자동조정)' : '고정형', ...(state.lte ? ['LTE'] : []), `${state.qty}대`]
+  $('pbSummary').textContent = uv ? `UV · ${col.name} · ${state.lift ? '리프트형' : '고정형'}${state.lte ? ' · LTE' : ''} · ${state.qty}대` : `S300 · ${col.name}${state.lidar ? ' · 라이다' : ''}${state.lte ? ' · LTE' : ''} · ${state.qty}대`;
+  const chips = uv ? ['부가세 포함', 'UV', col.name, state.lift ? '리프트형 (높이 자동조정)' : '고정형', ...(state.lte ? ['LTE'] : []), `${state.qty}대`]
                    : [state.buyer === 'gen' ? '부가세 포함' : '농업인 영세율', 'S300', col.name, state.lidar ? '라이다 센서' : '초음파 센서', ...(state.lte ? ['LTE'] : []), `${state.qty}대`];
   $('chips').innerHTML = chips.map((c) => `<span>${c}</span>`).join('');
-  if ($('miniLabel')) $('miniLabel').textContent = uv ? (state.lift ? 'UV 리프트형' : 'UV 고정형') : 'S300 ' + col.name;
+  if ($('miniLabel')) $('miniLabel').textContent = (uv ? 'UV ' : 'S300 ') + col.name;
 }
 
 function setModel(m) { if (state.model === m) return; state.model = m; update(); switchSet(); }
@@ -780,6 +806,7 @@ const IMWEB_UV = {
   prodIdx: 9, shippingTemplate: 'T202510230ea3b35d85abd',
   // 아임웹 상품 #9 (UV 사전계약금) 옵션 코드
   opt: {
+    color: { code: 'O202610293acf2485cca67', name: '색상', values: { original: ['O202610292fd9eb9f5519d', '원본 컬러'], forest: ['O2026102985a7fb1a6bdfd', '포레스트'], graphite: ['O202610291961c9625c1b8', '그래파이트'], sand: ['O20261029d66ab56f4d1f2', '샌드'] } },
     lift: { code: 'O202610281b918fadbc2ca', name: '리프트(높이 자동조정)', values: { fixed: ['O20261028588c317775738', '고정형(리프트 없음)'], lift: ['O2026102830dc0b064d0e1', '리프트형(높이 자동조정)'] } },
     lte:  { code: 'O20261028f0ff0f636eb16', name: 'LTE 모듈', values: { no: ['O202610281a79db2aa10d8', '미포함'], yes: ['O202610285e49b16a9eada', 'LTE 모듈 + 3년 구독 포함'] } }
   }
@@ -801,7 +828,7 @@ function postForm(url, params) {
 function selectedOptions() {
   const O = curIMWEB().opt;
   const pick = (g, k) => ({ value_type: 'SELECT', option_code: O[g].code, value_code: O[g].values[k][0], value_name: O[g].values[k][1], option_name: O[g].name });
-  if (isUV()) return [pick('lift', state.lift ? 'lift' : 'fixed'), pick('lte', state.lte ? 'yes' : 'no')];
+  if (isUV()) return [pick('color', state.color), pick('lift', state.lift ? 'lift' : 'fixed'), pick('lte', state.lte ? 'yes' : 'no')];
   return [pick('color', state.color), pick('sensor', state.lidar ? 'lidar' : 'ultra'), pick('lte', state.lte ? 'yes' : 'no'), pick('buyer', state.buyer === 'gen' ? 'gen' : 'farm')];
 }
 $('payBtn').onclick = () => {
@@ -818,7 +845,7 @@ $('payBtn').onclick = () => {
   }
   const col = CONFIG.colors.find((c) => c.id === state.color);
   const IMWEB = curIMWEB();
-  const spec = (isUV() ? 'UV / ' + (state.lift ? '리프트형(높이 자동조정)' : '고정형') + (state.lte ? ' / LTE' : '') + ' / ' + state.qty + '대 / 부가세 포함'
+  const spec = (isUV() ? 'UV / ' + col.name + ' / ' + (state.lift ? '리프트형(높이 자동조정)' : '고정형') + (state.lte ? ' / LTE' : '') + ' / ' + state.qty + '대 / 부가세 포함'
                        : 'S300 / ' + col.name + (state.lidar ? ' / 라이다 안전센서' : ' / 초음파 센서') + (state.lte ? ' / LTE' : '') + ' / ' + state.qty + '대' + ' / ' + (state.buyer === 'farm' ? '농업인·농업법인(영세율, 농업용 사용 동의)' : '학교·연구소·일반·기업(부가세 포함)')) + ' / 잔금: ' + ({ full: '100% 일시불', half: '50% 일시불 + 50% 카드 할부', p30: '30% 일시불 + 70% 카드 할부', inst: '100% 카드 할부' })[state.payPlan] + (memo ? ' / 온실: ' + memo : '');
   try { sessionStorage.setItem('fx_spec', spec); } catch (e) {}
   const btn = $('payBtn'); btn.disabled = true; btn.textContent = '주문서로 이동 중…';

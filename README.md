@@ -24,6 +24,7 @@ Settings → Pages → Branch: main / (root). 커스텀 도메인 사용 시 `CN
 ## FARMILY-X UV 추가 (2026-10-29)
 - 모델 선택(S300 / UV)이 구성기 상단에 추가됨. UV 옵션: 리프트(고정형 / 리프트형 +500만원), LTE. UV는 항상 부가세 포함.
 - 아임웹 상품: #8 S300 사전계약금, #9 UV 사전계약금 (옵션 리프트 2종 × LTE 2종)
-- UV 이미지: lab.farmily.ai:8090/farmily-uv/ 콘솔에서 `render_uv.js` 실행 → 다운로드 폴더의 `frames_uv-*.json` →
-  `python tools/convert_uv.py <폴더> img` → `python tools/make_sprites_jpg.py img img_sprites_jpg2 uv-fixed uv-lift` → 아임웹 업로드 후 `imweb/sprite_map.json` 갱신
-- uv-lift 세트는 리프트 500 mm 상승 상태로 렌더
+- 이미지(통일 카메라 2000x1500, fov35, dist5.0): S300은 lab s300 뷰어에서 `render_frames.js`, UV는 lab farmily-uv 뷰어에서 `render_uv.js` 실행
+  → 다운로드 폴더의 `frames_*.json` 16개 → `python tools/convert_unified.py <폴더> img` → `python tools/make_sprites_jpg.py img <출력>` (세트당 a/b 2장)
+  → 아임웹 업로드 후 `imweb/sprite_map.json`·위젯 CONFIG.sprites 갱신
+- UV 세트 키: uv-<original|forest|graphite|sand>-<fixed|lift> (lift = 리프트 400 mm 상승). 아임웹 상품 #9 옵션: 색상 4 × 리프트 2 × LTE 2

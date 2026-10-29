@@ -103,13 +103,13 @@
     const floorY = box.min.y;
     const c = document.createElement('canvas'); c.width = c.height = 1024; const g = c.getContext('2d');
     const grd = g.createRadialGradient(512, 512, 0, 512, 512, 512);
-    grd.addColorStop(0, '#e3e5e0'); grd.addColorStop(0.5, '#eceee9'); grd.addColorStop(1, '#f2f5f1');   // 가장자리는 배경색과 동일
+    grd.addColorStop(0, '#e9ebe6'); grd.addColorStop(0.45, '#eff1ec'); grd.addColorStop(1, '#f2f5f1');   // 은은한 바닥 그라데이션(띠처럼 보이지 않게), 가장자리는 배경색과 동일
     g.fillStyle = grd; g.fillRect(0, 0, 1024, 1024);
     const tex = new T.CanvasTexture(c);
     if ('colorSpace' in tex && T.SRGBColorSpace) tex.colorSpace = T.SRGBColorSpace; else if (T.sRGBEncoding) tex.encoding = T.sRGBEncoding;
     const floor = new T.Mesh(new T.PlaneGeometry(40, 40), new T.MeshBasicMaterial({ map: tex, toneMapped: false }));
     floor.rotation.x = -Math.PI / 2; floor.position.set(center.x, floorY - 0.002, center.z); floor.name = '__floor'; V.scene.add(floor);
-    const shadow = new T.Mesh(new T.PlaneGeometry(40, 40), new T.ShadowMaterial({ opacity: 0.30 }));
+    const shadow = new T.Mesh(new T.PlaneGeometry(40, 40), new T.ShadowMaterial({ opacity: 0.26 }));
     shadow.rotation.x = -Math.PI / 2; shadow.position.set(center.x, floorY - 0.001, center.z); shadow.receiveShadow = true; shadow.name = '__shadow'; V.scene.add(shadow);
     const sun = new T.DirectionalLight(0xffffff, 0.001);   // 조명은 거의 0 — 그림자만 사용
     sun.position.set(center.x + 1.2, box.max.y + 6, center.z + 2.0); sun.target.position.copy(center); sun.castShadow = true;

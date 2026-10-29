@@ -1,6 +1,6 @@
 /* FARMILY UV 사전계약용 턴테이블 렌더링 스크립트 (lab.farmily.ai:8090/farmily-uv/ 콘솔에서 실행)
- * 결과: frames_uv-fixed.json / frames_uv-lift.json (각 36장) → 다운로드 폴더
- *   uv-fixed = 리프트 0 mm(고정형), uv-lift = 리프트 400 mm 상승(높이 자동조정형)
+ * 결과: frames_uv-<팔레트>-<fixed|lift>.json 8개 (각 36장) → 다운로드 폴더
+ *   팔레트 original/forest/graphite/sand · fixed = 리프트 0 mm(고정형), lift = 리프트 400 mm 상승(높이 자동조정형)
  */
 (async () => {
   const sleep = (ms) => new Promise(r => setTimeout(r, ms));
@@ -25,12 +25,12 @@
     r.shadowMap.enabled = true; r.shadowMap.autoUpdate = true;
     const c = document.createElement('canvas'); c.width = c.height = 1024; const g = c.getContext('2d');
     const grd = g.createRadialGradient(512, 512, 0, 512, 512, 512);
-    grd.addColorStop(0, '#e3e5e0'); grd.addColorStop(0.5, '#eceee9'); grd.addColorStop(1, '#f2f5f1');
+    grd.addColorStop(0, '#e9ebe6'); grd.addColorStop(0.45, '#eff1ec'); grd.addColorStop(1, '#f2f5f1');   /* 은은한 바닥 그라데이션 (띠처럼 보이지 않도록 대비 축소) */
     g.fillStyle = grd; g.fillRect(0, 0, 1024, 1024);
     const tex = new T.CanvasTexture(c); tex.colorSpace = T.SRGBColorSpace;
     const floor = new T.Mesh(new T.PlaneGeometry(40, 40), new T.MeshBasicMaterial({ map: tex, toneMapped: false }));
     floor.rotation.x = -Math.PI / 2; floor.position.set(center.x, floorY - 0.002, center.z); floor.name = '__floor'; scene.add(floor);
-    const shadow = new T.Mesh(new T.PlaneGeometry(40, 40), new T.ShadowMaterial({ opacity: 0.30 }));
+    const shadow = new T.Mesh(new T.PlaneGeometry(40, 40), new T.ShadowMaterial({ opacity: 0.26 }));
     shadow.rotation.x = -Math.PI / 2; shadow.position.set(center.x, floorY - 0.001, center.z); shadow.receiveShadow = true; shadow.name = '__shadow'; scene.add(shadow);
     const sun = new T.DirectionalLight(0xffffff, 0.001);
     sun.position.set(center.x + 1.2, box.max.y + 6, center.z + 2.0); sun.target.position.copy(center); sun.castShadow = true;
@@ -43,9 +43,9 @@
   }
 
   // 3) 촬영
-  // S300 렌더(render_frames.js)와 동일한 카메라: 1600x1000, fov 36, dist 5.2, look floorY+0.95, elev 14 → 두 모델 스케일 일치
-  const W = window.__uvW || 1600, H = window.__uvH || 1000, DIST = window.__uvDist || 5.2, LOOK_Y = window.__uvLookY ?? 0.95;
-  cam.fov = 36;
+  // 통일 카메라 (S300 render_frames.js와 동일): 2000x1500, fov 35, dist 5.0, look floorY+1.0, elev 14 → 두 모델 스케일·배경 일치
+  const W = window.__uvW || 2000, H = window.__uvH || 1500, DIST = window.__uvDist || 5.0, LOOK_Y = window.__uvLookY ?? 1.0;
+  cam.fov = 35;
   function shoot(angleDeg, elevDeg = 14) {
     const prevSize = new T.Vector2(); r.getSize(prevSize); const prevPR = r.getPixelRatio();
     r.setPixelRatio(1); r.setSize(W, H, false); cam.aspect = W / H;
@@ -62,9 +62,16 @@
   function download(name, text) {
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: 'application/json' })); a.download = name; document.body.appendChild(a); a.click(); a.remove();
   }
-  const SETS = window.__uvSets || [['uv-fixed', 0], ['uv-lift', LIFT_MM]];
+  /* 4색 팔레트: 딥그린 계열(차대 외장·UV 패널 프레임) 재질을 팔레트 본체색으로 교체. 물통/램프/바퀴/프로파일은 그대로 */
+  const PALETTES = { original: '#1c524e', forest: '#35564a', graphite: '#3f494b', sand: '#777966' };
+  const bodyMats = [];
+  model.traverse(o => { if (!o.isMesh || Array.isArray(o.material) || !o.material.color || o.userData.uvRole === 'lamp') return; const h = {}; o.material.color.getHSL(h); if (h.s > 0.2 && h.l < 0.35 && h.h > 0.4 && h.h < 0.55) bodyMats.push(o.material); });
+  window.__uvBodyMats = bodyMats.length;
+  const setPalette = (id) => { for (const m of bodyMats) { m.color.set(PALETTES[id]); m.needsUpdate = true; } };
+  const SETS = window.__uvSets || Object.keys(PALETTES).flatMap((pid) => [[`uv-${pid}-fixed`, 0, pid], [`uv-${pid}-lift`, LIFT_MM, pid]]);
   const PREVIEW = !!window.__uvPreview;
-  for (const [key, mm] of SETS) {
+  for (const [key, mm, pid] of SETS) {
+    if (pid) setPalette(pid);
     equipment.setHeight(mm); model.updateMatrixWorld(true);
     if (PREVIEW) { window.__uvRender[key] = shoot(ANGLE0 + 280); continue; }
     const frames = [];
