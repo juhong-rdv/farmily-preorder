@@ -1,55 +1,57 @@
-<script>/* FARMILY 사전계약 주문서: 옵션 한 줄 → 항목별 사양표 (fx-order-spec) */
+<script>/* FARMILY 사전계약 주문서·주문조회: 옵션 → 항목별 사양표 (fx-order-spec) */
 (function(){
-  if(!/^\/(shop_payment|shop_payment_complete)/.test(location.pathname)) return;
-  var RULES=[
-    [/^잔금/, '결제 조건', function(v){return v;}],
-    [/^자켓/, '기념 자켓', function(v){return v.replace(/^자켓\s*/,'');}],
-    [/^온실/, '온실 정보', function(v){return v==='온실 정보 없음'?'입력 안 함':v.replace(/^온실:\s*/,'');}],
-    [/컬러/, '색상', function(v){return v;}],
-    [/고정형|리프트/, '리프트', function(v){return v;}],
-    [/센서/, '안전 센서', function(v){return v;}],
-    [/LTE/, 'LTE·케어서비스', function(v){return v;}],
-    [/농업|일반|사업자|개인/, '구매자 구분', function(v){return v;}]
-  ];
+  if(!/^\/(shop_payment|shop_payment_complete|shop_mypage)/.test(location.pathname)) return;
   var ORDER=['모델','색상','리프트','안전 센서','LTE·케어서비스','구매자 구분','결제 조건','기념 자켓','온실 정보','수량'];
+  /* 값으로 항목 판별 (주문서: "값 / 값 / ..." 한 줄) */
+  var BYVAL=[[/^잔금/,'결제 조건'],[/^자켓/,'기념 자켓'],[/^온실/,'온실 정보'],[/컬러/,'색상'],[/고정형|리프트/,'리프트'],[/센서/,'안전 센서'],[/LTE/,'LTE·케어서비스'],[/농업|일반|사업자|개인/,'구매자 구분']];
+  /* 옵션명으로 항목 판별 (주문 조회: "옵션명: 값" 여러 줄) */
+  var BYNAME=[[/잔금/,'결제 조건'],[/자켓/,'기념 자켓'],[/온실/,'온실 정보'],[/색상|컬러/,'색상'],[/리프트/,'리프트'],[/센서/,'안전 센서'],[/LTE/,'LTE·케어서비스'],[/구매자|사업자|세율|구분/,'구매자 구분']];
+  function clean(k,v){ v=String(v).trim();
+    if(k==='기념 자켓') return v.replace(/^자켓\s*/,'');
+    if(k==='온실 정보') return (v==='온실 정보 없음'||v==='')?'입력 안 함':v.replace(/^온실:\s*/,'');
+    return v; }
   var css=document.createElement('style');
   css.textContent='.fx-spec-hide{display:none!important}'+
-    '.fx-spec{margin:10px 0 2px;border:1px solid #d9e2dc;border-radius:8px;background:#f6f9f7;padding:12px 14px;font-size:13px;line-height:1.5;color:#171a20}'+
-    '.fx-spec h4{margin:0 0 8px;font-size:12px;font-weight:600;color:#1c524e;letter-spacing:.2px}'+
-    '.fx-spec dl{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;margin:0}'+
-    '.fx-spec dt{color:#6d7470;white-space:nowrap}.fx-spec dd{margin:0;font-weight:500;word-break:keep-all}'+
-    '.fx-spec a{display:inline-block;margin-top:10px;font-size:12px;color:#1c524e;text-decoration:underline;text-underline-offset:3px}'+
-    '@media(max-width:767px){.fx-spec{font-size:13.5px;padding:12px}}';
+    '.fx-spec{box-sizing:border-box;width:100%;max-width:440px;margin:10px 0 4px;border:1px solid #d9e2dc;border-radius:10px;background:#f6f9f7;padding:12px 16px;font-size:13px;line-height:1.5;color:#171a20;text-align:left}'+
+    '.fx-spec h4{margin:0 0 8px;padding:0 0 8px;border-bottom:1px solid #e2e9e4;font-size:12px;font-weight:600;color:#1c524e;letter-spacing:.2px}'+
+    '.fx-spec dl{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:0}'+
+    '.fx-spec dt{color:#6d7470;font-weight:400;white-space:nowrap}.fx-spec dd{margin:0;font-weight:500;word-break:keep-all;overflow-wrap:anywhere}'+
+    '@media(max-width:767px){.fx-spec{max-width:none;font-size:13.5px;padding:12px 14px}}';
   document.head.appendChild(css);
-  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-  function build(span){
-    var txt=span.textContent.trim(); var m=txt.match(/\s-\s(\d+)개$/); var qty=m?m[1]+'대':'';
-    if(m) txt=txt.slice(0,m.index);
-    var parts=txt.split(' / '), rows={}, extra=[];
-    parts.forEach(function(v){v=v.trim(); if(!v) return; for(var i=0;i<RULES.length;i++){ if(RULES[i][0].test(v)&&!rows[RULES[i][1]]){ rows[RULES[i][1]]=RULES[i][2](v); return; } } extra.push(v); });
-    var card=span.closest('div'); for(var k=0;k<3&&card&&!/FARMILY-X/.test(card.textContent);k++) card=card.parentElement;
-    var name=card?card.textContent:''; rows['모델']=/FARMILY-X\s*UV/.test(name)?'FARMILY-X UV':'FARMILY-X S300';
-    if(qty) rows['수량']=qty;
-    var html='<h4>선택하신 사양</h4><dl>';
-    ORDER.forEach(function(k){ if(rows[k]) html+='<dt>'+k+'</dt><dd>'+esc(rows[k])+'</dd>'; });
-    extra.forEach(function(v){ html+='<dt>기타</dt><dd>'+esc(v)+'</dd>'; });
-    html+='</dl>';
-    var box=document.createElement('div'); box.className='fx-spec'; box.innerHTML=html; return box;
+  function esc(s){return String(s).replace(/[\x26<>"]/g,function(c){return '\x26#'+c.charCodeAt(0)+';';});}
+  function modelOf(el){ for(var k=0;k<6;k++){ if(!el) break; var t=el.textContent||''; if(/FARMILY-X/.test(t)) return /FARMILY-X\s*UV/.test(t)?'FARMILY-X UV':'FARMILY-X S300'; el=el.parentElement; } return ''; }
+  function box(rows,extra,src){
+    var h='<h4>선택하신 사양</h4><dl>';
+    ORDER.forEach(function(k){ if(rows[k]) h+='<dt>'+k+'</dt><dd>'+esc(rows[k])+'</dd>'; });
+    extra.forEach(function(e){ h+='<dt>'+esc(e[0])+'</dt><dd>'+esc(e[1])+'</dd>'; });
+    var b=document.createElement('div'); b.className='fx-spec'; b.setAttribute('data-src',src); b.innerHTML=h+'</dl>'; return b;
+  }
+  function place(target,b){
+    var n=target.nextElementSibling;
+    if(n?n.classList.contains('fx-spec'):false){ if(n.getAttribute('data-src')===b.getAttribute('data-src')) return; n.remove(); }
+    target.classList.add('fx-spec-hide'); target.parentNode.insertBefore(b,target.nextSibling);
+  }
+  function fromLine(span){            /* 주문서 */
+    var src=span.textContent, txt=src.trim(), m=txt.match(/\s-\s(\d+)개$/); if(m) txt=txt.slice(0,m.index);
+    var rows={}, extra=[];
+    txt.split(' / ').forEach(function(v){ v=v.trim(); if(!v) return; for(var i=0;i<BYVAL.length;i++){ var k=BYVAL[i][1]; if(BYVAL[i][0].test(v)?!rows[k]:false){ rows[k]=clean(k,v); return; } } extra.push(['기타',v]); });
+    rows['모델']=modelOf(span); if(m) rows['수량']=m[1]+'대';
+    place(span.parentElement, box(rows,extra,src));
+  }
+  function fromRows(list){            /* 주문 조회·상세 */
+    var rows={}, extra=[], src=list.textContent;
+    [].forEach.call(list.children,function(r){ var lb=r.firstElementChild; if(!lb) return; var name=lb.textContent.replace(/:\s*$/,'').trim(); var val=r.textContent.slice(lb.textContent.length).trim();
+      for(var i=0;i<BYNAME.length;i++){ var k=BYNAME[i][1]; if(BYNAME[i][0].test(name)?!rows[k]:false){ rows[k]=clean(k,val); return; } } extra.push([name,val]); });
+    rows['모델']=modelOf(list);
+    place(list, box(rows,extra,src));
   }
   function apply(){
     var spans=document.querySelectorAll('span');
-    for(var i=0;i<spans.length;i++){
-      var s=spans[i]; if(s.children.length) continue;
-      var t=s.textContent; if(!/^잔금 .+ \/ 자켓 /.test(t)) continue;
-      var p=s.parentElement; if(!p) continue;
-      var next=p.nextElementSibling;
-      if(next&&next.classList.contains('fx-spec')&&next.getAttribute('data-src')===t) continue;
-      if(next&&next.classList.contains('fx-spec')) next.remove();
-      var box=build(s); box.setAttribute('data-src',t);
-      p.classList.add('fx-spec-hide'); p.parentNode.insertBefore(box,p.nextSibling);
-    }
+    for(var i=0;i<spans.length;i++){ var s=spans[i]; if(s.children.length||!s.parentElement) continue; if(/^잔금 .+ \/ 자켓 /.test(s.textContent)) fromLine(s); }
+    var labs=document.querySelectorAll('div');
+    for(var j=0;j<labs.length;j++){ var l=labs[j]; if(l.children.length) continue; if(!/^잔금 결제 방식:?$/.test(l.textContent.trim())) continue; var list=l.parentElement?l.parentElement.parentElement:null; if(list?list.parentNode:false) fromRows(list); }
   }
-  var busy=false; var mo=new MutationObserver(function(){ if(busy) return; busy=true; setTimeout(function(){ busy=false; apply(); },60); });
+  var busy=false, mo=new MutationObserver(function(){ if(busy) return; busy=true; setTimeout(function(){ busy=false; apply(); },60); });
   function start(){ apply(); mo.observe(document.body,{childList:true,subtree:true}); }
   if(document.body) start(); else document.addEventListener('DOMContentLoaded',start);
 })();</script>
