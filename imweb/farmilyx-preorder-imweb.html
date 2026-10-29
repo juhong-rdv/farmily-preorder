@@ -575,6 +575,38 @@ const CONFIG = {
       "uv-sand-lift": [
           "https://cdn.imweb.me/upload/S2025102337314c508962d/a0408525787cd.jpg",
           "https://cdn.imweb.me/upload/S2025102337314c508962d/0cab52845d280.jpg"
+      ],
+      "uv-forest-fixed-lidar": [
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/a397b7cbe34a8.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/acd9aa8e5ea1a.jpg"
+      ],
+      "uv-forest-lift-lidar": [
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/61e34493fd97c.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/4d1c9c8dc9321.jpg"
+      ],
+      "uv-graphite-fixed-lidar": [
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/240f45f7a41cc.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/8095286f1f263.jpg"
+      ],
+      "uv-graphite-lift-lidar": [
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/7415211843d4c.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/034fe5f25b3c9.jpg"
+      ],
+      "uv-original-fixed-lidar": [
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/9cb51fe9b3d6c.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/eb222de87446d.jpg"
+      ],
+      "uv-original-lift-lidar": [
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/322a365232c73.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/024883a8713db.jpg"
+      ],
+      "uv-sand-fixed-lidar": [
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/044e7407e8a4d.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/5e52ce4432ee8.jpg"
+      ],
+      "uv-sand-lift-lidar": [
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/a3b5fdebda04d.jpg",
+          "https://cdn.imweb.me/upload/S2025102337314c508962d/c5f7fa22feaa1.jpg"
       ]
   },
   spriteCols: 2, spriteW: 960, spriteH: 720, spritePerSheet: 18,
@@ -617,7 +649,7 @@ const $ = (id) => ROOT.querySelector('#' + id);
 const won = (n) => n.toLocaleString('ko-KR') + '원';
 const priceLabel = (p) => (p === null || p === undefined) ? '[가격 미정]' : (p === 0 ? '추가 비용 없음' : '+' + won(p));
 const FRAMES = CONFIG.frames;             // 36
-const setKey = () => state.model === 'uv' ? `uv-${state.color}-${state.lift ? 'lift' : 'fixed'}` : `${state.color}-${state.lidar ? 'on' : 'off'}`;
+const setKey = () => state.model === 'uv' ? `uv-${state.color}-${state.lift ? 'lift' : 'fixed'}${state.lidar ? '-lidar' : ''}` : `${state.color}-${state.lidar ? 'on' : 'off'}`;
 const isUV = () => state.model === 'uv';
 const SHEET = { cols: CONFIG.spriteCols, w: CONFIG.spriteW, h: CONFIG.spriteH, per: CONFIG.spritePerSheet || 36 };
 
@@ -768,7 +800,7 @@ function update() {
   $('modelS300').setAttribute('aria-checked', String(!uv)); $('modelUV').setAttribute('aria-checked', String(uv));
   $('modelS300Price').textContent = P.body != null ? won(P.body) + ' (영세율 기준)' : '[가격 미정]';
   $('modelUVPrice').textContent = won(Math.round(U.body * 1.1)) + ' (부가세 포함)';
-  $('secColor').hidden = false; $('secSensor').hidden = false; $('lidarPreviewNote').hidden = uv; $('sSensorRow').hidden = !uv; $('secFarm').hidden = uv; $('secLift').hidden = !uv;
+  $('secColor').hidden = false; $('secSensor').hidden = false; $('sSensorRow').hidden = !uv; $('secFarm').hidden = uv; $('secLift').hidden = !uv;
   $('optFixed').setAttribute('aria-checked', String(!state.lift)); $('optLift').setAttribute('aria-checked', String(state.lift));
   ROOT.querySelector('[data-price="lift"]').textContent = '+' + won(U.lift) + ' (공급가)';
   $('introTitle').querySelector('small').textContent = uv ? '(선택 제품 : UV 방제)' : '(선택 제품 : S300 스프레이)';
