@@ -446,7 +446,8 @@ html.fm-menu-enabled #s20251023e0388a798e193 ._widget_data{animation:none!import
     '.fx-spec h4{margin:0 0 8px;padding:0 0 8px;border-bottom:1px solid #e2e9e4;font-size:12px;font-weight:600;color:#1c524e;letter-spacing:.2px}'+
     '.fx-spec dl{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:0}'+
     '.fx-spec dt{color:#6d7470;font-weight:400;white-space:nowrap}.fx-spec dd{margin:0;font-weight:500;word-break:keep-all;overflow-wrap:anywhere}'+
-    '@media(max-width:767px){.fx-spec{max-width:none;font-size:13.5px;padding:12px 14px}}';
+    '@media(max-width:767px){.fx-spec{max-width:none;font-size:13.5px;padding:12px 14px}}'+
+    '@media(min-width:768px){table.shop-table2 tr.content>td.im-xs-align-top{width:62%}}';
   document.head.appendChild(css);
   function esc(s){return String(s).replace(/[\x26<>"]/g,function(c){return '\x26#'+c.charCodeAt(0)+';';});}
   function modelOf(el){ for(var k=0;k<6;k++){ if(!el) break; var t=el.textContent||''; if(/FARMILY-X/.test(t)) return /FARMILY-X\s*UV/.test(t)?'FARMILY-X UV':'FARMILY-X S300'; el=el.parentElement; } return ''; }
