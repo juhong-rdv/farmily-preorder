@@ -120,6 +120,7 @@
 .fxp .pay-est .pe-row b{flex:0 0 auto;text-align:right;white-space:nowrap}
 .fxp .pay-est .pe-note{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--green-lt);border:1px solid var(--green);color:var(--ink);font-size:12.5px;line-height:1.6}
 .fxp .pay-est .pe-note b{color:var(--green)}
+.fxp .pay-est .pe-title small{font-weight:500;color:var(--ink-3);font-size:12px;margin-left:4px}
 .fxp .pay-est .pe-title{display:block;font-size:13px;font-weight:700;color:var(--ink);margin:0 0 6px;padding-bottom:6px;border-bottom:1px solid var(--line)}
 .fxp .card[role="radio"]::before{content:"";position:absolute;left:16px;top:18px;width:18px;height:18px;border-radius:50%;border:2px solid #CFCFCB;background:#fff}
 .fxp .card[role="radio"][aria-checked="true"]{border:2px solid var(--green);background:var(--green-lt)}
@@ -159,7 +160,8 @@
 .fxp .mini.on{display:block}
 .fxp .card:not(.color-card){flex-wrap:wrap}
 .fxp .card:not(.color-card)>div{flex:1 1 100%}
-.fxp .card:not(.color-card)>em{flex:1 1 100%;text-align:right;margin-top:2px;color:var(--green)}
+.fxp .card:not(.color-card)>em{flex:1 1 100%;text-align:left;margin-top:4px;color:var(--green)}
+.fxp .card[role="radio"]:not(.color-card)>em{padding-left:0}
 .fxp .opt-head{flex-wrap:wrap;gap:4px}
 .fxp .summary{font-size:14px}
 .fxp .summary b{max-width:60%}
@@ -204,8 +206,10 @@
 
 .fxp [hidden]{display:none!important}
 .fxp{word-break:keep-all;overflow-wrap:break-word;letter-spacing:-0.01em}
+.fxp .card b small,.fxp .summary .refund{display:inline-block;white-space:nowrap;vertical-align:middle}
+.fxp .card b{line-height:1.35}
 .fxp .card span,.fxp .summary p,.fxp .policy p,.fxp .event-item span,.fxp .pay-est{line-height:1.65}
-.fxp .mini{display:none;position:fixed;right:12px;top:calc(var(--hdr,56px) + 12px);z-index:6;width:114px;height:114px;border-radius:14px;border:2px solid var(--green);background:#F2F5F1;box-shadow:0 6px 18px rgba(0,0,0,.18);padding:0;overflow:hidden;cursor:pointer}
+.fxp .mini{display:none;position:fixed;right:12px;top:calc(var(--hdr,56px) + 16px);z-index:6;width:114px;height:114px;border-radius:14px;border:2px solid var(--green);background:#F2F5F1;box-shadow:0 6px 18px rgba(0,0,0,.18);padding:0;overflow:hidden;cursor:pointer}
 .fxp .mini canvas{width:100%;height:100%;display:block}
 .fxp .mini span{position:absolute;left:0;right:0;bottom:0;background:rgba(20,20,19,.72);color:#fff;font-size:10px;font-weight:700;text-align:center;padding:3px 6px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fxp{font-family:'Noto Sans KR',system-ui,sans-serif;color:#141413;-webkit-font-smoothing:antialiased;line-height:1.4}
@@ -377,27 +381,27 @@
       </section>
 
       <section class="opt">
-        <div class="opt-head"><b>잔금 결제 방식 <small style="font-weight:400;color:var(--ink-3)">(예상 납부액 안내)</small></b></div>
+        <div class="opt-head"><b>잔금 결제 방식</b></div>
         <div class="choice" role="radiogroup" aria-label="잔금 결제 방식">
           <button class="card" id="payFull" type="button" role="radio" aria-checked="true">
             <div><b>100% 일시 결제</b><span>잔금 전액을 카드 일시불(또는 계좌이체)로 결제합니다. 할부 수수료가 없습니다.</span></div>
             <em id="payFullAmt"></em>
           </button>
           <button class="card" id="payP30" type="button" role="radio" aria-checked="false">
-            <div><b>30% 일시 결제 + 70% 12개월 카드 할부</b><span>잔금의 30%는 일시불로, 나머지 70%는 12개월 카드 할부로 결제합니다. 초기 부담을 더 줄이고 싶을 때 선택하세요.</span></div>
+            <div><b>30% 일시 결제 + 70% 카드 할부</b><span>잔금의 30%는 일시불로, 나머지 70%는 카드 할부로 결제합니다. 초기 부담을 더 줄이고 싶을 때 선택하세요. 할부 개월 수는 잔금 결제 시 카드사 조건에 따라 선택합니다.</span></div>
             <em id="payP30Amt"></em>
           </button>
           <button class="card" id="payHalf" type="button" role="radio" aria-checked="false">
-            <div><b>50% 일시 결제 + 50% 12개월 카드 할부 <small>많이 선택하는 옵션</small></b><span>잔금의 절반은 일시불로, 나머지 절반은 12개월 카드 할부로 결제합니다. 초기 부담을 줄이면서 할부 수수료는 절반에만 붙습니다.</span></div>
+            <div><b>50% 일시 결제 + 50% 카드 할부 <small>많이 선택하는 옵션</small></b><span>잔금의 절반은 일시불로, 나머지 절반은 카드 할부로 결제합니다. 초기 부담을 줄이면서 할부 수수료는 절반에만 붙습니다.</span></div>
             <em id="payHalfAmt"></em>
           </button>
           <button class="card" id="payInst" type="button" role="radio" aria-checked="false">
-            <div><b>100% 12개월 카드 할부</b><span>잔금 전액을 12개월 카드 할부로 결제합니다. 월 납부 부담이 가장 작지만 할부 수수료가 전액에 붙습니다.</span></div>
+            <div><b>100% 카드 할부</b><span>잔금 전액을 카드 할부로 결제합니다. 월 납부 부담이 가장 작지만 할부 수수료가 전액에 붙습니다.</span></div>
             <em id="payInstAmt"></em>
           </button>
         </div>
         <div class="pay-est" id="payEst"></div>
-        <p style="margin:8px 0 0;font-size:12px;color:var(--ink-3);line-height:1.6">※ 예상 납부액은 12개월 할부 수수료를 연 15%로 가정해 계산한 참고 금액입니다. 할부 수수료율은 카드사·카드 상품·회원 등급에 따라 다르며(통상 12개월 기준 연 10~19%), 무이자 할부 행사가 적용되면 수수료가 없을 수 있습니다. 실제 납부액은 잔금 결제 시 카드사 안내를 따릅니다. 사전계약 할인 150만원은 모든 방식에 동일하게 적용됩니다.</p>
+        <p style="margin:8px 0 0;font-size:12px;color:var(--ink-3);line-height:1.6">※ 할부 개월 수는 잔금 결제 시 카드사 조건에 따라 선택하며, 위 시뮬레이션은 12개월 할부·수수료 연 15%를 가정해 계산한 참고 금액입니다. 할부 수수료율은 카드사·카드 상품·회원 등급에 따라 다르며(통상 12개월 기준 연 10~19%), 무이자 할부 행사가 적용되면 수수료가 없을 수 있습니다. 실제 납부액은 잔금 결제 시 카드사 안내를 따릅니다. 사전계약 할인 150만원은 모든 방식에 동일하게 적용됩니다.</p>
       </section>
 
       <section class="opt">
@@ -590,8 +594,20 @@ async function draw() {
   new IntersectionObserver((es) => { out = !es[0].isIntersecting; sync(); }, { threshold: 0.12 }).observe(viewer);
   mq.addEventListener ? mq.addEventListener('change', sync) : mq.addListener(sync);
   /* 상단 고정 헤더(아임웹) 높이만큼 아래에 배치 */
-  const hdr = () => { let h = 0; for (const el of document.querySelectorAll('header, #header, .header, [class*="header"]')) { const cs = getComputedStyle(el); if ((cs.position === 'fixed' || cs.position === 'sticky') && el.getBoundingClientRect().top <= 1 && el.offsetHeight > 0 && el.offsetHeight < 200) h = Math.max(h, el.getBoundingClientRect().bottom); } ROOT.style.setProperty('--hdr', Math.round(h) + 'px'); };
-  hdr(); window.addEventListener('scroll', hdr, { passive: true }); window.addEventListener('resize', hdr);
+  /* 사이트 상단 고정 헤더(아임웹) 높이 감지: 화면 위에 붙어 있고 폭이 넓은 fixed/sticky 요소의 가장 아래쪽 */
+  let hdrT = 0;
+  const hdr = () => {
+    let h = 0; const vw = window.innerWidth;
+    for (const el of document.querySelectorAll('body *')) {
+      if (el === mini || ROOT.contains(el)) continue;
+      const cs = getComputedStyle(el); if (cs.position !== 'fixed' && cs.position !== 'sticky') continue;
+      const rc = el.getBoundingClientRect();
+      if (rc.top <= 2 && rc.bottom > 0 && rc.bottom <= 260 && rc.width >= vw * 0.7 && cs.visibility !== 'hidden' && cs.display !== 'none') h = Math.max(h, rc.bottom);
+    }
+    ROOT.style.setProperty('--hdr', Math.round(Math.max(h, 56)) + 'px');
+  };
+  const hdrLazy = () => { const now = Date.now(); if (now - hdrT < 250) return; hdrT = now; hdr(); };
+  hdr(); setTimeout(hdr, 1500); window.addEventListener('scroll', hdrLazy, { passive: true }); window.addEventListener('resize', hdr);
   mini.onclick = () => viewer.scrollIntoView({ behavior: 'smooth', block: 'start' });
 })();
 
@@ -713,9 +729,9 @@ function update() {
   const splitOf = (ratio) => { const up = Math.round(balance * ratio), fin = balance - up, m = pmt(fin); return { up, fin, m, fee: fin > 0 ? m * 12 - fin : 0 }; };
   const half = splitOf(0.5), p30 = splitOf(0.3), inst = splitOf(0);
   $('payFullAmt').textContent = known ? '일시불 ' + won(balance) : '[가격 미정]';
-  $('payHalfAmt').textContent = known ? '월 약 ' + won(half.m) + ' ×12' : '[가격 미정]';
-  $('payP30Amt').textContent = known ? '월 약 ' + won(p30.m) + ' ×12' : '[가격 미정]';
-  $('payInstAmt').textContent = known ? '월 약 ' + won(inst.m) + ' ×12' : '[가격 미정]';
+  $('payHalfAmt').textContent = known ? '일시불 ' + won(half.up) + ' + 할부 ' + won(half.fin) : '[가격 미정]';
+  $('payP30Amt').textContent = known ? '일시불 ' + won(p30.up) + ' + 할부 ' + won(p30.fin) : '[가격 미정]';
+  $('payInstAmt').textContent = known ? '할부 ' + won(balance) : '[가격 미정]';
   let est = '';
   if (known) {
     const cur = splitOf(UP[state.payPlan] ?? 1), pct = Math.round((UP[state.payPlan] ?? 1) * 100);
@@ -729,7 +745,7 @@ function update() {
     else hl = `사전계약 할인 <b>${won(disc)}</b>이 12개월 할부 수수료(약 ${won(fee)})의 대부분을 상쇄해 실질 수수료 부담은 <b>약 ${won(fee - disc)}</b>에 그칩니다.`;
     est += `<div class="pe-note">${hl}</div>`;
   } else est = '가격 확정 후 안내됩니다.';
-  $('payEst').innerHTML = '<span class="pe-title">결제 예상 시뮬레이션</span>' + est;
+  $('payEst').innerHTML = '<span class="pe-title">결제 예상 시뮬레이션 <small>(12개월 카드 할부로 할 경우 · 참고용)</small></span>' + est;
   $('pbTotal').textContent = known ? won(Math.round(finalTotal * vat)) + ((uv || state.buyer === 'gen') ? ' (할인·부가세 적용)' : ' (할인 적용)') : totalLabel;
   $('pbSummary').textContent = uv ? `UV · ${state.lift ? '리프트형' : '고정형'}${state.lte ? ' · LTE' : ''} · ${state.qty}대` : `S300 · ${col.name}${state.lidar ? ' · 라이다' : ''}${state.lte ? ' · LTE' : ''} · ${state.qty}대`;
   const chips = uv ? ['부가세 포함', 'UV', state.lift ? '리프트형 (높이 자동조정)' : '고정형', ...(state.lte ? ['LTE'] : []), `${state.qty}대`]
@@ -803,7 +819,7 @@ $('payBtn').onclick = () => {
   const col = CONFIG.colors.find((c) => c.id === state.color);
   const IMWEB = curIMWEB();
   const spec = (isUV() ? 'UV / ' + (state.lift ? '리프트형(높이 자동조정)' : '고정형') + (state.lte ? ' / LTE' : '') + ' / ' + state.qty + '대 / 부가세 포함'
-                       : 'S300 / ' + col.name + (state.lidar ? ' / 라이다 안전센서' : ' / 초음파 센서') + (state.lte ? ' / LTE' : '') + ' / ' + state.qty + '대' + ' / ' + (state.buyer === 'farm' ? '농업인·농업법인(영세율, 농업용 사용 동의)' : '학교·연구소·일반·기업(부가세 포함)')) + ' / 잔금: ' + ({ full: '100% 일시불', half: '50% 일시불 + 50% 12개월 할부', p30: '30% 일시불 + 70% 12개월 할부', inst: '100% 12개월 할부' })[state.payPlan] + (memo ? ' / 온실: ' + memo : '');
+                       : 'S300 / ' + col.name + (state.lidar ? ' / 라이다 안전센서' : ' / 초음파 센서') + (state.lte ? ' / LTE' : '') + ' / ' + state.qty + '대' + ' / ' + (state.buyer === 'farm' ? '농업인·농업법인(영세율, 농업용 사용 동의)' : '학교·연구소·일반·기업(부가세 포함)')) + ' / 잔금: ' + ({ full: '100% 일시불', half: '50% 일시불 + 50% 카드 할부', p30: '30% 일시불 + 70% 카드 할부', inst: '100% 카드 할부' })[state.payPlan] + (memo ? ' / 온실: ' + memo : '');
   try { sessionStorage.setItem('fx_spec', spec); } catch (e) {}
   const btn = $('payBtn'); btn.disabled = true; btn.textContent = '주문서로 이동 중…';
   const fail = (e) => { alert('주문서를 만들지 못했습니다. 잠시 후 다시 시도해 주세요.\n' + (e && e.message ? e.message : '')); btn.disabled = false; btn.textContent = '사전계약금 카드 결제'; };
