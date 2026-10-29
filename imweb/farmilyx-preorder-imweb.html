@@ -840,6 +840,7 @@ function update() {
 function setModel(m) { if (state.model === m) return; state.model = m; update(); switchSet(); }
 $('modelS300').onclick = () => setModel('s300');
 $('modelUV').onclick = () => setModel('uv');
+try { if (new URLSearchParams(location.search).get('model') === 'uv') setModel('uv'); } catch (e) {}
 $('optFixed').onclick = () => { if (state.lift) { state.lift = false; update(); switchSet(); } };
 $('optLift').onclick = () => { if (!state.lift) { state.lift = true; update(); switchSet(); } };
 $('optLidar').onclick = () => { if (!state.lidar) { state.lidar = true; update(); switchSet(); } };
