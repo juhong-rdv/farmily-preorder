@@ -658,7 +658,7 @@ const canvas = $('canvas');
 const ctx = canvas.getContext('2d');
 const sheets = new Map();                  // key -> Promise<HTMLImageElement|null>
 let zoom = 1, panX = 0, panY = 0;
-const IMG_BG = '#F2F5F1';                   // 렌더 이미지의 배경색
+const IMG_BG = '#F2F4EF';                   // 렌더 이미지의 배경색
 
 function loadOne(url) {
   const img = new Image(); img.decoding = 'async'; img.src = url;
@@ -681,6 +681,28 @@ function resize() {
 }
 new ResizeObserver(() => resize()).observe($('stage'));
 
+/* 화면이 이미지보다 넓을 때(브라우저 축소 등) 이미지 가장자리를 배경색으로 서서히 녹여 사각형 경계가 보이지 않게 */
+const FEATHER = { c: null, m: null, key: '' };
+function drawFeathered(img, sx, sy, dx, dy, dw, dh, fx, fy) {
+  const key = dw + 'x' + dh + (fx ? 'x' : '') + (fy ? 'y' : '');
+  if (FEATHER.key !== key) {
+    const c = FEATHER.c || document.createElement('canvas'), m = FEATHER.m || document.createElement('canvas');
+    c.width = m.width = dw; c.height = m.height = dh;
+    const g = m.getContext('2d'); g.clearRect(0, 0, dw, dh); g.fillStyle = '#000'; g.fillRect(0, 0, dw, dh);
+    g.globalCompositeOperation = 'destination-in';
+    const band = (lin, len) => { lin.addColorStop(0, 'rgba(0,0,0,0)'); lin.addColorStop(0.2, 'rgba(0,0,0,1)'); lin.addColorStop(0.8, 'rgba(0,0,0,1)'); lin.addColorStop(1, 'rgba(0,0,0,0)'); return lin; };
+    if (fx) { g.fillStyle = band(g.createLinearGradient(0, 0, dw, 0)); g.fillRect(0, 0, dw, dh); }
+    if (fy) { g.fillStyle = band(g.createLinearGradient(0, 0, 0, dh)); g.fillRect(0, 0, dw, dh); }
+    g.globalCompositeOperation = 'source-over';
+    Object.assign(FEATHER, { c, m, key });
+  }
+  const o = FEATHER.c.getContext('2d');
+  o.globalCompositeOperation = 'source-over'; o.clearRect(0, 0, dw, dh);
+  o.drawImage(img, sx, sy, SHEET.w, SHEET.h, 0, 0, dw, dh);
+  o.globalCompositeOperation = 'destination-in'; o.drawImage(FEATHER.m, 0, 0);
+  o.globalCompositeOperation = 'source-over';
+  ctx.drawImage(FEATHER.c, dx, dy);
+}
 async function draw() {
   const key = setKey();
   const imgs = await loadSheet(key);
@@ -694,7 +716,8 @@ async function draw() {
   const dx = Math.round((W - dw) / 2 + panX), dy = Math.round((H - dh) / 2 + panY);
   const img = imgs[Math.floor(state.frame / SHEET.per)], f = state.frame % SHEET.per;
   const sx = (f % SHEET.cols) * SHEET.w, sy = Math.floor(f / SHEET.cols) * SHEET.h;
-  ctx.drawImage(img, sx, sy, SHEET.w, SHEET.h, dx, dy, dw, dh);
+  if (dw < W - 2 || dh < H - 2) drawFeathered(img, sx, sy, dx, dy, dw, dh, dw < W - 2, dh < H - 2);
+  else ctx.drawImage(img, sx, sy, SHEET.w, SHEET.h, dx, dy, dw, dh);
   /* 모바일 플로팅 미니 뷰어: 프레임 중앙부를 잘라 원형 썸네일로 */
   const mc = $('miniCanvas'); if (mc) { const g = mc.getContext('2d'); g.fillStyle = IMG_BG; g.fillRect(0, 0, mc.width, mc.height); const cw = SHEET.h * 0.92, chh = SHEET.h * 0.92; g.drawImage(img, sx + (SHEET.w - cw) / 2, sy + SHEET.h * 0.04, cw, chh, 0, 0, mc.width, mc.height); }
 }
