@@ -80,7 +80,14 @@
 .fxp .agree.err{border-color:#C8321E;background:#FFF3F1;color:#8A1F12;animation:fxShake .5s}
 .fxp .agree.err input{outline:2px solid #C8321E;outline-offset:1px}
 .fxp .gift{display:flex;gap:16px;border:1px solid var(--line);border-radius:12px;padding:16px;background:#FAFAF8}
-.fxp .gift img{flex:0 0 120px;width:120px;height:120px;object-fit:contain;border-radius:10px;background:#fff;border:1px solid var(--line-2)}
+.fxp .gift-img{flex:0 0 120px;width:120px;height:120px;padding:0;border-radius:10px;background:#fff;border:1px solid var(--line-2);position:relative;overflow:hidden;cursor:zoom-in}
+.fxp .gift-img img{width:100%;height:100%;object-fit:contain;display:block}
+.fxp .gift-img span{position:absolute;left:0;right:0;bottom:0;font-size:11px;font-weight:700;color:#fff;background:rgba(20,20,19,.6);padding:3px 0;text-align:center}
+.fxp-lb{font-family:'Noto Sans KR',system-ui,sans-serif;position:fixed;inset:0;z-index:2147483000;background:rgba(10,14,12,.86);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;cursor:zoom-out}
+.fxp-lb[hidden]{display:none}
+.fxp-lb img{max-width:min(92vw,720px);max-height:78vh;object-fit:contain;border-radius:14px;background:#fff;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.fxp-lb p{margin:0;color:#fff;font-size:14px;text-align:center}
+.fxp-lb .lb-close{position:absolute;top:16px;right:16px;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.15);color:#fff;font-size:28px;line-height:1;cursor:pointer}
 .fxp .gift-body{display:flex;flex-direction:column;gap:8px;min-width:0}
 .fxp .gift-body>b{font-size:16px}
 .fxp .gift-body>span{font-size:13px;color:var(--ink-2);line-height:1.6}
@@ -95,7 +102,7 @@
 .fxp .size-info p{margin:6px 0 0;font-size:12px;color:var(--ink-3)}
 .fxp .gift-note{margin:0;font-size:12px;color:var(--ink-3);line-height:1.6}
 @media (max-width: 860px){.fxp .gift{flex-direction:column}
-.fxp .gift img{width:100%;height:auto;max-height:220px;flex:none}
+.fxp .gift-img{width:100%;height:220px;flex:none}
 .fxp .size-info table{display:block;overflow-x:auto}}
 .fxp .agree-msg{margin:6px 0 0;font-size:12.5px;font-weight:700;color:#C8321E}
 @keyframes fxShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
@@ -374,7 +381,7 @@
       <section class="opt" id="secGift">
         <div class="opt-head"><b>사전예약 기념 선물 <small style="font-weight:400;color:var(--ink-3)">(기본 제공 · 무료)</small></b><span>자켓 사이즈 선택</span></div>
         <div class="gift">
-          <img src="https://cdn.imweb.me/upload/S2025102337314c508962d/f50436656a36a.png" alt="FARMILY 2027 기념 자켓" loading="lazy">
+          <button class="gift-img" id="giftImgBtn" type="button" aria-label="자켓 사진 크게 보기"><img src="https://cdn.imweb.me/upload/S2025102337314c508962d/f50436656a36a.png" alt="FARMILY 2027 기념 자켓" loading="lazy"><span>크게 보기</span></button>
           <div class="gift-body">
             <b>FARMILY 2027 온실 작업용 기념 자켓</b>
             <span>사전예약 고객 전원께 1벌 드립니다. 작업복 위에 가볍게 걸치는 바람막이 자켓(네이비, FARMILY 로고).</span>
@@ -472,6 +479,11 @@
   </aside>
 
 <button class="mini" id="mini" type="button" aria-label="모델 미리보기로 이동" title="위로 이동해 모델 보기"><canvas id="miniCanvas" width="228" height="228"></canvas><span id="miniLabel"></span></button>
+<div class="fxp-lb" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="기념 자켓 사진">
+  <button class="lb-close" id="lbClose" type="button" aria-label="닫기">×</button>
+  <img src="https://cdn.imweb.me/upload/S2025102337314c508962d/f50436656a36a.png" alt="FARMILY 2027 기념 자켓">
+  <p>FARMILY 2027 온실 작업용 기념 자켓 · 네이비 · 사전예약 고객 전원 1벌 무료</p>
+</div>
 <div class="done" id="done" hidden>
   <div class="done-box">
     <div class="check"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
@@ -926,6 +938,11 @@ function renderSizes() {
     b.onclick = () => { state.jacket = sz; update(); }; wrap.appendChild(b);
   }
 }
+const LB = $('lightbox'); document.body.appendChild(LB);   /* 스태킹 컨텍스트 밖(body)으로 옮겨 헤더·결제바 위에 표시 */
+$('giftImgBtn').onclick = () => { LB.hidden = false; document.body.style.overflow = 'hidden'; };
+const closeLb = () => { LB.hidden = true; document.body.style.overflow = ''; };
+LB.onclick = closeLb; LB.querySelector('#lbClose').onclick = (e) => { e.stopPropagation(); closeLb(); };
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !LB.hidden) closeLb(); });
 renderSizes();
 renderSwatches();
 update();
