@@ -23,8 +23,8 @@
   <p class="fxm-sub" id="fxmSub">로그인하시면 사전계약 내역과 결제 영수증을 확인하고, 취소 요청도 직접 하실 수 있습니다.</p>
 
   <div class="fxm-grid" id="fxmOut">
-    <button type="button" class="fxm-card hi" id="fxmLogin"><div><b>로그인</b><span>이메일 또는 카카오·네이버 계정으로 로그인합니다.</span></div><em>로그인하기</em></button>
-    <button type="button" class="fxm-card" id="fxmJoin"><div><b>회원가입</b><span>이름·연락처·이메일만으로 1분이면 가입됩니다.</span></div><em>가입하기</em></button>
+    <button type="button" class="fxm-card hi" id="fxmLogin"><div><b>로그인</b><span>이메일 또는 Google 계정으로 로그인합니다.</span></div><em>로그인하기</em></button>
+    <button type="button" class="fxm-card" id="fxmJoin"><div><b>회원가입</b><span>Google 계정으로 간편 가입하거나 이메일로 가입할 수 있습니다.</span></div><em>가입하기</em></button>
     <button type="button" class="fxm-card quiet" id="fxmOrderOut"><div><b>사전계약 조회</b><span>결제 내역·영수증 확인과 취소 요청은 로그인 후 이용할 수 있습니다.</span></div><em>로그인 후 조회</em></button>
   </div>
 
@@ -51,7 +51,7 @@
   }
   document.getElementById('fxmLogin').onclick=function(){ if(!call('openLogin')) location.href='/login?back_url='+back; };
   document.getElementById('fxmOrderOut').onclick=function(){ if(!call('openLogin')) location.href='/login?back_url='+btoa('/shop_mypage/?m2=order'); };
-  document.getElementById('fxmJoin').onclick=function(){ if(!call('openJoin')) location.href='/login?back_url='+back; };
+  document.getElementById('fxmJoin').onclick=function(){ if(!call('openJoinPatternChoice') && !call('openJoin')) location.href='/login?back_url='+back; };
   document.getElementById('fxmProfile').onclick=function(){ if(!call('editProfile')) location.href='/shop_mypage'; };
   render();
   var n=0,t=setInterval(function(){ render(); if(++n>10) clearInterval(t); },500);
