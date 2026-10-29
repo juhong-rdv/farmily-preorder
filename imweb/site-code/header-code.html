@@ -1,0 +1,86 @@
+<script>/* 사전계약금 상품 상세 → 구성기 (화면 그리기 전에 이동, 깜빡임 방지) */(function(){if(location.pathname.indexOf('/shop_view')!==0)return;var i=new URLSearchParams(location.search).get('idx');if(i==='8'||i==='9'){document.documentElement.style.visibility='hidden';location.replace(i==='9'?'/pre-order?model=uv':'/pre-order');}})();</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://farmily.ai/#organization","name":"주식회사 랑데뷰","legalName":"주식회사 랑데뷰","alternateName":["랑데뷰","Rendezvous"],"url":"https://farmily.ai/","logo":{"@type":"ImageObject","url":"https://cdn.imweb.me/thumbnail/20260205/0e0cfaf0e4928.png","width":500,"height":500},"description":"농업 로봇 브랜드 파밀리(FARMILY)를 개발하는 기업. 온실 스프레이·UV-C 방제 로봇과 자율주행 플랫폼, 원격 작업 확인 솔루션을 제공합니다.","email":"hello@farmily.ai","telephone":"+82-2-6953-4608","address":{"@type":"PostalAddress","streetAddress":"옥토골길 54","addressLocality":"광주시","addressRegion":"경기도","postalCode":"12783","addressCountry":"KR"},"brand":{"@id":"https://farmily.ai/#brand"},"sameAs":["https://www.instagram.com/farmilyx/","https://www.youtube.com/@farmily_official","https://blog.naver.com/farmilyx","https://pf.kakao.com/_ExjSKX","https://github.com/rendezvue"]},{"@type":"Brand","@id":"https://farmily.ai/#brand","name":"파밀리(FARMILY)","alternateName":["파밀리","FARMILY"],"url":"https://farmily.ai/","logo":"https://cdn.imweb.me/thumbnail/20260205/0e0cfaf0e4928.png"},{"@type":"WebSite","@id":"https://farmily.ai/#website","url":"https://farmily.ai/","name":"파밀리 FARMILY","alternateName":["파밀리","FARMILY","랑데뷰 파밀리"],"inLanguage":"ko-KR","publisher":{"@id":"https://farmily.ai/#organization"}}]}
+</script>
+
+<style>
+/* 최근게시물 - 카테고리 이름 박스 */
+  .title.title-block > span {
+  display: block !important;   /* 카테고리 뒤에서 줄바꿈 */
+}
+  
+.title.title-block span em {
+  /*display: inline-block !important;*/
+  display: inline-block !important;
+  padding: 5px 8px !important;
+  margin-bottom: 10px !important;
+  margin-right: 5px !important;
+  padding-right: 8px !important;   /* 인라인 padding-right:5px 덮어쓰기 */
+  background: #FFECEA !important;  /* 배경색 */
+  border-radius: 4px !important;   /* 999px 하면 알약 모양 */
+  background: #E8F3F2 !important;  /* 로봇 티일 그린 */
+  font-style: bold !important;   /* em 기본 기울임 해제 */
+  /*font-size: 12px !important;*/
+  /*font-weight: 600 !important;*/
+  /*line-height: 1.6 !important;*/
+  /*vertical-align: middle !important;*/
+}
+</style>
+
+<!-- FARMILY MENU FIRST PAINT START -->
+<style id="farmily-menu-first-paint">
+html.fm-menu-boot body,html.fm-menu-enabled body{padding-top:56px!important}
+html.fm-menu-boot #doz_header_wrap{display:none!important}
+html.fm-menu-boot #farmily-mega-root,html.fm-menu-enabled #farmily-mega-root{position:fixed!important;top:0;left:0;right:0;width:100%}
+@media(max-width:767px){html.fm-menu-boot #s2025102356efc881651f3{display:none!important}}
+</style>
+<script>
+// true = 맞춤 메뉴 / false = 아임웹 기본 메뉴
+window.FARMILY_MENU_ENABLED = true;
+(function(){
+  if(!window.FARMILY_MENU_ENABLED||/^\/(admin|_)(\/|$)/.test(location.pathname))return;
+  document.documentElement.classList.add('fm-menu-boot');
+  // 메뉴 스크립트가 실행되지 않으면 기본 메뉴를 복구합니다.
+  setTimeout(function(){document.documentElement.classList.remove('fm-menu-boot');},8000);
+})();
+</script>
+<!-- FARMILY MENU FIRST PAINT END -->
+
+<!-- FARMILY KR-ONLY: 2027사전예약 메뉴·페이지(/pre-order) 해외 접속 시 숨김 -->
+<script>
+(function(){
+  var PAGE = '/pre-order';
+  var MENU_TEXT = '2027사전예약';
+  var KEY = 'fx_geo_cc';
+  function hide(){
+    var links = document.querySelectorAll('a');
+    for (var i = 0; i < links.length; i++) {
+      var a = links[i], href = (a.getAttribute('href') || '').replace(/[?#].*$/, '').replace(/\/$/, '');
+      if (href.slice(-PAGE.length) === PAGE || (a.textContent || '').trim() === MENU_TEXT) {
+        var li = a.closest('li') || a; li.style.display = 'none';
+      }
+    }
+    if (location.pathname.replace(/\/$/, '') === PAGE) {
+      var box = document.querySelector('.fxp');
+      if (box) box.innerHTML = '<div style="padding:120px 20px;text-align:center;font-size:15px;color:#4A4A48;line-height:1.7">이 페이지는 대한민국 내에서만 이용하실 수 있습니다.<br>This page is available in South Korea only.<br><br>문의: hello@farmily.ai</div>';
+    }
+  }
+  function apply(cc){
+    try { sessionStorage.setItem(KEY, cc); } catch(e){}
+    if (cc !== 'KR') {
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hide); else hide();
+      var n = 0, t = setInterval(function(){ hide(); if (++n > 20) clearInterval(t); }, 500);
+    }
+  }
+  var cached = null; try { cached = sessionStorage.getItem(KEY); } catch(e){}
+  if (cached) { apply(cached); return; }
+  fetch('https://get.geojs.io/v1/ip/country.json', { cache: 'no-store' })
+    .then(function(r){ return r.json(); })
+    .then(function(j){ apply((j && j.country) || 'KR'); })
+    .catch(function(){
+      fetch('https://ipwho.is/').then(function(r){ return r.json(); })
+        .then(function(j){ apply((j && j.country_code) || 'KR'); })
+        .catch(function(){});
+    });
+})();
+</script>
