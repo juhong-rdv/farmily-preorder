@@ -426,7 +426,7 @@
       <div class="paybar-line"><span id="pbSummary"></span><b id="pbTotal"></b></div>
       <div class="paybar-row">
         <div class="today"><small>오늘 결제</small><b>100,000원</b></div>
-        <button id="payBtn" type="button">사전계약금 카드 결제</button>
+        <button id="payBtn" type="button">사전계약금 결제</button>
       </div>
     </div>
   </aside>
@@ -444,7 +444,7 @@
     </div>
     <div class="done-steps">
       <div><i>01</i><span>담당자 연락 · 온실 구조 확인 및 사양 확정</span></div>
-      <div><i>02</i><span>제작 일정 확정 후 잔금 결제 안내 메일 발송 (카드 결제 링크)</span></div>
+      <div><i>02</i><span>제작 일정 확정 후 잔금 결제 안내 메일 발송 (결제 링크)</span></div>
       <div><i>03</i><span>순차 출고 · 현장 설치 및 운용 교육</span></div>
     </div>
     <p class="done-contact">문의: <a href="mailto:hello@farmily.ai">hello@farmily.ai</a> · 02-6953-4608</p>
@@ -850,7 +850,7 @@ $('payBtn').onclick = () => {
                        : 'S300 / ' + col.name + (state.lidar ? ' / 라이다 안전센서' : ' / 초음파 센서') + (state.lte ? ' / LTE' : '') + ' / ' + state.qty + '대' + ' / ' + (state.buyer === 'farm' ? '농업인·농업법인(영세율, 농업용 사용 동의)' : '학교·연구소·일반·기업(부가세 포함)')) + ' / 잔금: ' + ({ full: '100% 일시불', half: '50% 일시불 + 50% 카드 할부', p30: '30% 일시불 + 70% 카드 할부', inst: '100% 카드 할부' })[state.payPlan] + (memo ? ' / 온실: ' + memo : '');
   try { sessionStorage.setItem('fx_spec', spec); } catch (e) {}
   const btn = $('payBtn'); btn.disabled = true; btn.textContent = '주문서로 이동 중…';
-  const fail = (e) => { alert('주문서를 만들지 못했습니다. 잠시 후 다시 시도해 주세요.\n' + (e && e.message ? e.message : '')); btn.disabled = false; btn.textContent = '사전계약금 카드 결제'; };
+  const fail = (e) => { alert('주문서를 만들지 못했습니다. 잠시 후 다시 시도해 주세요.\n' + (e && e.message ? e.message : '')); btn.disabled = false; btn.textContent = '사전계약금 결제'; };
   const opts = selectedOptions();
   // 1) 옵션 조합 → 아임웹 옵션 상세 코드
   const sp = new URLSearchParams({ prod_idx: String(IMWEB.prodIdx) });
