@@ -109,13 +109,13 @@
     if ('colorSpace' in tex && T.SRGBColorSpace) tex.colorSpace = T.SRGBColorSpace; else if (T.sRGBEncoding) tex.encoding = T.sRGBEncoding;
     const floor = new T.Mesh(new T.PlaneGeometry(40, 40), new T.MeshBasicMaterial({ map: tex, toneMapped: false }));
     floor.rotation.x = -Math.PI / 2; floor.position.set(center.x, floorY - 0.002, center.z); floor.name = '__floor'; V.scene.add(floor);
-    const shadow = new T.Mesh(new T.PlaneGeometry(40, 40), new T.ShadowMaterial({ opacity: 0.26 }));
+    const shadow = new T.Mesh(new T.PlaneGeometry(40, 40), new T.ShadowMaterial({ opacity: 0.24 }));
     shadow.rotation.x = -Math.PI / 2; shadow.position.set(center.x, floorY - 0.001, center.z); shadow.receiveShadow = true; shadow.name = '__shadow'; V.scene.add(shadow);
     const sun = new T.DirectionalLight(0xffffff, 0.001);   // 조명은 거의 0 — 그림자만 사용
-    sun.position.set(center.x + 1.2, box.max.y + 6, center.z + 2.0); sun.target.position.copy(center); sun.castShadow = true;
+    sun.position.set(center.x + 0.45, box.max.y + 9, center.z + 0.8); sun.target.position.copy(center); sun.castShadow = true;
     sun.shadow.mapSize.set(2048, 2048);
     const sc = sun.shadow.camera; sc.left = -3; sc.right = 3; sc.top = 3; sc.bottom = -3; sc.near = 0.1; sc.far = 25; sc.updateProjectionMatrix();
-    sun.shadow.bias = -0.0005; sun.shadow.radius = 4;
+    sun.shadow.bias = -0.0005; sun.shadow.radius = 6;
     V.scene.add(sun); V.scene.add(sun.target);
     // lab 뷰어 자체 조명의 그림자는 끔 (그림자가 2개 생기는 문제) — 그림자는 위 sun 하나만
     V.scene.traverse(o => { if (o.isLight && o !== sun && o.castShadow) { o.castShadow = false; console.log('  기존 조명 그림자 끔:', o.type, o.name || ''); } });

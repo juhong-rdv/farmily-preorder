@@ -30,13 +30,13 @@
     const tex = new T.CanvasTexture(c); tex.colorSpace = T.SRGBColorSpace;
     const floor = new T.Mesh(new T.PlaneGeometry(40, 40), new T.MeshBasicMaterial({ map: tex, toneMapped: false }));
     floor.rotation.x = -Math.PI / 2; floor.position.set(center.x, floorY - 0.002, center.z); floor.name = '__floor'; scene.add(floor);
-    const shadow = new T.Mesh(new T.PlaneGeometry(40, 40), new T.ShadowMaterial({ opacity: 0.26 }));
+    const shadow = new T.Mesh(new T.PlaneGeometry(40, 40), new T.ShadowMaterial({ opacity: 0.24 }));
     shadow.rotation.x = -Math.PI / 2; shadow.position.set(center.x, floorY - 0.001, center.z); shadow.receiveShadow = true; shadow.name = '__shadow'; scene.add(shadow);
     const sun = new T.DirectionalLight(0xffffff, 0.001);
-    sun.position.set(center.x + 1.2, box.max.y + 6, center.z + 2.0); sun.target.position.copy(center); sun.castShadow = true;
+    sun.position.set(center.x + 0.45, box.max.y + 9, center.z + 0.8); sun.target.position.copy(center); sun.castShadow = true;
     sun.shadow.mapSize.set(2048, 2048);
     const sc = sun.shadow.camera; sc.left = -3; sc.right = 3; sc.top = 3; sc.bottom = -3; sc.near = 0.1; sc.far = 25; sc.updateProjectionMatrix();
-    sun.shadow.bias = -0.0005; sun.shadow.radius = 4;
+    sun.shadow.bias = -0.0005; sun.shadow.radius = 6;
     scene.add(sun); scene.add(sun.target);
     scene.traverse(o => { if (o.isLight && o !== sun && o.castShadow) o.castShadow = false; });
     model.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = false; } });
