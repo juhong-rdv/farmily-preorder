@@ -354,7 +354,7 @@
           <button class="card" id="optLidar" type="button" role="radio" aria-checked="false">
             <div>
               <b>라이다(LiDAR) 센서</b>
-              <span>레이저를 부채꼴로 연속 스캔해 각도별 거리를 측정하므로 사각 없이 전체 영역을 정밀하게 감지하고 감속·정지합니다. 작업자가 함께 다니는 온실에 권장. 초음파 센서를 대체하며, 선택하면 미리보기에 센서와 감지 범위가 표시됩니다.</span>
+              <span>레이저를 부채꼴로 연속 스캔해 각도별 거리를 측정하므로 사각 없이 전체 영역을 정밀하게 감지하고 감속·정지합니다. 작업자가 함께 다니는 온실에 권장. 초음파 센서를 대체합니다.<span id="lidarPreviewNote"> 선택하면 미리보기에 센서와 감지 범위가 표시됩니다.</span></span>
             </div>
             <em data-price="lidar"></em>
           </button>
@@ -403,6 +403,7 @@
         <div><span>본체</span><b id="sBody"></b></div>
         <div><span id="sColorLbl">색상</span><b id="sColor"></b></div>
         <div><span id="sLidarLbl">안전 센서</span><b id="sLidar"></b></div>
+        <div id="sSensorRow" hidden><span>안전 센서</span><b id="sSensor"></b></div>
         <div><span>무선 통신·파밀리+케어서비스</span><b id="sLte"></b></div>
         <div><span>수량</span><b id="sQty"></b></div>
         <div><span>기념 자켓 (무료)</span><b id="sJacket"></b></div>
@@ -767,7 +768,7 @@ function update() {
   $('modelS300').setAttribute('aria-checked', String(!uv)); $('modelUV').setAttribute('aria-checked', String(uv));
   $('modelS300Price').textContent = P.body != null ? won(P.body) + ' (영세율 기준)' : '[가격 미정]';
   $('modelUVPrice').textContent = won(Math.round(U.body * 1.1)) + ' (부가세 포함)';
-  $('secColor').hidden = false; $('secSensor').hidden = uv; $('secFarm').hidden = uv; $('secLift').hidden = !uv;
+  $('secColor').hidden = false; $('secSensor').hidden = false; $('lidarPreviewNote').hidden = uv; $('sSensorRow').hidden = !uv; $('secFarm').hidden = uv; $('secLift').hidden = !uv;
   $('optFixed').setAttribute('aria-checked', String(!state.lift)); $('optLift').setAttribute('aria-checked', String(state.lift));
   ROOT.querySelector('[data-price="lift"]').textContent = '+' + won(U.lift) + ' (공급가)';
   $('introTitle').querySelector('small').textContent = uv ? '(선택 제품 : UV 방제)' : '(선택 제품 : S300 스프레이)';
@@ -784,7 +785,7 @@ function update() {
   ROOT.querySelector('[data-price="lte"]').textContent = priceLabel(P.lte);
   $('qtyVal').textContent = state.qty;
 
-  const unit = uv ? U.body + (col.price ?? 0) + (state.lift ? U.lift : 0) + (state.lte ? (P.lte ?? 0) : 0)
+  const unit = uv ? U.body + (col.price ?? 0) + (state.lift ? U.lift : 0) + (state.lidar ? (P.lidar ?? 0) : 0) + (state.lte ? (P.lte ?? 0) : 0)
                   : (P.body ?? 0) + (col.price ?? 0) + (state.lidar ? (P.lidar ?? 0) : 0) + (state.lte ? (P.lte ?? 0) : 0);
   const known = uv ? true : (P.body !== null && P.body !== undefined);
   const vat = (uv || state.buyer === 'gen') ? 1.1 : 1;   // UV는 항상 부가세 포함. S300은 농업인·농업법인(영세율) 외에 부가세 10%
@@ -794,6 +795,7 @@ function update() {
   $('sBody').textContent = uv ? `UV ${state.lift ? '리프트형' : '고정형'} · ${won(U.body + (state.lift ? U.lift : 0))} (공급가)` : `S300 · ${P.body != null ? won(P.body) : '[가격 미정]'}`;
   $('sColor').textContent = `${col.name} · ${priceLabel(col.price)}`;
   $('sLidar').textContent = uv ? (state.lift ? `리프트형(높이 자동조정) · +${won(U.lift)}` : '고정형 · 기본') : (state.lidar ? `라이다 센서 · ${priceLabel(P.lidar)}` : '초음파 센서 · 추가 비용 없음');
+  $('sSensor').textContent = state.lidar ? `라이다 센서 · ${priceLabel(P.lidar)}` : '초음파 센서 · 추가 비용 없음';
   $('sLte').textContent = state.lte ? `LTE 모듈 + 3년 구독 · ${priceLabel(P.lte)}` : '미포함 (기본)';
   $('sQty').textContent = `${state.qty}대`;
   $('sJacket').textContent = `${state.jacket} · 1벌`;
@@ -830,8 +832,8 @@ function update() {
   } else est = '가격 확정 후 안내됩니다.';
   $('payEst').innerHTML = '<span class="pe-title">결제 예상 시뮬레이션 <small>(12개월 카드 할부로 할 경우 · 참고용)</small></span>' + est;
   $('pbTotal').textContent = known ? won(Math.round(finalTotal * vat)) + ((uv || state.buyer === 'gen') ? ' (할인·부가세 적용)' : ' (할인 적용)') : totalLabel;
-  $('pbSummary').textContent = uv ? `UV · ${col.name} · ${state.lift ? '리프트형' : '고정형'}${state.lte ? ' · LTE' : ''} · ${state.qty}대` : `S300 · ${col.name}${state.lidar ? ' · 라이다' : ''}${state.lte ? ' · LTE' : ''} · ${state.qty}대`;
-  const chips = uv ? ['부가세 포함', 'UV', col.name, state.lift ? '리프트형 (높이 자동조정)' : '고정형', ...(state.lte ? ['LTE'] : []), `${state.qty}대`]
+  $('pbSummary').textContent = uv ? `UV · ${col.name} · ${state.lift ? '리프트형' : '고정형'}${state.lidar ? ' · 라이다' : ''}${state.lte ? ' · LTE' : ''} · ${state.qty}대` : `S300 · ${col.name}${state.lidar ? ' · 라이다' : ''}${state.lte ? ' · LTE' : ''} · ${state.qty}대`;
+  const chips = uv ? ['부가세 포함', 'UV', col.name, state.lift ? '리프트형 (높이 자동조정)' : '고정형', state.lidar ? '라이다 센서' : '초음파 센서', ...(state.lte ? ['LTE'] : []), `${state.qty}대`]
                    : [state.buyer === 'gen' ? '부가세 포함' : '농업인 영세율', 'S300', col.name, state.lidar ? '라이다 센서' : '초음파 센서', ...(state.lte ? ['LTE'] : []), `${state.qty}대`];
   $('chips').innerHTML = chips.map((c) => `<span>${c}</span>`).join('');
   if ($('miniLabel')) $('miniLabel').textContent = (uv ? 'UV ' : 'S300 ') + col.name;
@@ -859,15 +861,18 @@ $('qtyDown').onclick = () => { state.qty = Math.max(1, state.qty - 1); update();
 
 /* ========== 아임웹 주문서 연결 (사전계약금 상품 idx 8) ==========
    흐름: 약관 동의 확인 → OMS_add_order.cm 으로 주문서 생성(회원/비회원 모두 가능) → 주문서(/shop_payment)로 이동
-   선택 사양은 sessionStorage.fx_spec 에 저장되고, 공통 Footer Code 스크립트가 주문서 배송메모에 자동 입력 */
+   잔금 결제 방식·자켓 사이즈·온실 정보는 상품의 입력형 옵션으로 함께 전달 (배송메모 사용 안 함) */
 const IMWEB_UV = {
   prodIdx: 9, shippingTemplate: 'T202510230ea3b35d85abd',
   // 아임웹 상품 #9 (UV 사전계약금) 옵션 코드
   opt: {
-    color: { code: 'O202610293acf2485cca67', name: '색상', values: { original: ['O202610292fd9eb9f5519d', '원본 컬러'], forest: ['O2026102985a7fb1a6bdfd', '포레스트'], graphite: ['O202610291961c9625c1b8', '그래파이트'], sand: ['O20261029d66ab56f4d1f2', '샌드'] } },
-    lift: { code: 'O202610281b918fadbc2ca', name: '리프트(높이 자동조정)', values: { fixed: ['O20261028588c317775738', '고정형(리프트 없음)'], lift: ['O2026102830dc0b064d0e1', '리프트형(높이 자동조정)'] } },
-    lte:  { code: 'O20261028f0ff0f636eb16', name: 'LTE 모듈', values: { no: ['O202610281a79db2aa10d8', '미포함'], yes: ['O202610285e49b16a9eada', 'LTE 모듈 + 3년 구독 포함'] } }
-  }
+    lift:   { code: 'O202610281b918fadbc2ca', name: '리프트(높이 자동조정)', values: { fixed: ['O20261028588c317775738', '고정형(리프트 없음)'], lift: ['O2026102830dc0b064d0e1', '리프트형(높이 자동조정)'] } },
+    lte:    { code: 'O20261028f0ff0f636eb16', name: 'LTE 모듈', values: { no: ['O202610281a79db2aa10d8', 'LTE 미포함'], yes: ['O202610285e49b16a9eada', 'LTE 모듈 + 3년 구독 포함'] } },
+    color:  { code: 'O202610293acf2485cca67', name: '색상', values: { original: ['O202610292fd9eb9f5519d', '원본 컬러'], forest: ['O2026102985a7fb1a6bdfd', '포레스트'], graphite: ['O202610291961c9625c1b8', '그래파이트'], sand: ['O20261029d66ab56f4d1f2', '샌드'] } },
+    sensor: { code: 'O20261029b5debc33b43f1', name: '안전센서', values: { ultra: ['O202610297fbf10a2ccc65', '초음파 센서'], lidar: ['O2026102997757b1ab947d', '라이다 센서'] } }
+  },
+  // 입력형 옵션 (잔금 결제 방식 · 기념 자켓 사이즈 · 온실 정보)
+  inp: { pay: ['O20261029e26fa420eedd0', '잔금 결제 방식'], jacket: ['O20261029583cab269fc0c', '기념 자켓 사이즈'], farm: ['O2026102964220fd6edd15', '온실 정보'] }
 };
 const IMWEB_S300 = {
   prodIdx: 8, shippingTemplate: 'T202510230ea3b35d85abd',
@@ -875,9 +880,10 @@ const IMWEB_S300 = {
   opt: {
     color:  { code: 'O202610278aeb61428357f', name: '색상', values: { original: ['O2026102775bbb91183e54', '원본 컬러'], forest: ['O202610275c2637cb79a76', '포레스트'], graphite: ['O20261027336b9ad33e586', '그래파이트'], sand: ['O20261027cfbcf8475b7f8', '샌드'] } },
     sensor: { code: 'O202610276d5506294a66b', name: '안전센서', values: { ultra: ['O20261027c96ea53d35d29', '초음파 센서'], lidar: ['O20261027deea217f2fdfc', '라이다 센서'] } },
-    lte:    { code: 'O20261027b74bce6a840f8', name: 'LTE 모듈', values: { no: ['O202610278e6a09ebc870b', '미포함'], yes: ['O202610272b0ca408c5226', 'LTE 모듈 + 3년 구독 포함'] } },
+    lte:    { code: 'O20261027b74bce6a840f8', name: 'LTE 모듈', values: { no: ['O202610278e6a09ebc870b', 'LTE 미포함'], yes: ['O202610272b0ca408c5226', 'LTE 모듈 + 3년 구독 포함'] } },
     buyer:  { code: 'O20261027f230d03fa3975', name: '구매자 구분(부가세)', values: { farm: ['O202610276d12b4ee8f50f', '농업인·농업법인(영세율)'], gen: ['O2026102742532ac2e6283', '학교·연구소·일반·기업(부가세 포함)'] } }
-  }
+  },
+  inp: { pay: ['O20261029520935333b303', '잔금 결제 방식'], jacket: ['O202610299dc2372b736da', '기념 자켓 사이즈'], farm: ['O20261029ca5f50f330735', '온실 정보'] }
 };
 const curIMWEB = () => isUV() ? IMWEB_UV : IMWEB_S300;
 function postForm(url, params) {
@@ -886,8 +892,14 @@ function postForm(url, params) {
 function selectedOptions() {
   const O = curIMWEB().opt;
   const pick = (g, k) => ({ value_type: 'SELECT', option_code: O[g].code, value_code: O[g].values[k][0], value_name: O[g].values[k][1], option_name: O[g].name });
-  if (isUV()) return [pick('color', state.color), pick('lift', state.lift ? 'lift' : 'fixed'), pick('lte', state.lte ? 'yes' : 'no')];
+  if (isUV()) return [pick('lift', state.lift ? 'lift' : 'fixed'), pick('lte', state.lte ? 'yes' : 'no'), pick('color', state.color), pick('sensor', state.lidar ? 'lidar' : 'ultra')];
   return [pick('color', state.color), pick('sensor', state.lidar ? 'lidar' : 'ultra'), pick('lte', state.lte ? 'yes' : 'no'), pick('buyer', state.buyer === 'gen' ? 'gen' : 'farm')];
+}
+const PAY_TXT = { full: '잔금 100% 일시불', half: '잔금 50% 일시불 + 50% 카드 할부', p30: '잔금 30% 일시불 + 70% 카드 할부', inst: '잔금 100% 카드 할부' };
+function inputOptions(memo) {
+  const I = curIMWEB().inp;
+  const mk = (k, text) => ({ value_type: 'INPUT', option_code: I[k][0], value_code: '', value_name: text, option_name: I[k][1] });
+  return [mk('pay', PAY_TXT[state.payPlan] || PAY_TXT.full), mk('jacket', '자켓 ' + state.jacket), mk('farm', memo ? '온실: ' + memo.replace(/\s+/g, ' ').slice(0, 200) : '온실 정보 없음')];
 }
 $('payBtn').onclick = () => {
   const memo = $('fMemo').value.trim();
@@ -901,17 +913,14 @@ $('payBtn').onclick = () => {
     setTimeout(() => { try { $('fAgree').focus({ preventScroll: true }); } catch (e) {} }, 400);
     return;
   }
-  const col = CONFIG.colors.find((c) => c.id === state.color);
   const IMWEB = curIMWEB();
-  const spec = (isUV() ? 'UV / ' + col.name + ' / ' + (state.lift ? '리프트형(높이 자동조정)' : '고정형') + (state.lte ? ' / LTE' : '') + ' / ' + state.qty + '대 / 부가세 포함'
-                       : 'S300 / ' + col.name + (state.lidar ? ' / 라이다 안전센서' : ' / 초음파 센서') + (state.lte ? ' / LTE' : '') + ' / ' + state.qty + '대' + ' / ' + (state.buyer === 'farm' ? '농업인·농업법인(영세율, 농업용 사용 동의)' : '학교·연구소·일반·기업(부가세 포함)')) + ' / 잔금: ' + ({ full: '100% 일시불', half: '50% 일시불 + 50% 카드 할부', p30: '30% 일시불 + 70% 카드 할부', inst: '100% 카드 할부' })[state.payPlan] + ' / 자켓: ' + state.jacket + (memo ? ' / 온실: ' + memo : '');
-  try { sessionStorage.setItem('fx_spec', spec); } catch (e) {}
+  try { sessionStorage.removeItem('fx_spec'); } catch (e) {}
   const btn = $('payBtn'); btn.disabled = true; btn.textContent = '주문서로 이동 중…';
   const fail = (e) => { alert('주문서를 만들지 못했습니다. 잠시 후 다시 시도해 주세요.\n' + (e && e.message ? e.message : '')); btn.disabled = false; btn.textContent = '사전계약금 결제'; };
-  const opts = selectedOptions();
+  const opts = selectedOptions(), inps = inputOptions(memo), all = opts.concat(inps);
   // 1) 옵션 조합 → 아임웹 옵션 상세 코드
   const sp = new URLSearchParams({ prod_idx: String(IMWEB.prodIdx) });
-  opts.forEach((o, i) => { ['value_type', 'option_code', 'value_code', 'value_name'].forEach((k) => sp.append('options[' + i + '][' + k + ']', o[k])); });
+  all.forEach((o, i) => { ['value_type', 'option_code', 'value_code', 'value_name'].forEach((k) => sp.append('options[' + i + '][' + k + ']', o[k])); });
   sp.append('require', 'Y'); sp.append('count', String(state.qty)); sp.append('idx', '0'); sp.append('skip_quantity_validation', 'false');
   postForm('/shop/select_option.cm', sp).then((j) => {
     const so = j && j.selected_option;
@@ -920,7 +929,7 @@ $('payBtn').onclick = () => {
     const op = new URLSearchParams({ backurl: location.origin + '/pre-order', prodIdx: String(IMWEB.prodIdx) });
     const pre = 'optDataList[0]';
     op.append(pre + '[idx]', '0'); op.append(pre + '[option_detail_code]', so.option_detail_code);
-    (so.options || opts).forEach((o, i) => { ['value_type', 'option_code', 'value_code', 'value_name', 'option_name'].forEach((k) => op.append(pre + '[options][' + i + '][' + k + ']', o[k])); });
+    inps.concat(opts).forEach((o, i) => { ['value_type', 'option_code', 'value_code', 'value_name', 'option_name'].forEach((k) => op.append(pre + '[options][' + i + '][' + k + ']', o[k])); });
     op.append(pre + '[price]', String(so.price != null ? so.price : CONFIG.deposit)); op.append(pre + '[count]', String(state.qty)); op.append(pre + '[require]', 'true');
     op.append(pre + '[sku_no]', so.sku_no || ''); op.append(pre + '[use_stock]', 'false'); op.append(pre + '[stock]', '0'); op.append(pre + '[stock_un_limit]', 'false'); op.append(pre + '[option_mix_type]', 'MIX');
     ['orderCount=0', 'type=normal', 'deliv_type=parcel', 'deliv_pay_type=price', 'deliv_country=KR', 'is_gift_buy=false'].forEach((kv) => { const [k, v] = kv.split('='); op.append(k, v); });
