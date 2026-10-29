@@ -17,15 +17,32 @@
     '.fx-spec dl{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:0}'+
     '.fx-spec dt{color:#6d7470;font-weight:400;white-space:nowrap}.fx-spec dd{margin:0;font-weight:500;word-break:keep-all;overflow-wrap:anywhere}'+
     '@media(max-width:767px){.fx-spec{max-width:none;font-size:13.5px;padding:12px 14px}}'+
-    '@media(min-width:768px){table.shop-table2 tr.content>td.im-xs-align-top{width:62%}}';
+    '@media(min-width:768px){table.shop-table2 tr.content>td.im-xs-align-top{width:62%}}'+
+    '.fx-spec.fx-fold{padding:9px 14px}.fx-spec.fx-fold summary{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;list-style:none;outline:none}'+
+    '.fx-spec.fx-fold summary::-webkit-details-marker{display:none}'+
+    '.fx-fold .fx-sum{font-size:13px;font-weight:500;color:#171a20;line-height:1.5;word-break:keep-all}'+
+    '.fx-fold .fx-tog{flex:none;font-size:12px;color:#1c524e;font-weight:600;white-space:nowrap}'+
+    '.fx-fold .fx-tog:after{content:"\\25BE";display:inline-block;margin-left:4px;transition:transform .15s}'+
+    '.fx-fold[open] .fx-tog:after{transform:rotate(180deg)}'+
+    '.fx-fold dl{margin-top:10px;padding-top:10px;border-top:1px solid #e2e9e4}';
   document.head.appendChild(css);
   function esc(s){return String(s).replace(/[\x26<>"]/g,function(c){return '\x26#'+c.charCodeAt(0)+';';});}
   function modelOf(el){ for(var k=0;k<6;k++){ if(!el) break; var t=el.textContent||''; if(/FARMILY-X/.test(t)) return /FARMILY-X\s*UV/.test(t)?'FARMILY-X UV':'FARMILY-X S300'; el=el.parentElement; } return ''; }
+  var FOLD=/^\/shop_mypage/.test(location.pathname)?!/idx=/.test(location.search):false;
+  function short(k,v){ if(k==='LTE·케어서비스') return /미포함/.test(v)?'LTE 미포함':'LTE 포함'; if(k==='리프트') return /고정형/.test(v)?'고정형':'리프트형'; if(k==='결제 조건') return v.replace(/^잔금\s*/,'잔금 '); return v; }
   function box(rows,extra,src){
-    var h='<h4>선택하신 사양</h4><dl>';
-    ORDER.forEach(function(k){ if(rows[k]) h+='<dt>'+k+'</dt><dd>'+esc(rows[k])+'</dd>'; });
-    extra.forEach(function(e){ h+='<dt>'+esc(e[0])+'</dt><dd>'+esc(e[1])+'</dd>'; });
-    var b=document.createElement('div'); b.className='fx-spec'; b.setAttribute('data-src',src); b.innerHTML=h+'</dl>'; return b;
+    var dl='<dl>';
+    ORDER.forEach(function(k){ if(rows[k]) dl+='<dt>'+k+'</dt><dd>'+esc(rows[k])+'</dd>'; });
+    extra.forEach(function(e){ dl+='<dt>'+esc(e[0])+'</dt><dd>'+esc(e[1])+'</dd>'; });
+    dl+='</dl>';
+    var b;
+    if(FOLD){
+      var sm=[]; ['색상','리프트','안전 센서','LTE·케어서비스'].forEach(function(k){ if(rows[k]) sm.push(esc(short(k,rows[k]))); });
+      b=document.createElement('details'); b.className='fx-spec fx-fold';
+      b.innerHTML='<summary><span class="fx-sum">'+sm.join(' · ')+'</span><span class="fx-tog">사양 자세히</span></summary>'+dl;
+      b.addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation(); if(e.target.closest('summary')) b.open=!b.open; });
+    } else { b=document.createElement('div'); b.className='fx-spec'; b.innerHTML='<h4>선택하신 사양</h4>'+dl; }
+    b.setAttribute('data-src',src); return b;
   }
   function place(target,b){
     var n=target.nextElementSibling;
@@ -55,4 +72,5 @@
   var busy=false, mo=new MutationObserver(function(){ if(busy) return; busy=true; setTimeout(function(){ busy=false; apply(); },60); });
   function start(){ apply(); mo.observe(document.body,{childList:true,subtree:true}); }
   if(document.body) start(); else document.addEventListener('DOMContentLoaded',start);
-})();</script>
+})();
+</script>
