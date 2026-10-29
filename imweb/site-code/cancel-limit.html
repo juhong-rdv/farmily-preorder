@@ -1,0 +1,46 @@
+<script>
+/* FARMILY 사전계약 취소: 결제 7일 경과 시 취소 버튼 → 고객센터 안내 + 취소 안내문 (fx-cancel-limit) */
+(function(){
+  if(!/^\/shop_mypage/.test(location.pathname)) return;
+  var LIMIT=(typeof window.FX_CANCEL_DAYS==='number')?window.FX_CANCEL_DAYS:7, TEL='02-6953-4608';
+  var css=document.createElement('style');
+  css.textContent='.fx-cancel-hide{display:none!important}'+
+    '.fx-cancel-tel{display:inline-flex;flex-direction:column;align-items:center;gap:2px;padding:8px 14px;border:1px solid #d9e2dc;border-radius:999px;background:#fff;font-size:12px;line-height:1.35;color:#5c5e62;text-align:center;white-space:nowrap;text-decoration:none}'+
+    '.fx-cancel-tel b{font-size:13px;font-weight:600;color:#1c524e}'+
+    '.fx-cancel-note{box-sizing:border-box;margin:0 0 16px;padding:14px 18px;border:1px solid #d9e2dc;border-radius:10px;background:#f6f9f7;font-size:13px;line-height:1.7;color:#3d4043;word-break:keep-all;text-align:left}'+
+    '.fx-cancel-note strong{display:block;margin:0 0 4px;font-size:13px;font-weight:600;color:#1c524e}'+
+    '.fx-cancel-note ul{margin:0;padding:0 0 0 16px}.fx-cancel-note li{margin:0}'+
+    '.fx-cancel-note a{color:#1c524e;font-weight:600;text-decoration:none}'+
+    '@media(max-width:767px){.fx-cancel-note{font-size:13.5px;padding:12px 14px}.fx-cancel-tel{white-space:normal}}';
+  document.head.appendChild(css);
+  var DATE=/(20\d\d)-(\d\d)-(\d\d)/;
+  function blockOf(el){ for(var k=0;k<9;k++){ if(!el) return null; if(DATE.test(el.textContent||'')) return el; el=el.parentElement; } return null; }
+  function daysSince(block){ var m=(block.textContent||'').match(DATE); if(!m) return 0; var d=new Date(+m[1],+m[2]-1,+m[3]); var t=new Date(); t=new Date(t.getFullYear(),t.getMonth(),t.getDate()); return Math.round((t-d)/864e5); }
+  function isFx(block){ return /FARMILY-X/.test(block.textContent||''); }
+  function fixButtons(){
+    var bs=document.querySelectorAll('a,button');
+    for(var i=0;i<bs.length;i++){
+      var b=bs[i]; if(b.textContent.trim()!=='취소') continue; if(b.classList.contains('fx-cancel-hide')) continue;
+      var blk=blockOf(b); if(!blk) continue; if(!isFx(blk)) continue; if(daysSince(blk)<=LIMIT) continue;
+      var t=document.createElement('a'); t.className='fx-cancel-tel'; t.href='tel:'+TEL.replace(/-/g,'');
+      t.innerHTML='<span>결제 '+LIMIT+'일 경과</span><b>취소 문의 '+TEL+'</b>';
+      b.classList.add('fx-cancel-hide'); b.parentNode.insertBefore(t,b.nextSibling);
+    }
+  }
+  function addNote(){
+    if(document.querySelector('.fx-cancel-note')) return;
+    var spec=document.querySelector('.fx-spec'); if(!spec) return;
+    var blk=blockOf(spec); if(!blk) return;
+    if(blk.tagName==='TABLE') blk=blk.parentElement;
+    var n=document.createElement('div'); n.className='fx-cancel-note';
+    n.innerHTML='<strong>사전계약 취소 안내</strong><ul>'+
+      '<li>결제일로부터 '+LIMIT+'일 이내에는 「취소」 버튼으로 직접 취소를 접수하실 수 있습니다. 접수 후 담당자 확인을 거쳐 결제 취소·환불이 진행됩니다.</li>'+
+      '<li>'+LIMIT+'일이 지난 뒤에는 고객센터(<a href="tel:'+TEL.replace(/-/g,'')+'">'+TEL+'</a>)로 문의해 주세요.</li></ul>';
+    blk.parentNode.insertBefore(n,blk);
+  }
+  function apply(){ fixButtons(); addNote(); }
+  var busy=false, mo=new MutationObserver(function(){ if(busy) return; busy=true; setTimeout(function(){ busy=false; apply(); },80); });
+  function start(){ apply(); mo.observe(document.body,{childList:true,subtree:true}); }
+  if(document.body) start(); else document.addEventListener('DOMContentLoaded',start);
+})();
+</script>
