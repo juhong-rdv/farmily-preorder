@@ -421,40 +421,9 @@ html.fm-menu-enabled #s20251023e0388a798e193 ._widget_data{animation:none!import
 <script>
 (function(){
   /* 사전계약금 상품 상세(/shop_view/?idx=8|9)는 구성기(/pre-order)로 보냄 — 주문서의 상품 링크 등에서 유입 시 혼동 방지 */
-  if (location.pathname.indexOf('/shop_view') !== 0) return;
+  if (location.pathname.indexOf('/shop_view') !== 0 || /fxdev=1/.test(location.search)) return;
   var idx = new URLSearchParams(location.search).get('idx');
   if (idx === '8') location.replace('/pre-order');
   else if (idx === '9') location.replace('/pre-order?model=uv');
-})();
-</script>
-<script>
-(function(){
-  if (location.pathname.indexOf('/shop_payment') !== 0) return;
-  var spec = ''; try { spec = sessionStorage.getItem('fx_spec') || ''; } catch (e) {}
-  if (!spec) return;
-  var TAG = '[사전계약 구성] ', FULL = TAG + spec;
-  function setVal(el, val, proto){ var set = Object.getOwnPropertyDescriptor(proto, 'value').set; set.call(el, val); el.dispatchEvent(new Event(proto === HTMLSelectElement.prototype ? 'change' : 'input', { bubbles: true })); }
-  function findSel(){ return Array.prototype.find.call(document.querySelectorAll('select'), function(s){ return Array.prototype.some.call(s.options, function(o){ return o.value === '직접입력'; }); }); }
-  function findInp(){ return Array.prototype.find.call(document.querySelectorAll('input'), function(i){ return (i.placeholder || '').indexOf('배송메모') === 0; }); }
-  function guard(){
-    var sel = findSel();
-    if (sel && sel.value !== '직접입력') setVal(sel, '직접입력', HTMLSelectElement.prototype);
-    if (sel && !sel.dataset.fxLocked) { sel.dataset.fxLocked = '1'; var wrap = sel.parentElement; if (wrap) { wrap.style.display = 'none'; } }
-    var inp = findInp();
-    if (inp) {
-      if (inp.value.indexOf(TAG) !== 0) setVal(inp, FULL, HTMLInputElement.prototype);
-      if (!inp.dataset.fxLocked) {
-        inp.dataset.fxLocked = '1'; inp.readOnly = true; inp.title = '사전계약 구성 (자동 입력)';
-        inp.style.cssText += ';background:#f7f7f5;color:#4a4a48;cursor:default';
-        var note = document.createElement('p'); note.id = 'fx-memo-note';
-        note.style.cssText = 'margin:8px 0 0;font-size:12px;line-height:1.6;color:#6b6b68;word-break:keep-all';
-        note.textContent = '사전예약 페이지에서 선택한 구성이 자동으로 기록됩니다. 수정이 필요하면 결제 후 고객지원(02-6953-4608)으로 연락해 주세요.';
-        if (inp.parentElement && !document.getElementById('fx-memo-note')) inp.parentElement.appendChild(note);
-      }
-    }
-  }
-  guard(); setInterval(guard, 400);
-  document.addEventListener('submit', guard, true);
-  document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('button,a,input[type=submit]'); if (b && /결제/.test(b.textContent || b.value || '')) guard(); }, true);
 })();
 </script>
