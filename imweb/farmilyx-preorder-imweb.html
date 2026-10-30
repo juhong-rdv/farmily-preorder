@@ -104,6 +104,7 @@
 @media (max-width: 860px){.fxp .gift{flex-direction:column}
 .fxp .gift-img{width:100%;height:220px;flex:none}
 .fxp .size-info table{display:block;overflow-x:auto}}
+.fxp .qty-note{margin:-6px 0 0;font-size:12px;color:var(--ink-3);text-align:right}
 .fxp .agree-msg{margin:6px 0 0;font-size:12.5px;font-weight:700;color:#C8321E}
 @keyframes fxShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
 .fxp .policy{display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--ink-2);line-height:1.6}
@@ -377,6 +378,7 @@
           <button id="qtyUp" type="button" aria-label="수량 늘리기">+</button>
         </div>
       </section>
+      <p class="qty-note">회원 계정 1개당 모델별 최대 5대까지 사전계약하실 수 있습니다.</p>
 
       <section class="opt" id="secGift">
         <div class="opt-head"><b>사전예약 기념 선물 <small style="font-weight:400;color:var(--ink-3)">(기본 제공 · 무료)</small></b><span>자켓 사이즈 선택</span></div>
@@ -911,7 +913,8 @@ $('payP30').onclick = () => setPayPlan('p30');
 $('payInst').onclick = () => setPayPlan('inst');
 $('optFarm').onclick = () => { state.buyer = state.buyer === 'farm' ? 'gen' : 'farm'; $('optFarm').setAttribute('aria-pressed', state.buyer === 'farm' ? 'true' : 'false'); $('farmPrice').textContent = state.buyer === 'farm' ? '부가세 0%' : '부가세 10% 포함'; update(); };
 $('fAgree').onchange = () => { if ($('fAgree').checked) { ROOT.querySelector('.agree').classList.remove('err'); const m = $('agreeMsg'); if (m) m.remove(); } };
-$('qtyUp').onclick = () => { state.qty = Math.min(10, state.qty + 1); update(); };
+const MAX_QTY = 5;   /* 계정당 모델별 최대 구매 대수 (아임웹 상품 설정 '1인 최대 구매 수량'과 동일) */
+$('qtyUp').onclick = () => { state.qty = Math.min(MAX_QTY, state.qty + 1); update(); };
 $('qtyDown').onclick = () => { state.qty = Math.max(1, state.qty - 1); update(); };
 
 /* ========== 아임웹 주문서 연결 (사전계약금 상품 idx 8) ==========
@@ -968,8 +971,18 @@ $('payBtn').onclick = () => {
     setTimeout(() => { try { $('fAgree').focus({ preventScroll: true }); } catch (e) {} }, 400);
     return;
   }
+  /* 회원만 주문 가능: 비로그인 시 선택 사양을 저장하고 로그인 창 → 로그인 후 같은 사양으로 복원 */
+  if (!window.MEMBER_UID) {
+    try { sessionStorage.setItem('fx_cfg', JSON.stringify({ s: { jacket: state.jacket, model: state.model, lift: state.lift, payPlan: state.payPlan, buyer: state.buyer, color: state.color, lidar: state.lidar, lte: state.lte, qty: state.qty }, memo, agree: true, t: Date.now() })); } catch (e) {}
+    const lab = ROOT.querySelector('.agree');
+    let msg = $('agreeMsg'); if (!msg) { msg = document.createElement('p'); msg.id = 'agreeMsg'; msg.className = 'agree-msg'; lab.after(msg); }
+    msg.textContent = '사전계약은 회원만 가능합니다. 로그인(또는 Google 간편 가입) 후 선택하신 사양 그대로 결제를 이어가실 수 있습니다.';
+    const back = (() => { try { return btoa(unescape(encodeURIComponent(location.pathname + location.search))); } catch (e) { return ''; } })();
+    try { if (window.SITE_MEMBER && typeof SITE_MEMBER.openLogin === 'function') { SITE_MEMBER.openLogin(back); return; } } catch (e) {}
+    location.href = '/login?back_url=' + back; return;
+  }
   const IMWEB = curIMWEB();
-  try { sessionStorage.removeItem('fx_spec'); } catch (e) {}
+  try { sessionStorage.removeItem('fx_spec'); sessionStorage.removeItem('fx_cfg'); } catch (e) {}
   const btn = $('payBtn'); btn.disabled = true; btn.textContent = '주문서로 이동 중…';
   const fail = (e) => { alert('주문서를 만들지 못했습니다. 잠시 후 다시 시도해 주세요.\n' + (e && e.message ? e.message : '')); btn.disabled = false; btn.textContent = '사전계약금 결제'; };
   const opts = selectedOptions(), inps = inputOptions(memo), all = opts.concat(inps);
@@ -1011,6 +1024,20 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !LB.hidd
 renderSizes();
 renderSwatches();
 update();
+/* 로그인 전 저장한 사양 복원 (30분 이내) */
+try {
+  const raw = sessionStorage.getItem('fx_cfg');
+  if (raw) {
+    const c = JSON.parse(raw);
+    if (c && c.s && Date.now() - (c.t || 0) < 30 * 60 * 1000) {
+      Object.assign(state, c.s); state.qty = Math.min(MAX_QTY, Math.max(1, state.qty || 1));
+      if (c.memo) $('fMemo').value = c.memo;
+      if (c.agree) $('fAgree').checked = true;
+      update(); switchSet();
+    }
+    if (window.MEMBER_UID) sessionStorage.removeItem('fx_cfg');
+  }
+} catch (e) {}
 
 /* ========== 결제 완료 화면 (위젯 안) ========== */
 function showDone(oid, name, spec) {
