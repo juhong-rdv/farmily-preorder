@@ -552,6 +552,8 @@ html.fm-menu-enabled #s20251023e0388a798e193 ._widget_data{animation:none!import
 </script>
 <script>/* FARMILY 2027 사전계약(공동구매) 홍보: 상단 공지 띠 + 메인 연두색 띠 교체 + 메인 첫 방문 팝업 (fx-promo) */
 (function(){
+  /* 2026-12-31 23:59:59 (한국시간) 이후 자동 종료 */
+  if (Date.now() > Date.parse('2026-12-31T23:59:59+09:00')) return;
   var P=location.pathname, LINK='/pre-order';
   var HIDE=/^\/(pre-order|shop_payment|shop_mypage|shop_cart|login|join|admin)/.test(P);
   function ss(k,v){ try{ if(v===undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k,v); }catch(e){ return null; } }
