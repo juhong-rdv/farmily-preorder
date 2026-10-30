@@ -550,4 +550,101 @@ html.fm-menu-enabled #s20251023e0388a798e193 ._widget_data{animation:none!import
   if(document.body) start(); else document.addEventListener('DOMContentLoaded',start);
 })();
 </script>
+<script>/* FARMILY 2027 사전계약(공동구매) 홍보: 상단 공지 띠 + 메인 연두색 띠 교체 + 메인 첫 방문 팝업 (fx-promo) */
+(function(){
+  var P=location.pathname, LINK='/pre-order';
+  var HIDE=/^\/(pre-order|shop_payment|shop_mypage|shop_cart|login|join|admin)/.test(P);
+  function ss(k,v){ try{ if(v===undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k,v); }catch(e){ return null; } }
+  function ls(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
+  var css=document.createElement('style');
+  css.textContent=
+    /* 상단 공지 띠 */
+    '#fx-notice{position:fixed;top:0;left:0;right:0;height:34px;z-index:10001;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 44px;background:#1c524e;color:#fff;font:500 13px/1 "Noto Sans KR",Pretendard,system-ui,sans-serif;letter-spacing:-.1px;box-sizing:border-box}'+
+    '#fx-notice a.fx-n-link{color:#fff;text-decoration:none;display:flex;align-items:center;gap:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'+
+    '#fx-notice .fx-n-tag{flex:none;font-size:11px;font-weight:700;color:#173a2c;background:#ccff47;border-radius:999px;padding:4px 9px}'+
+    '#fx-notice .fx-n-more{flex:none;color:#ccff47;font-weight:700}'+
+    '#fx-notice a.fx-n-link:hover .fx-n-more{text-decoration:underline;text-underline-offset:3px}'+
+    '#fx-notice button{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:28px;height:28px;border:0;background:transparent;color:rgba(255,255,255,.75);font-size:18px;line-height:1;cursor:pointer}'+
+    'html.fx-notice #farmily-mega-root{top:34px!important}'+
+    '@media(max-width:767px){#fx-notice{font-size:12px;padding:0 38px 0 12px;justify-content:flex-start}#fx-notice .fx-n-long{display:none}}'+
+    '@media(min-width:768px){#fx-notice .fx-n-short{display:none}}'+
+    /* 첫 방문 팝업 */
+    '#fx-pop{position:fixed;inset:0;z-index:2147482000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(10,18,14,.62);font-family:"Noto Sans KR",Pretendard,system-ui,sans-serif}'+
+    '#fx-pop .fx-p-card{position:relative;width:100%;max-width:580px;border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 24px 70px rgba(0,0,0,.35);color:#171a20}'+
+    '#fx-pop .fx-p-top{background:#1c524e;color:#fff;padding:28px 28px 24px}'+
+    '#fx-pop .fx-p-kicker{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.6px;color:#173a2c;background:#ccff47;border-radius:999px;padding:5px 10px;margin:0 0 14px}'+
+    '#fx-pop h3{margin:0;font-size:24px;line-height:1.35;font-weight:800;letter-spacing:-.6px;color:#fff}'+
+    '#fx-pop .fx-p-sub{margin:8px 0 0;font-size:13.5px;line-height:1.6;color:rgba(255,255,255,.82);word-break:keep-all}'+
+    '#fx-pop ul{list-style:none;margin:0;padding:20px 28px 6px}'+
+    '#fx-pop li{display:flex;gap:12px;align-items:flex-start;padding:9px 0;border-bottom:1px solid #eef1ee;font-size:14px;line-height:1.5;word-break:keep-all}'+
+    '#fx-pop li:last-child{border-bottom:0}'+
+    '#fx-pop li b{flex:none;min-width:84px;font-size:12.5px;font-weight:600;color:#6d7470;padding-top:1px}'+
+    '#fx-pop li span strong{color:#1c524e}'+
+    '#fx-pop .fx-p-cta{display:block;margin:12px 28px 0;height:50px;border-radius:12px;background:#1c524e;color:#fff;font-size:16px;font-weight:700;line-height:50px;text-align:center;text-decoration:none}'+
+    '#fx-pop .fx-p-cta:hover{background:#174440}'+
+    '#fx-pop .fx-p-foot{display:flex;justify-content:space-between;align-items:center;padding:14px 28px 18px}'+
+    '#fx-pop .fx-p-foot button{border:0;background:none;font-size:13px;color:#6d7470;cursor:pointer;padding:4px 0}'+
+    '#fx-pop .fx-p-foot button.fx-p-close{color:#171a20;font-weight:600}'+
+    '#fx-pop .fx-p-x{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;font-size:20px;line-height:1;cursor:pointer}'+
+    '@media(max-width:480px){#fx-pop .fx-p-top{padding:24px 22px 20px}#fx-pop h3{font-size:21px}#fx-pop ul{padding:16px 22px 4px}#fx-pop .fx-p-cta{margin:10px 22px 0}#fx-pop .fx-p-foot{padding:12px 22px 16px}}';
+  document.head.appendChild(css);
+
+  /* 1) 상단 공지 띠 (구성기·결제·마이페이지 제외, 닫으면 이번 방문 동안 숨김) */
+  function notice(){
+    if(HIDE) return; if(ss('fx_notice_off')==='1') return; if(document.getElementById('fx-notice')) return;
+    var n=document.createElement('div'); n.id='fx-notice';
+    n.innerHTML='<a class="fx-n-link" href="'+LINK+'"><span class="fx-n-tag">공동구매</span>'+
+      '<span class="fx-n-long">2027 사전계약(공동구매) 진행 중 · 1대당 150만원 할인 · 사전계약금 10만원</span>'+
+      '<span class="fx-n-short">2027 사전계약 · 1대당 150만원 할인</span>'+
+      '<span class="fx-n-more">신청하기 →</span></a><button type="button" aria-label="공지 닫기">×</button>';
+    n.querySelector('button').onclick=function(){ n.remove(); document.documentElement.classList.remove('fx-notice'); document.body.style.removeProperty('padding-top'); ss('fx_notice_off','1'); };
+    var pt=parseFloat(getComputedStyle(document.body).paddingTop)||0;
+    document.body.insertBefore(n,document.body.firstChild);
+    document.documentElement.classList.add('fx-notice');
+    document.body.style.setProperty('padding-top',(pt+34)+'px','important');
+  }
+
+  /* 2) 메인 연두색 띠: 도입 문의 → 사전계약(공동구매) 신청 */
+  function band(){
+    if(P!=='/') return;
+    var t=document.getElementById('text_w20251023127d926f9df27'); if(!t) return;
+    var s=t.querySelector('strong'); if(!s) return;
+    if(s.getAttribute('data-fx')==='1') return;
+    s.textContent='2027 사전계약(공동구매) 신청하기 →'; s.setAttribute('data-fx','1');
+    var a=t.closest('a'); if(a) a.setAttribute('href',LINK);
+  }
+
+  /* 3) 메인 첫 방문 팝업 (오늘 하루 보지 않기) */
+  function today(){ var d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+  function pop(){
+    if(P!=='/') return; if(ls('fx_pop_skip')===today()) return; if(ss('fx_pop_seen')==='1') return; if(document.getElementById('fx-pop')) return;
+    var w=document.createElement('div'); w.id='fx-pop'; w.setAttribute('role','dialog'); w.setAttribute('aria-modal','true'); w.setAttribute('aria-label','2027 사전계약 공동구매 안내');
+    w.innerHTML='<div class="fx-p-card">'+
+      '<div class="fx-p-top"><span class="fx-p-kicker">2027 사전계약 · 공동구매</span>'+
+      '<h3>2027년 농사 시즌,<br>FARMILY-X 미리 준비하세요</h3>'+
+      '<p class="fx-p-sub">온실 레일 자율주행 방제 로봇 S300(약제 살포)·UV(UV-C 방제) 사전계약을 받고 있습니다.</p>'+
+      '<button type="button" class="fx-p-x" aria-label="닫기">×</button></div>'+
+      '<ul>'+
+      '<li><b>사전계약 할인</b><span>잔금에서 <strong>1대당 150만원</strong> 할인</span></li>'+
+      '<li><b>오늘 결제</b><span>사전계약금 <strong>10만원</strong> · 결제일로부터 7일 이내 취소 접수 가능</span></li>'+
+      '<li><b>기념 선물</b><span>사전계약 고객 전원 FARMILY 바람막이 자켓 제공</span></li>'+
+      '<li><b>구매 수량</b><span>회원 계정당 모델별 최대 5대</span></li>'+
+      '</ul>'+
+      '<a class="fx-p-cta" href="'+LINK+'">사전계약 신청하기</a>'+
+      '<div class="fx-p-foot"><button type="button" class="fx-p-today">오늘 하루 보지 않기</button><button type="button" class="fx-p-close">닫기</button></div>'+
+      '</div>';
+    function close(){ w.remove(); document.removeEventListener('keydown',esc); ss('fx_pop_seen','1'); }
+    function esc(e){ if(e.key==='Escape') close(); }
+    w.addEventListener('click',function(e){ if(e.target===w) close(); });
+    w.querySelector('.fx-p-x').onclick=close; w.querySelector('.fx-p-close').onclick=close;
+    w.querySelector('.fx-p-today').onclick=function(){ ls('fx_pop_skip',today()); close(); };
+    w.querySelector('.fx-p-cta').addEventListener('click',function(){ ss('fx_pop_seen','1'); });
+    document.addEventListener('keydown',esc);
+    document.body.appendChild(w);
+  }
+
+  function run(){ notice(); band(); }
+  function start(){ run(); setTimeout(pop,700); var n=0, t=setInterval(function(){ band(); if(++n>20) clearInterval(t); },300); }
+  if(document.body) start(); else document.addEventListener('DOMContentLoaded',start);
+})();</script>
 
