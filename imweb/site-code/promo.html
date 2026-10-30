@@ -94,6 +94,8 @@
   }
 
   function run(){ notice(); band(); }
-  function start(){ run(); setTimeout(pop,700); var n=0, t=setInterval(function(){ band(); if(++n>20) clearInterval(t); },300); }
-  if(document.body) start(); else document.addEventListener('DOMContentLoaded',start);
+  function go(){ run(); setTimeout(pop,700); var n=0, t=setInterval(function(){ band(); if(++n>20) clearInterval(t); },300); }
+  /* 국내(KR) 접속에만 표시: Header Code의 접속 국가 판별(fx_geo_cc) 결과를 기다렸다가 KR일 때만 실행, 판별 실패·해외면 표시하지 않음 */
+  function gate(){ var k=0; (function chk(){ var cc=ss('fx_geo_cc'); if(cc==='KR') return go(); if(cc) return; if(++k>30) return; setTimeout(chk,200); })(); }
+  if(document.body) gate(); else document.addEventListener('DOMContentLoaded',gate);
 })();</script>
